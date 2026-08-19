@@ -1,0 +1,8 @@
+.table-head{
+    z-index:2;
+    position:sticky;
+    top:0px
+}
+.tooltip{
+    z-index: 100000 !important;
+}

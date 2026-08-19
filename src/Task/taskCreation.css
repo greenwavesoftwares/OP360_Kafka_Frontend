@@ -1,0 +1,24 @@
+.p-tabview.p-tabview-left .p-tabview-nav {
+  display: flex;
+  flex-direction: column;
+  width: 150px;  /* Adjust width as needed */
+}
+
+.p-tabview.p-tabview-left .p-tabview-panels {
+  flex: 1;
+}
+
+
+
+.textInput {
+  width: 100%; /* Make sure TextField takes the full width of its container */
+}
+.taskInputStyle{
+      background: #f8fafc;
+    width: 500px !important;
+    border: 1px solid red;
+}
+
+
+  
+  

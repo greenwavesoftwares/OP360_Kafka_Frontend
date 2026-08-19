@@ -1,0 +1,9 @@
+
+.body{
+transform: scale(0.7);
+}
+.UserInfoTableStyle.p-datatable .p-column-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

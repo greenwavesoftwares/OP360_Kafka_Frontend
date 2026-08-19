@@ -1,0 +1,33 @@
+.cell {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center; 
+    margin-bottom: 20px; 
+  }
+  
+  .cell-items {
+    padding-right: 40px; 
+  }
+ 
+  .cardBody {
+    background: rgb(244 247 250 / 42%);
+    border: 1px solid rgb(226 232 240 / 34%);
+    padding: 0.7rem 0.7rem;
+    border-radius: 0.75rem;
+}
+
+ .cardBodyGreen {
+    background: #caffd345;
+    border: 1px solid rgb(226 232 240 / 34%);
+    padding: 0.7rem 0.7rem;
+    border-radius: 0.75rem;
+}
+.selfJobDropdownStyle .p-inputtext{
+      padding: 0.5rem;
+    font-size: 0.85rem;
+}
+.InputSection .MuiInputBase-input-MuiOutlinedInput-input{
+   padding: 0.5rem;
+}
+
+  

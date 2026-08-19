@@ -1,0 +1,33 @@
+.layout {
+  width: 100%;
+}
+
+@media (min-width: 40rem) {
+  .layout {
+    max-width: 40rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .layout {
+    max-width: 48rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .layout {
+    max-width: 64rem;
+  }
+}
+
+@media (min-width: 80rem) {
+  .layout {
+    max-width: 80rem;
+  }
+}
+
+@media (min-width: 96rem) {
+  .layout {
+    max-width: 96rem;
+  }
+}

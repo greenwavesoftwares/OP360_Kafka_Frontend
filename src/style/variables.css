@@ -1,0 +1,52 @@
+/* NOTE CSS variables */
+:root {
+  --primary-color: #2563eb;
+  --secondary-color: #9333ea;
+  --text-color: #333;
+  --border-radius: 8px;
+  --font-family: "Inter", sans-serif;
+  --info-card: #2563eb;
+  --fontColor:#263238;
+
+  /*standardized font size */
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.85rem;
+  --fs-base: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.25rem;
+  --fs-2xl: 1.5rem;
+
+
+  /* info-card  */
+  --infoCard-BG: #fffefec9;
+  --infoCard-border: #dfd9d942;
+  --infoCard-subHeader: #6b7280;
+  --infoCard-header-FontSize: 0.85rem;
+  --iconBlue-bg: #dbeafe;
+
+  /* content card */
+  --card-bg: #fffefec9;
+  --card-border: #dfd9d942;
+
+   /* Table styles */
+  --tableOuterBorder: #dfd9d961;
+  --tableBG: #998b8b17;
+  --tableOddRow: #f7f7f7;
+  --tablePaginator-active: #dcdbe34a;
+  --tableHighlight: #cbcbf5;
+  --tableHeaderIcon: #7c7c7c;
+  --tableFooterBG: #dbdff5;
+  --tablePaginator-active: #dcdbe34a;
+
+  /* Button Style */
+  --buttonPadding: 0.4rem 0.8rem;
+  --buttonTextFontSize:0.85rem;
+  --buttonColumnGap:0.2rem;
+
+
+  /* Dialog Style */
+  --dialogHeaderPadding: 0.3rem 1rem 0.1rem 0.8rem;
+  --dialogFooterPadding: 0.3rem 1rem 0.7rem 0.8rem;
+  --dialogContentPadding: 0.2rem 0.9rem 0.7rem 0.9rem;
+  --dialogHeaderBottomBorder: #c3bdbdde;
+}

@@ -1,0 +1,30 @@
+.fc .fc-popover {
+    z-index: 7;
+}
+
+.tab-label {
+    text-transform:none !important;
+}
+.tab-info{
+    font-size: 1.1rem !important
+}
+/* Allow chip to grow in height */
+.chip-wrapper {
+  height: auto !important;    /* override fixed height */
+  min-height: 24px;           /* keep minimum for small chip */
+  align-items: flex-start;    /* align text nicely at the top */
+  padding-top: 4px;
+  padding-bottom: 4px;
+  white-space: normal;        /* allow wrapping */
+}
+
+/* Style the text inside */
+.chip-multiline {
+  display: inline-block;
+  max-width: 150px;   /* control width so wrapping happens */
+  white-space: normal;
+  word-break: break-word;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  line-height: 1.3;
+}

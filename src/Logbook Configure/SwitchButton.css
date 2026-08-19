@@ -1,0 +1,67 @@
+.switch-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 128px;
+    height: 33px;
+    border-radius: 30px;
+    background-color: #ddd;
+    padding: 2px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2)
+  }
+  
+  .switch-container.day {
+    background-color: #f1c40f; /* Day theme */
+  }
+  
+  .switch-container.night {
+    background-color: #789cc1; /* Night theme */
+  }
+  
+  .switch-ball {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: white;
+    font-size: 24px;
+    font-weight: bold;
+    position: absolute;
+    top: 4px;
+     left: 1px; 
+    transition: transform 0.5s ease, box-shadow 0.3s ease;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  .switch-ball::after{
+    left: 0;
+  }
+  
+  .switch-container.night .switch-ball {
+    transform: translateX(100px); /* Moves the ball to the other end */
+  }
+  
+  .switch-label {
+    font-size: 0.75rem !important;
+    font-weight: 600;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.5s ease;
+  }
+  
+  .label-day {
+    left: 8px; /* Opposite side for day */
+    color: white;
+  }
+  
+  .label-night {
+    right: 15px; /* Opposite side for night */
+    color: #e5e9ed;
+    left: 56px;
+  }
+  

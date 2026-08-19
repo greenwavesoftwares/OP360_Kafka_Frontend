@@ -1,0 +1,75 @@
+{
+  "short_name": "Operations360",
+  "name": "Operations360",
+  "description": "Operations360 by Greenwave Solutions Pvt Ltd",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "gw-logo192.jpg",
+      "type": "image/jpg",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "gwlogo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "gwlogo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "id": "Operations360",
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/screenshots/Admin_Page_Mobile.png",
+      "sizes": "372x824",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/screenshots/Logbook_Configure_Mobile.png",
+      "sizes": "372x824",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/screenshots/Task_Master_Mobile.png",
+      "sizes": "372x824",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/screenshots/Admin_Page.png",
+      "sizes": "1919x911",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/Logbook_Configure.png",
+      "sizes": "1919x911",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/Task_Master.png",
+      "sizes": "1919x911",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ]
+}

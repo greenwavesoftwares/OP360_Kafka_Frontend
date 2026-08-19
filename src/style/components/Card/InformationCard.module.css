@@ -1,0 +1,28 @@
+.infoCard {
+  background-color: var(--infoCard-BG) !important;
+  box-shadow: #0000000a 1px 1px 2px !important;
+  border-radius: 0.4rem !important;
+  border-color: var(--border-color);
+  padding: 0.6rem 1rem;
+}
+.Header {
+  color: #374151;
+  margin: 0;
+  padding: 0;
+  font-size: var(--infoCard-header-FontSize);
+}
+.subHeader {
+  font-size: 0.75rem;
+  margin: 0;
+  padding: 0;
+  color: var(--infoCard-subHeader) !important;
+}
+.blueIcon {
+  background-color: var(--iconBlue-bg);
+  color: #2563eb;
+  display: grid;
+  align-items: center;
+  font-size: 1rem !important;
+  padding: 0.5rem !important;
+  border-radius: 0.5rem;
+}

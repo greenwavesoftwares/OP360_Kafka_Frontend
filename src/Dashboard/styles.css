@@ -1,0 +1,52 @@
+.container {
+    position: relative;
+  }
+  
+  .appbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 5rem;
+    z-index: +99999999999999999999;
+  }
+  .spinner-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999; /* Ensures the spinner is on top of other content */
+  }
+ .panelContant .p-panel-content{
+  padding: 0 !important;
+  border: 0 !important;
+ }
+ .p-dataview .p-dataview-header{
+  padding: 0.5rem;
+ }
+ .p-progressbar-determinate .p-progressbar-label{
+  font-size: 0.7rem;
+ }
+ .dashboardDatatable.p-datatable .p-datatable-thead > tr > th{
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  text-align: center;
+ }
+ .dashboardDatatable.p-datatable .p-datatable-tbody > tr > td{
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  text-align: center;
+ }
+ .dashboardDatatable.p-datatable .p-column-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* width: max-content; */
+
+}
+.dateTimeSection.p-column-header-content{
+  width: 9rem;
+}

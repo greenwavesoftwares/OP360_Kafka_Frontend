@@ -1,0 +1,10 @@
+.primeReactButton :global(.p-button) {
+    color: #ffffff;
+    background: #6366f1;
+    border: 1px solid #6366f1;
+    padding: var(--buttonPadding) !important;
+     font-size: var(--buttonTextFontSize) !important;
+    column-gap: var(--buttonColumnGap);
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    border-radius: 6px;
+}

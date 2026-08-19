@@ -1,0 +1,26 @@
+/* Increase the width of the switch */
+.p-inputswitch {
+    /* width: 60px;  You can adjust the width as per your need */
+}
+
+/* Custom background when ON */
+.custom-switch-on .p-inputswitch-slider {
+    background-color: hsl(33, 89%, 46%); /* Green for ON state */
+    border: .5px solid black;
+}
+
+/* Custom background when OFF */
+.custom-switch-off .p-inputswitch-slider {
+    background-color: hsl(143, 81%, 29%); /* Red for OFF state */
+    border: 1px solid black;
+
+}
+
+/* Optionally, you can also modify the slider knob color */
+.custom-switch-on .p-inputswitch-slider .p-inputswitch-button {
+    background-color: #ffffff; /* White knob when ON */
+}
+
+.custom-switch-off .p-inputswitch-slider .p-inputswitch-button {
+    background-color: #ffffff; /* White knob when OFF */
+}

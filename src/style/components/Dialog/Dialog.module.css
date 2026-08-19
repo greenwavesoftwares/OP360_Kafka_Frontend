@@ -1,0 +1,22 @@
+/* NOTEDialog Styles */
+
+/* Dialog Header */
+.dialogHeader :global(.p-dialog-header) {
+  padding: var(--dialogHeaderPadding);
+  border-bottom: 1px solid var(--dialogHeaderBottomBorder) !important;
+}
+.dialogHeader :global(.p-dialog-header .p-dialog-title) {
+  font-size: 0.85rem !important;
+}
+
+
+
+/* Dialog Content */
+.dialogContent :global(.p-dialog-content) {
+  padding: var(--dialogContentPadding);
+}
+
+/* Dialog Footer */
+.dialogFooter :global(.p-dialog .p-dialog-footer) {
+  padding: var(--dialogFooterPadding);
+}

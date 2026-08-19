@@ -1,0 +1,6 @@
+.contentCard {
+    box-shadow: #0000000a 1px 1px 2px !important;
+    border-radius: .4rem !important;
+    background-color: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+}

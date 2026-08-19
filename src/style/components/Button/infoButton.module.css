@@ -1,0 +1,9 @@
+/* Info Button */
+.infoButton {
+  padding: var(--buttonPadding) !important;
+  font-size: var(--buttonTextFontSize) !important;
+  column-gap: var(--buttonColumnGap);
+}
+.p-button-icon{
+    
+}

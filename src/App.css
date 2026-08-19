@@ -1,0 +1,738 @@
+/* Common CSS */
+:root {
+   --fc-button-bg-color: #e0e0e0;
+   --fc-button-text-color: black;
+   --fc-button-border-color: #c3bfbf;
+   --fc-button-border-color: #c3bfbf;
+   --fc-button-active-bg-color: #b9b5b5;
+   --fc-button-active-border-color: #b4b0b0;
+   --fc-button-hover-bg-color: #b9b5b5;
+    --fc-button-hover-border-color: #b4b0b0;
+}
+/* Scale down the primereact component size*/
+html {
+    font-size: 14px;
+}
+body{
+  /* caret-color: transparent; */
+  /* transform: scaleX(0.45);
+  transform: scaleY(0.95); */
+  background-color: #F4F7FF !important; 
+}
+
+/* Input Section */
+.inputSection.p-inputtext.p-inputtext-sm {
+    font-size: 0.8rem;
+}
+.p-input-icon-left > .p-inputtext {
+    padding-left: 2.2rem;
+}
+
+/* MUI Chip */
+/* Active Chip */
+.activeChipStyle.MuiChip-root {
+  background: none;
+  border: 1px solid #7ff37f;
+  color: green;
+}
+.activeChipStyle.MuiChip-root .MuiChip-icon {
+  color: green;
+  border-color: #7ff37f;
+}
+.activeChipStyle .MuiChip-label {
+  color: green;
+}
+/* In-active Chip */
+.inActiveChipStyle.MuiChip-root {
+  background: none;
+  border: 1px solid #fda0a0;
+  color: #ff4d4d;
+}
+.inActiveChipStyle.MuiChip-root .MuiChip-icon {
+  color: #ff4d4d;
+  border-color: #fda0a0;
+}
+.inActiveChipStyle .MuiChip-label {
+  color: #ff4d4d;
+}
+
+/* File Upload */
+.p-fileupload .p-fileupload-buttonbar {
+    background: #f9fafb;
+    padding: 0.8rem;
+}
+.p-fileupload .p-fileupload-row > div {
+    padding: 1rem 1rem;
+    font-size: 0.85rem;
+}
+
+
+
+/* Panel Style */
+.panelStye.p-panel .p-panel-content{
+  padding: 0.5rem;
+}
+
+
+
+
+/* Input Switch  */
+.p-inputswitch {
+    width: 2.6rem;
+    height: 1.3rem;
+}
+.p-inputswitch .p-inputswitch-slider:before {
+    background: #ffffff;
+    width: 1rem;
+    height: 1rem;
+    left: 0.1rem;
+    margin-top: -0.5rem;
+    border-radius: 50%;
+    transition-duration: 0.2s;
+}
+
+
+
+.ellipsisText{
+  overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 140px;
+
+}
+
+  /* Mui Menu Bar */
+  .muiMeunuBarZIndex.MuiDrawer-docked .MuiDrawer-paper{
+    z-index: +300 !important;
+    background: #263238;
+  }
+  .muiMeunuBarZIndexRedBG.MuiDrawer-docked .MuiDrawer-paper {
+    z-index: +300 !important;
+    background: rgb(90, 7, 7);
+  }
+  .CurrentUserStatus{
+    position: relative;
+    background-color: rgb(72, 60, 46);
+  }
+  
+  .pageHeader{
+    position: relative;
+  }
+  /*Primereact Stepper */
+  .forBorderRadius.p-stepper .p-stepper-panels{
+    border-radius: 1rem;
+  }
+ 
+
+
+
+  /* Common Style */
+  .p-dialog .p-dialog-header{
+    padding: 1rem 1rem 0.2rem 1rem !important;
+  }
+  .p-card .p-card-content {
+    padding: 0.7rem !important;
+}
+.resetDialog{
+  background: #00000002 !important;
+}
+
+
+
+/* Button Style */
+.disabledFocus.p-button.p-button-danger:enabled:focus{
+/* box-shadow: none !important; */
+}
+.iconStyle.MuiSvgIcon-root{
+  width: 0.85rem !important;
+  height: 0.85rem !important;
+
+}
+
+/* tab style */
+
+
+
+
+/* MenuSection Style */
+.menuTreeSectionStyle .MuiTreeItem-content .MuiTreeItem-label{
+background-color: rgb(255, 0, 0) !important;
+}
+.menuTreeSectionStyle .MuiTreeItem-content .MuiTreeItem-iconContainer{
+  background: green;
+  width: 0;
+}
+.menuTreeSectionStyle .MuiTreeItem-content{
+  padding: 0;
+}
+
+
+/* React Flow Name Hide */
+.react-flow__attribution{
+  display: none;
+}
+
+.SidebarHeader.p-sidebar .p-sidebar-header{
+  padding: 0.2rem !important;
+  border-bottom: 1px solid #eee8e8;
+}
+
+
+
+
+/* DatePIcker */
+.p-datepicker table td {
+  padding: 0.2rem;
+}
+.p-datepicker table th{
+  padding: 0.2rem;
+}
+
+/* Primereact Date Table */
+.p-datatable .p-datatable-header {
+  padding: 0.5rem 0.5rem;
+  font-size: 0.87rem;
+}
+.UserInfoTableStyle.p-datatable .p-datatable-thead > tr > th {
+  font-size: 0.87rem;
+  text-align: center;
+  padding: 0.5rem 0.5rem;
+}
+.UserInfoTableStyle.p-datatable .p-column-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.UserInfoTableStyle.p-datatable .p-datatable-tbody > tr > td{
+  padding: 0.35rem 0.35rem;
+  text-align: center;
+}
+.UserInfoTableStyle.p-datatable.p-datatable-striped .p-datatable-tbody > tr.p-row-odd{
+  background: #fbfbfb;
+}
+.UserInfoTableStyle.p-datatable .p-datatable-header {
+    background: white;
+}
+.dataTableFooter.p-datatable .p-datatable-footer{
+    padding: 0.7rem 1rem;
+}
+.dataTableStyle{
+  border: 1px solid #e5e7eb;
+  font-size: 0.87rem;
+}
+.primereactDatatableStyle{
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+}
+.dataTableStyle.MuiPaper-root-MuiTableContainer-root{
+  border: 1px solid #e5e7eb;
+  font-size: 0.87rem;
+}
+
+.UserGroupdataTableStyle .p-datatable-wrapper {
+  height: 25rem !important;
+}
+.HeaderColor.p-datatable .p-datatable-thead > tr > th {
+  background-color:#DBE0E9;
+  color: #263238;
+}
+.HeaderColor.p-datatable .p-sortable-column .p-sortable-column-icon{
+  color: #263238 !important;
+}
+
+.HeaderColorExpandable.p-datatable .p-datatable-thead > tr > th {
+  background-color:#495c81;
+  color: white;
+}
+.HeaderColorExpandable.p-datatable .p-sortable-column .p-sortable-column-icon{
+  color: white !important;
+}
+.p-column-filter-menu{
+  margin-left: 0 !important;
+}
+
+/* MUI DateTable */
+.MuiDatatableTableHeader.MuiTableCell-root { 
+  background-color:#DBE0E9;
+  padding: 0.5rem 0.5rem;
+}
+.MuiDatatableTableHeader-Font{
+  color: #263238;
+   font-weight: 600 !important; 
+  font-size: 0.9rem !important;
+}
+.Expanded-MuiDatatableTableHeader.MuiTableCell-root { 
+  background-color:#495c81;
+  padding: 0.5rem 0.5rem;
+}
+.MuiDatatableBodyPadding.MuiTableCell-root{
+  padding: 0.5rem;
+}
+
+
+.HeaderStyle.p-column-filter-menu {
+  display: inline-flex;
+  margin-left: 0;
+}
+
+
+/* Primereact Dialog */
+
+.newresetDialog.p-dialog{
+  box-shadow: none !important;
+  height: 21.5rem;
+  width:  22rem;
+  padding: 0.5rem 1rem !important;
+}
+.newresetDialog.p-dialog .p-dialog-header{padding: 0.5rem 1rem 0.5rem 1rem !important}
+
+
+
+/* Dropdown */
+.p-dropdown-items-wrapper{
+  /* max-width: 200px !important; */
+
+}
+.MuiDrawer-paper::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+
+/* Calender Style*/
+.fc .fc-toolbar-title {
+  font-size: 1.2rem;
+}
+.noPadding.p-card .p-card-body{
+  padding: 0 !important;
+}
+
+
+
+
+/* primereact-fieldset  */
+.fieldSetStyle.p-fieldset .p-fieldset-legend {
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  background: #ebebeb;
+  font-weight: 700;
+  border-radius: 6px;
+  font-size: 0.68rem;
+}
+
+.fieldSetStyle.p-fieldset .p-fieldset-content {
+  padding: 0.2rem;
+}
+
+.forToggleButton.p-fieldset.p-fieldset-toggleable .p-fieldset-legend a{
+  padding: 0 !important;
+}
+
+/* Primereact Toggle Button Style */
+.loogBookToggleButtonStyle.p-togglebutton.p-highlight .p-button {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: #ffffff;
+    font-size: 0.75rem;
+    padding:0.4rem 0.8rem;
+    
+}
+.loogBookToggleButtonStyle.p-togglebutton .p-button{
+    background: #c3c4e2;
+    border-color:#c3c4e2;
+    /* color: #171616; */
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    
+}
+
+
+
+/* Primereact Tab View */
+.tabViewStyle.p-tabview .p-tabview-panels
+{
+  padding: 0rem;
+}
+.tabViewStyleWithPadding.p-tabview .p-tabview-panels
+{
+  padding: 0.5rem;
+}
+.noPadding.p-panel .p-panel-content {
+  padding: 0 !important;
+}
+.noPadding.p-panel.p-panel-toggleable .p-panel-header{
+  padding: 0.2rem 1.25rem !important; 
+}
+.HeaderStyle.p-panel .p-panel-header{
+  padding: 0 !important;
+}
+.HeaderStyle.p-panel-header{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.p-overlaypanel .p-overlaypanel-content {
+  padding: 0.5rem;
+  background: #f0f0f0;
+  font-size: 0.9rem;
+}
+
+
+
+/* React Fullcalendar Style */
+.fc .fc-button{
+  text-transform: capitalize;
+  font-size: 0.95rem;
+}
+.fc-v-event{
+  background-color: transparent;
+  border: none;
+}
+
+
+
+/* toggle-button */
+.custom-toggle-button .p-button {
+  font-size: 10px; /* Adjust the font size as needed */
+  padding: 8px 12px; /* Adjust the padding as needed */
+  border-radius: 8px;
+}
+.p-inputnumber-buttons-stacked .p-inputnumber-input {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  width: 7rem;
+}
+.toggle-button-active .p-button{
+  background-color: #43a047 !important;
+  border-color: #43a047 !important;
+  color: white !important;
+}
+.toggle-button-activeNew .p-button{
+  background-color: #43a047 !important;
+  border-color: #43a047 !important;
+  color: white !important;
+  padding: 0.2rem 0.6rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+}
+.toggle-button-inactiveNew .p-button{
+  background-color: #ff1744 !important;
+  border-color: #ff1744 !important;
+  color: white !important;
+  padding: 0.2rem 0.6rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+}
+.toggle-button-default .p-button{ 
+  color: rgb(0, 0, 0) !important;
+}
+.toggle-button-inactive .pi-times{
+  color: white !important;
+}
+.toggle-button-inactive .p-button{
+  background-color: #ff1744 !important;
+  border-color: #ff1744 !important;
+  color: white !important;
+}
+.activeBtn.p-togglebutton.p-highlight .p-button {
+  background: #06b6d4;
+  border-color: #06b6d4;
+  color: #ffffff;
+  border-radius: 2rem;
+  padding: 0.6rem;
+  font-size: 0.7rem;
+}
+
+
+
+/* Dropdown Set Max Height */
+.setMaxHeight.MuiList-root-MuiMenu-list{
+  background: red !important;
+}
+
+.cardBorderRadius{
+  border-radius: 1rem;
+}
+.gradientsBGColorOne{
+ background: hsl(40deg 59.22% 93.23%);
+ 
+}
+.gradientsBGColorTwo{
+  background: hsl(71.3deg 61.84% 92.76%);
+  
+ }
+ .gradientsBGColorThree{
+  background: hsl(0deg 100% 97.55%);
+  
+ }
+
+
+
+
+/* MenuBar Style */
+.MuiListItem-root{
+    padding-top: 2px !important;  
+    padding-bottom: 2px !important;
+
+}
+.p-dialog .p-dialog-header .p-dialog-title {
+  font-size: 1rem !important;
+}
+.css-1r9jet7{
+  min-height: 3rem !important;
+  /* display: none !important; */
+}
+
+/* Dialog Header Style */
+.dialogHeaderStyle.p-dialog .p-dialog-header {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+
+/* Prime React Tree Select */
+
+.p-treeselect .p-treeselect-label.p-placeholder {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+.p-tree{
+      padding: 0.2rem;
+}
+.p-tree-container {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    font-size: 0.85rem;
+}
+
+/* listbox */
+
+.p-listbox .p-listbox-header .p-listbox-filter {
+    padding-right: 1.75rem;
+    font-size: 0.85rem;
+}
+.p-listbox .p-listbox-list .p-listbox-item{
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+}
+
+
+/* dropdown placeholder */
+.p-dropdown .p-dropdown-label.p-placeholder {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+
+/* primereact card */
+.primeCardStyle.p-card .p-card-content{
+  padding: 0 !important;
+}
+.primeReactCard-padding.p-card .p-card-body{
+  padding: 0 !important;
+}
+.cardBodyPadding.p-card .p-card-body {
+  padding: 0rem;
+}
+
+
+/* Primereact panel style */
+.LogbookGridStyle.p-panel.p-panel-toggleable .p-panel-header{
+   background: #DBE0E9;
+   padding: 0.4rem 1.25rem !important;
+}
+
+.newlistboxStyleforgap.p-listbox .p-listbox-list .p-listbox-item{
+  padding: 0.4rem 0.5rem;
+}
+
+
+/* carousel style */
+.p-carousel-prev{
+  margin: 0 !important;
+  /* color: white;
+    background: #a6cfef; */
+}
+.p-carousel-next {
+  margin: 0 !important;
+  /* color: white;
+  background: #a6cfef; */
+}
+
+
+
+/* Chip Style */
+.primereact-chip-style.p-divider.p-divider-horizontal{
+  margin:  0 0 0 0.5rem !important;
+  padding:  0 !important;
+}
+.primereact-chip-style.p-divider .p-divider-content {
+  background-color: whitesmoke !important;
+}
+
+
+
+/* primereact tag color */
+.p-tag-custom {
+  background-color: #f0f0f0; /* Custom default color */
+  color: #000;
+}
+/* primereact datetable paginator */
+.p-paginator .p-dropdown .p-dropdown-label{
+  padding-top: 5px !important;
+}
+.p-paginator .p-dropdown{
+  height: 2rem !important;
+}
+
+
+.CalenderButtonStyle .p-button{
+  background:#607d8b;
+}
+
+.logbookDateTimeFieldStyle{
+  min-width: 14.5rem;
+}
+
+/* MUi Tab style */
+.css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected{
+  color: #1976d2;
+  border-radius: 1rem 1rem 0 0;
+  background: #f6faff;
+  padding: 0.5rem 1rem;
+}
+/* Primereact MultiSelect */
+.mutiSelectStyle.p-multiselect .p-multiselect-label{
+  width: 7.8rem;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+}
+.logbookInputSwitchbtn.p-inputswitch{
+  width: 2.35rem;
+  height: 1rem;
+}
+.logbookInputSwitchbtn.p-inputswitch .p-inputswitch-slider:before {
+  background: #ffffff;
+  width: 0.7rem;
+  height: 0.7rem;
+  left: 0.2rem;
+  /* right: 0rem; */
+  margin-top: -0.36rem;
+ 
+}
+
+/* Primereact Dialog Style */
+.zindexforDailog{
+  z-index: +310 !important;
+}
+
+/* fromStyel */
+.fromStyle{
+  display: flex;
+  align-items: center;
+      justify-content: center;
+}
+.fromLableStyle{
+  display: block;
+  width: 100px !important;
+  
+}
+.fromLableStyleNew{
+  display: block;
+  width: 80px !important;
+  
+}
+.w-full
+{
+  width: 100% !important;
+  font-size: 0.85rem !important;
+}
+
+
+
+/* Mobile View */
+@media only screen and (max-width: 600px) {
+  /* For Commmon Use */
+  .mobileView-FontSize{
+      font-size: 0.75rem;  
+  }
+  .noPadding-sm{
+    padding: 0 !important;
+  }
+  .css-1r9jet7{
+    min-height: 0px !important;
+  }
+  #reviewer-dropdown{
+    max-width: 11rem !important;
+  }
+  #asset-group-dropdown{
+    max-width: 11rem !important;
+  }
+  #department{
+    max-width: 11rem !important;
+  }
+  #addLogbookAndAssetDropdown{
+    max-width: 50% !important;
+  }
+  #SelectLogbookForAddLogbookAndAssetDropdown{
+    max-width: 50% !important;
+  }
+  /* For DateTable */
+  .tableHeaderSection-sm{
+    display: grid !important;
+    justify-content:center !important;
+    margin: 0 !important;
+    justify-items: center !important;
+  }
+  .UserInfoTableStyle-sm.p-datatable .p-datatable-thead > tr > th{
+    font-size: 0.7rem;  
+  }
+  .UserInfoTableStyle-sm.p-datatable .p-datatable-tbody > tr > td{
+    font-size: 0.72rem; 
+  }
+  .fc .fc-toolbar {
+     justify-content: space-between; 
+     flex-direction: column;  
+  }
+  .MuiTabPanel-root {
+    padding: 0.8rem 0 !important ;
+  }
+  .p-stepper-header .p-stepper-action{
+    display: inline-grid;
+    justify-items: center;
+  }
+
+}
+
+
+
+
+
+/* custom scrollbar */
+::-webkit-scrollbar {
+  width: 1rem;
+  height: 1rem;
+
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8bbbf;
+  cursor: pointer;
+}
+
+
+/* <Container maxWidth="lg" sx={{ padding: "0" }}> */

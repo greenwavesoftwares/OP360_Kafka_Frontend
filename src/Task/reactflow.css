@@ -1,0 +1,16 @@
+
+  
+ .react-flow__handle{
+    width: 8px;
+    height: 8px;
+ }
+  
+  .react-flow__handle-top{
+    background-color: blue;
+  }
+  .react-flow__handle-bottom{
+    background-color: green;
+  }
+  .react-flow__node-default, .react-flow__node-input, .react-flow__node-output, .react-flow__node-group{
+    width: min-content !important;
+  }

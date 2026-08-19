@@ -1,0 +1,100 @@
+/*NOTE Table styles */
+
+/* Table Header */
+.tableHeader.p-datatable.p-datatable-sm .p-datatable-header {
+  font-size: var(--fs-sm);
+  background: none !important;
+  border: 1px solid var(--card-border) !important;
+  color: var(--fontColor) !important;
+  padding: 0.4rem 0.5rem;
+}
+.tableHeaderFont {
+  margin: 0;
+  padding: 0;
+  font-weight: 500;
+}
+.tableRowHeader.p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
+  font-size: var(--fs-sm);
+  padding: 0.5rem 0.7rem;
+  text-align: center !important;
+  background: #f7f7f7 !important;
+  color: var(--fontColor) !important;
+  border: 1px solid #dfd9d961 !important;
+}
+
+
+
+
+/* Table Content */
+.contentAlignment.p-datatable .p-column-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dataTableBodyPadding.p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+  padding: 0.2rem 0.4rem !important;
+}
+.dataTableBody.p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+  font-size: var(--fs-sm);
+  padding: 0 !important;
+  text-align: center !important;
+  background: none !important;
+  color: var(--fontColor) !important;
+}
+.tableOddRowColor.p-datatable.p-datatable-striped .p-datatable-tbody > tr.p-row-odd {
+    background: #f7f7f7a8;
+}
+
+
+/* Date Table Pagination */
+.dataTablePaginator .p-paginator {
+  padding: 0.2rem !important;
+  background: none !important;
+  border: none !important;
+}
+.dataTablePaginator.p-datatable.p-datatable-gridlines .p-paginator-bottom {
+  padding: 0.2rem !important;
+  background: none !important;
+  border: none !important;
+}
+.p-paginator .p-paginator-pages .p-paginator-page {
+  min-width: 2.5rem !important;
+  height: 2.5rem !important;
+}
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    font-size: var(--fs-sm);
+}
+.dataTablePaginator
+  .p-paginator
+  .p-paginator-pages
+  .p-paginator-page.p-highlight {
+  background: var(--tablePaginator-active) !important;
+  color: var(--fontColor) !important;
+}
+
+/* Date Table Dropdown Pagination */
+.paginatorDropDownStyle.p-dropdown {
+  background: var(--card-bg);
+  color: var(--fontColor);
+  border: 1px solid var(--card-border);
+}
+.paginatorDropDownStyle .p-dropdown {
+  background: var(--card-bg);
+  color: var(--fontColor);
+  border: 1px solid var(--card-border);
+}
+.paginatorDropDownStyle.p-dropdown .p-dropdown-trigger {
+  color: #ffffff;
+  width: 3rem;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  background: #1976d2;
+}
+.paginatorDropDownStyle::placeholder {
+  color: var(--fontColor);
+  opacity: 0.75;
+}
+.p-paginator .p-dropdown .p-dropdown-label {
+    padding-top: 5px !important;
+    font-size: 0.85rem;
+}

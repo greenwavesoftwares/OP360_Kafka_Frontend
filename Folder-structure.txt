@@ -1,0 +1,378 @@
+File Tree: operations360
+Generated on: 10/22/2025, 11:57:56 AM
+Root path: c:\Users\SurajShaw\OneDrive - Greenwave Solutions Pvt. Ltd\Desktop\Greenwave Git Frontend\Operations360_Updated\operations360
+
+────────────────────────────────────────────────────────────────────────────────
+
+
+├── 📁 public/
+│   ├── 🖼️ LoginPage.svg
+│   ├── 🖼️ assetCreation.jpg
+│   ├── 📄 favicon.ico
+│   ├── 🖼️ gw-logo.png
+│   ├── 🖼️ gw-logo192.jpg
+│   ├── 🖼️ gwlogo512.png
+│   ├── 🌐 index.html
+│   ├── 🎬 loginVideo.mp4
+│   ├── 🖼️ logo.png
+│   ├── ⚙️ manifest.json
+│   ├── 📄 robots.txt
+│   └── 🖼️ scan.jpg
+├── 📁 src/
+│   ├── 📁 ActivityReviewer/
+│   │   ├── 📄 ActivityReviewTable.jsx
+│   │   ├── 🎨 ActivityReviewer.css
+│   │   ├── 📄 ActivityReviewer.jsx
+│   │   ├── 📄 ActivityReviewerAPI.js
+│   │   ├── 📄 ActivityTerminationDialog.jsx
+│   │   └── 📄 RemarksDialog.jsx
+│   ├── 📁 AdhocJob/
+│   │   ├── 📄 AdhocJobTable.jsx
+│   │   └── 📄 TaskCreationForAdhoc.jsx
+│   ├── 📁 Asset/
+│   │   ├── 📄 AssetCreation.jsx
+│   │   ├── 📄 AssetMasterTest.jsx
+│   │   ├── 🎨 assetStyle.css
+│   │   ├── 📄 dateComp.jsx
+│   │   ├── 📄 module.deviceIssueCategoryUpload.jsx
+│   │   ├── 📄 module.deviceIssueUpload.jsx
+│   │   ├── 📄 sampletable.jsx
+│   │   └── 🎨 styles.css
+│   ├── 📁 Dashboard/
+│   │   ├── 📄 AssetOrUserTableContainer.jsx
+│   │   ├── 📄 CardDataView.jsx
+│   │   ├── 📄 DashboardAPI.js
+│   │   ├── 📄 DataTableTest.jsx
+│   │   ├── 📄 DatatableForUser.jsx
+│   │   ├── 📄 EllipsisText.jsx
+│   │   ├── 📄 ExpandableDataTable.jsx
+│   │   ├── 📄 FilterSidebar.jsx
+│   │   ├── 📄 GanttChart.jsx
+│   │   ├── 📄 ManufacturingTablesContainer.jsx
+│   │   ├── 📄 ReactCalendarTimeline.jsx
+│   │   ├── 📄 ReactGantt.jsx
+│   │   ├── 📄 SendEmailButton.jsx
+│   │   ├── 📄 Test.jsx
+│   │   ├── 📄 TimeLineChartTest.jsx
+│   │   ├── 📄 TimelineChart.jsx
+│   │   ├── 📄 TimelineContainer.jsx
+│   │   ├── 📄 TimelineView.jsx
+│   │   ├── 📄 TransactionTable.jsx
+│   │   ├── 🎨 custom-gantt.css
+│   │   ├── 🎨 gantt.css
+│   │   └── 🎨 styles.css
+│   ├── 📁 Email Template/
+│   │   ├── 📄 EmailActivityReview.jsx
+│   │   ├── 📄 EmailJobAssign.jsx
+│   │   └── 📄 EmailJobReview.jsx
+│   ├── 📁 Image/
+│   │   ├── 🖼️ GWWhiteLogo.png
+│   │   ├── 🖼️ bg-login.png
+│   │   ├── 🖼️ bgimage.jpg
+│   │   ├── 🖼️ bgimage1.jpg
+│   │   ├── 🖼️ gw-logo.png
+│   │   ├── 🖼️ login.jpg
+│   │   └── 🖼️ logo.png
+│   ├── 📁 JobAssign/
+│   │   ├── 📄 ActivityDetails.jsx
+│   │   ├── 📄 EventModal.jsx
+│   │   ├── 📄 JobAssign.jsx
+│   │   ├── 📄 JobAssignAPI.js
+│   │   ├── 📄 JobDetailsForModal.jsx
+│   │   ├── 📄 JobOverview.jsx
+│   │   ├── 📄 JobOverviewForMobile.jsx
+│   │   ├── 📄 RepeatJob.jsx
+│   │   ├── 📄 UserValueTemplate.jsx
+│   │   └── 📄 helper.js
+│   ├── 📁 JobPerformer/
+│   │   ├── 📄 AcitivityDetailTable.jsx
+│   │   ├── 📄 ActivityFlowForUpcomingActivities.jsx
+│   │   ├── 📄 ActivityHistory.jsx
+│   │   ├── 📄 DateSelection.jsx
+│   │   ├── 📄 HorizontalGraph.jsx
+│   │   ├── 📄 JobHelper.js
+│   │   ├── 📄 JobPerformSkeleton.jsx
+│   │   ├── 📄 JobPerformer.jsx
+│   │   ├── 📄 JobPerformerAPI.js
+│   │   ├── 📄 JobPiechart.jsx
+│   │   ├── 🎨 Performer.css
+│   │   └── 📄 Stats.jsx
+│   ├── 📁 JobReviewer/
+│   │   ├── 📄 ActivityFlow.jsx
+│   │   ├── 📄 ActivityFlowToRevertActivities.jsx
+│   │   ├── 📄 ApproveTable.jsx
+│   │   ├── 🎨 JobReviewer.css
+│   │   ├── 📄 JobReviewer.jsx
+│   │   ├── 📄 JobReviewerAPI.js
+│   │   ├── 📄 JobTerminationDialog.jsx
+│   │   ├── 📄 ProgressBar.jsx
+│   │   └── 📄 SelfJobTable.jsx
+│   ├── 📁 Logbook/
+│   │   ├── 📁 ChatNotNew/
+│   │   │   ├── 📄 ChatBotNew.js
+│   │   │   ├── 📄 ChatUI.jsx
+│   │   │   ├── 📄 StreamingText.js
+│   │   │   ├── 📄 TypingIndicator.js
+│   │   │   └── 📄 chatApi.js
+│   │   ├── 📁 Chatbot/
+│   │   │   └── 📄 TypingIndicator.js
+│   │   ├── 📁 Configuration/
+│   │   │   └── 📄 LogbookConfig.jsx
+│   │   ├── 📁 View/
+│   │   │   ├── 📄 LView.jsx
+│   │   │   ├── 📄 LViewWithProps.jsx
+│   │   │   ├── 📄 LogBookSelection.jsx
+│   │   │   ├── 📄 LogBookView.jsx
+│   │   │   ├── 📄 LogbookForm.jsx
+│   │   │   ├── 📄 LogbookReportView.jsx
+│   │   │   ├── 📄 LogbookReportViewComponent.jsx
+│   │   │   ├── 📄 LogbookSkeleton.jsx
+│   │   │   └── 📄 LogbookViewTest.jsx
+│   │   └── 📄 LogbookApi.js
+│   ├── 📁 Logbook Asset/
+│   │   ├── 📄 AssetMaster.jsx
+│   │   ├── 📄 AssetTree.component.jsx
+│   │   ├── 📄 AssetViewItem.jsx
+│   │   ├── 📄 EditAssetItem.jsx
+│   │   ├── 📄 LogbookAsset.jsx
+│   │   ├── 📄 LogbookAssetApi.js
+│   │   └── 📄 ModalBox.component.jsx
+│   ├── 📁 Logbook Configure/
+│   │   ├── 📄 ApiRequestForm.jsx
+│   │   ├── 📄 CellCssBuilder.js
+│   │   ├── 📄 ConfigureLogbook.jsx
+│   │   ├── 📄 ConfigureLogbookAPI.js
+│   │   ├── 📄 CustomScrollBottom.jsx
+│   │   ├── 🎨 CustomSwitch.css
+│   │   ├── 📄 CustomizedSwitches.jsx
+│   │   ├── 📄 DocumentForm.jsx
+│   │   ├── 📄 DownArrow.js
+│   │   ├── 📄 DropdownTable.jsx
+│   │   ├── 📄 DynamicTable.jsx
+│   │   ├── 📄 ExcelDownloader.jsx
+│   │   ├── 📄 FileCellComponent.js
+│   │   ├── 📄 FileDownloadComponent.jsx
+│   │   ├── 🎨 FileUpload.css
+│   │   ├── 📄 FileUploadComponent.jsx
+│   │   ├── 📄 FormComponent.jsx
+│   │   ├── 🎨 FormDesign.css
+│   │   ├── 📄 FormDesign.jsx
+│   │   ├── 📄 FormGrid.jsx
+│   │   ├── 🎨 Grid.css
+│   │   ├── 📄 GridPlayGround.jsx
+│   │   ├── 📄 GridTest.jsx
+│   │   ├── 📄 LocalVariablesTab.jsx
+│   │   ├── 📄 LogbookMaster.jsx
+│   │   ├── 📄 MicSwitch.jsx
+│   │   ├── 📄 MicToggle.jsx
+│   │   ├── 📄 PickListAPI.jsx
+│   │   ├── 📄 PickListDemo.jsx
+│   │   ├── 🎨 SwitchButton.css
+│   │   ├── 📄 SwitchButton.jsx
+│   │   ├── 🎨 SwitchButtonPublicAndPrivate.css
+│   │   ├── 📄 SwitchMicButton.jsx
+│   │   └── 📄 SwitchMicButtonWebSocket.jsx
+│   ├── 📁 LogbookReports/
+│   │   ├── 📄 LogbookFormtest.jsx
+│   │   ├── 📄 LogbookReportViewWithPageNavigation.jsx
+│   │   ├── 📄 LogbookReportsApi.js
+│   │   ├── 📄 LogbookReportsTable.jsx
+│   │   ├── 📄 NavigationTest.jsx
+│   │   ├── 📄 ReportConfigurator.jsx
+│   │   └── 📄 ReportView.jsx
+│   ├── 📁 Login/
+│   │   ├── 📄 GreenwaveComponent.jsx
+│   │   ├── 📄 Login.jsx
+│   │   ├── 🎨 LoginPage.css
+│   │   └── 📄 MaximizeWindow.jsx
+│   ├── 📁 MenuBar/
+│   │   ├── 📁 resources/
+│   │   ├── 📄 Menubar.jsx
+│   │   ├── 📄 MenubarAPI.js
+│   │   └── 📄 MobileMenubar.jsx
+│   ├── 📁 OnDemandJobAssign/
+│   │   ├── 📄 AddJob.jsx
+│   │   └── 📄 OnDemandJobAssignHome.jsx
+│   ├── 📁 Restricted/
+│   │   ├── 📄 Restricted.jsx
+│   │   └── 🖼️ restrict.png
+│   ├── 📁 SelfJobCreation/
+│   │   ├── 📄 MultipleLogbookModal.jsx
+│   │   ├── 📄 PendingJobsModal.jsx
+│   │   ├── 📄 SelectAssetModal.jsx
+│   │   ├── 🎨 SelfJob.css
+│   │   ├── 📄 SelfJobCreation.jsx
+│   │   ├── 📄 SelfJobCreationAPI.js
+│   │   └── 📄 SelfJobHelper.js
+│   ├── 📁 Task/
+│   │   ├── 📄 ActivityFlow.jsx
+│   │   ├── 📄 CustomNode.jsx
+│   │   ├── 📄 DeleteEdgeDrop.jsx
+│   │   ├── 📄 TaskAPI.js
+│   │   ├── 📄 TaskCreation.jsx
+│   │   ├── 📄 TaskMasterTest.jsx
+│   │   ├── 📄 TaskModified.jsx
+│   │   ├── 📄 flowTest.jsx
+│   │   ├── 📄 mainpage.jsx
+│   │   ├── 🎨 reactflow.css
+│   │   └── 🎨 taskCreation.css
+│   ├── 📁 Tenant/
+│   │   ├── 📄 PlantPage.jsx
+│   │   ├── 📄 Tenant.jsx
+│   │   └── 📄 TenantApi.js
+│   ├── 📁 Test Ground/
+│   │   ├── 📄 ActivityCarousel.jsx
+│   │   ├── 🎨 BasicDemo.css
+│   │   ├── 📄 BasicDemo.jsx
+│   │   ├── 📄 Example.jsx
+│   │   ├── 📄 Example1.jsx
+│   │   ├── 📄 HoverTypography.jsx
+│   │   ├── 📄 MessageComponent.jsx
+│   │   ├── 📄 MonacoScriptRunner.js
+│   │   ├── 📄 MyGridLayout.jsx
+│   │   ├── 📄 PageRefresh.jsx
+│   │   └── 🎨 styel.css
+│   ├── 📁 UserModuleUpdated/
+│   │   ├── 📄 AddOrUpdateUser.jsx
+│   │   ├── 🎨 Admin.css
+│   │   ├── 📄 RowExpansionTemplate.jsx
+│   │   ├── 📄 UserOverview.jsx
+│   │   ├── 📄 UsermoduleApi.js
+│   │   ├── 📄 helper.js
+│   │   ├── 📄 useDebouncedValue.js
+│   │   └── 📄 useFilteredData.js
+│   ├── 📁 UserProfile/
+│   │   ├── 📄 UserDetails.jsx
+│   │   └── 📄 UserProfile.jsx
+│   ├── 📁 cert/
+│   ├── 📁 components/
+│   │   ├── 📁 CountdownTimer/
+│   │   │   └── 📄 CountDownTimer.jsx
+│   │   ├── 📁 CustomDialog/
+│   │   │   └── 📄 CustomDialog.jsx
+│   │   └── 📁 shared/
+│   │       ├── 📁 CommentBox/
+│   │       │   ├── 📄 CommentBox.component.jsx
+│   │       │   └── 🎨 CommentBox.styles.css
+│   │       ├── 📁 DataTable/
+│   │       │   └── 📄 DataTable.jsx
+│   │       ├── 📁 DateField/
+│   │       │   ├── 📄 DateField.component.jsx
+│   │       │   ├── 🎨 DateField.styles.css
+│   │       │   ├── 📄 DateTimeField.component.jsx
+│   │       │   ├── 🎨 DateTimeField.styles.css
+│   │       │   ├── 📄 TimeField.component.jsx
+│   │       │   └── 🎨 TimeField.styles.css
+│   │       ├── 📁 Dropdown/
+│   │       │   └── 📄 Dropdown.component.jsx
+│   │       ├── 📁 Dropdown1/
+│   │       │   ├── 📄 dropdown.jsx
+│   │       │   └── 🎨 dropdown.style.css
+│   │       ├── 📁 Image/
+│   │       │   ├── 🖼️ Greenwave.jpg
+│   │       │   ├── 📄 Image.component.jsx
+│   │       │   └── 🎨 Image.styles.css
+│   │       ├── 📁 Label/
+│   │       │   ├── 📄 Label.component.jsx
+│   │       │   └── 🎨 Label.styles.css
+│   │       ├── 📁 LabelApi/
+│   │       │   ├── 📄 LabelApi.component.jsx
+│   │       │   └── 🎨 LabelApi.styles.css
+│   │       ├── 📁 NumberBox/
+│   │       │   ├── 📄 NumberBox.component.jsx
+│   │       │   └── 🎨 NumberBox.styles.css
+│   │       ├── 📁 TextBox/
+│   │       │   ├── 📄 InputTextBox.component.jsx
+│   │       │   └── 🎨 InputTextBox.styles.css
+│   │       ├── 📁 UsersDropdown/
+│   │       │   └── 📄 UsersDropdown.component.jsx
+│   │       ├── 📁 button/
+│   │       │   ├── 📄 MyButton.jsx
+│   │       │   ├── 🎨 button.component.css
+│   │       │   └── 📄 button.component.jsx
+│   │       ├── 📁 confirmationDialog/
+│   │       │   ├── 🎨 dialog.component.css
+│   │       │   └── 📄 dialog.component.jsx
+│   │       ├── 📁 customToast/
+│   │       │   └── 📄 CustomToast.jsx
+│   │       ├── 📁 dialog/
+│   │       │   ├── 🎨 dialog.component.css
+│   │       │   └── 📄 dialog.component.jsx
+│   │       ├── 📁 snackbar/
+│   │       │   └── 📄 customSnackbar.jsx
+│   │       ├── 📁 tag/
+│   │       │   ├── 📄 ActiveStatus.jsx
+│   │       │   ├── 📄 AdminButton.jsx
+│   │       │   └── 📄 LogButtonDashboard.jsx
+│   │       ├── 📁 textfield/
+│   │       │   ├── 📄 textfield.component.jsx
+│   │       │   └── 🎨 textfield.style.css
+│   │       └── 📁 tree/
+│   │           ├── 📄 AssetTree.component.jsx
+│   │           └── 📄 tree.component.jsx
+│   ├── 📁 helper/
+│   │   ├── 📄 AuthService.js
+│   │   └── 📄 InputLogics.js
+│   ├── 📁 taskmaster/
+│   │   ├── 📄 ActivityCreation.jsx
+│   │   ├── 📄 ActivityDetails.jsx
+│   │   ├── 📄 AddActivity.jsx
+│   │   ├── 📄 AddActivityDialog.jsx
+│   │   ├── 📄 AddAsset.jsx
+│   │   ├── 📄 AddTaskFormDialog.jsx
+│   │   ├── 📄 AssetDialog.jsx
+│   │   ├── 📄 AssetDialogForNewTask.jsx
+│   │   ├── 📄 GroupAndDepartment.jsx
+│   │   ├── 📄 LogbookDropDown.jsx
+│   │   ├── 📄 LogbookSelectionDialog.jsx
+│   │   ├── 📄 Modal.component.jsx
+│   │   ├── 📄 MyContext.jsx
+│   │   ├── 📄 TaskCreation.jsx
+│   │   ├── 📄 TaskFormDialog.jsx
+│   │   ├── 📄 TaskHome.jsx
+│   │   └── 📄 taskApi.js
+│   ├── 📁 taskreviewer/
+│   │   ├── 📄 ReviewDialog.jsx
+│   │   ├── 📄 TaskDetailsDialog.jsx
+│   │   └── 📄 taskReviewer.jsx
+│   ├── 📁 test/
+│   │   ├── 📄 BlankPage.jsx
+│   │   ├── 📄 Login.jsx
+│   │   ├── 📄 Test.jsx
+│   │   └── 📄 test.component.jsx
+│   ├── 📁 userhome/
+│   │   ├── 📄 Notification.jsx
+│   │   ├── 📄 PasswordChange.jsx
+│   │   ├── 📄 UserDetails.jsx
+│   │   ├── 📄 UserGroupAPI.js
+│   │   └── 📄 UserHomeDashboard.component.jsx
+│   ├── 📄 AdminRoutes.js
+│   ├── 🎨 App.css
+│   ├── 📄 App.js
+│   ├── 📄 App.test.js
+│   ├── 📄 CommonAPI.js
+│   ├── 📄 ErrorBoundary.js
+│   ├── 📄 NavigationGuard.jsx
+│   ├── 📄 NotFound.component.jsx
+│   ├── 📄 TokenComponent.jsx
+│   ├── 📄 TokenMessage.jsx
+│   ├── 📄 UserTable.jsx
+│   ├── 📄 WrappedRoutes.js
+│   ├── 📄 helper.js
+│   ├── 🎨 index.css
+│   ├── 📄 index.js
+│   ├── 🖼️ logo.svg
+│   ├── 🖼️ page404.png
+│   ├── 📄 reportWebVitals.js
+│   ├── 📄 setupTests.js
+│   ├── 📄 test.js
+│   └── 📄 withNavigation.js
+├── ⚙️ .gitignore
+├── 📝 README.md
+├── 📄 create-build.bat
+├── ⚙️ package-lock.json
+├── ⚙️ package.json
+└── ⚙️ web.config
+
+────────────────────────────────────────────────────────────────────────────────
+Generated by FileTree Pro Extension

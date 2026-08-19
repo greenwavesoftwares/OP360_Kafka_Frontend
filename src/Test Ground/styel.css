@@ -1,0 +1,40 @@
+/* Custom styles for the Timeline */
+.vis-timeline {
+    border-color: #5D99C3;
+    border-radius: 5px;
+}
+
+.vis-timeline .vis-timeline-axis {
+    border-color: #5D99C3;
+    background-color: #5D99C3;
+}
+
+.vis-timeline .vis-timeline-event {
+    color: white !important;
+    border-radius: 5px !important;
+}
+
+.vis-timeline .vis-timeline-event-content {
+    padding: 5px;
+    text-shadow: none;
+}
+
+.vis-timeline .unavailable {
+    background: #F03030 !important; /* red */
+    border-color: #bd2828 !important; /* red */
+}
+
+.vis-timeline .available {
+    background: #1AA11A !important; /* green */
+    border-color: #136e13 !important; /* green */
+}
+
+.vis-timeline .maybe {
+    background: #FFA500 !important; /* orange */
+    border-color: #cc8100 !important; /* orange */
+}
+
+.vis-timeline .vis-timeline-event.vis-timeline-event-selected {
+    background: #BECEFE !important;
+    border-color: #97B0F8 !important;
+}
