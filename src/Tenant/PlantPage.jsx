@@ -40,7 +40,7 @@ import {
   loginCheckBeforeTenant, // Function to post new plant data
 } from "./TenantApi"; // Import API functions from another file
 import { Card } from "primereact/card"; // Card component from PrimeReact
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Style definitions for the components
 const styles = {
@@ -185,7 +185,7 @@ export default function PlantPage() {
             .includes(currentSearch.trim().toLowerCase()) ||
           plant.division
             .toLowerCase()
-            .includes(currentSearch.trim().toLowerCase())
+            .includes(currentSearch.trim().toLowerCase()),
       );
       console.log("Filtered Rows => ", filteredPlantRows);
       setFilteredPlantRows(filteredPlantRows); // Update the filtered rows
@@ -225,10 +225,10 @@ export default function PlantPage() {
         console.log("data : ", data);
         // Update the plant list to remove the deleted plant
         setPlantList((prevList) =>
-          prevList.filter((item) => item.plantID !== e)
+          prevList.filter((item) => item.plantID !== e),
         );
         setFilteredPlantRows((prevList) =>
-          prevList.filter((item) => item.plantID !== e)
+          prevList.filter((item) => item.plantID !== e),
         );
         handleClickSnackbar(); // Open the snackbar
         setsnackbarSeverity("success"); // Set snackbar severity to success
@@ -279,7 +279,7 @@ export default function PlantPage() {
       plantList.some(
         (p) =>
           p.plantName.toLowerCase().trim() ===
-          newPlant.plantName.toLowerCase().trim()
+          newPlant.plantName.toLowerCase().trim(),
       )
     ) {
       // If it does, show an error message
@@ -294,7 +294,7 @@ export default function PlantPage() {
       plantList.some(
         (p) =>
           p.plantID.toLowerCase().trim() ===
-          newPlant.plantID.toLowerCase().trim()
+          newPlant.plantID.toLowerCase().trim(),
       )
     ) {
       // If it does, show an error message
@@ -349,7 +349,7 @@ export default function PlantPage() {
     // Replace multiple spaces with a single space
     var stringWithoutExtraSpaces = stringWithoutSpecialChars.replace(
       /\s+/g,
-      " "
+      " ",
     );
     return stringWithoutExtraSpaces; // Return the cleaned-up string
   }
@@ -358,38 +358,61 @@ export default function PlantPage() {
   return (
     <Container maxWidth="lg" sx={{ padding: "0 !important" }}>
       <>
-        {/* A container to hold the button and title */}
         <div
           style={{
-            display: "flex", // Use flexbox to arrange items in a row
-            alignItems: "center", // Center items vertically
-            columnGap: "1rem", // Space between columns
-            rowGap: "1rem", // Space between rows
-            margin: "1rem 0", // Margin around the container
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          {/* Button to show or hide the form */}
-          <IconButton
-            variant="contained"
-            onClick={() => setShowForm(!showForm)} // Toggle the form visibility
-            sx={{
-              backgroundColor: "#77c0f1", // Button color
-              borderRadius: "50px", // Round the corners of the button
+          {/* A container to hold the button and title */}
+          <div
+            style={{
+              display: "flex", // Use flexbox to arrange items in a row
+              alignItems: "center", // Center items vertically
+              columnGap: "1rem", // Space between columns
+              rowGap: "1rem", // Space between rows
+              margin: "1rem 0", // Margin around the container
             }}
           >
-            {/* Show different icons based on whether the form is shown or not */}
-            {showForm ? (
-              <Tooltip title="Show All Plant">
-                <ArrowDropUpOutlinedIcon /> {/* Icon to show plants */}
-              </Tooltip>
-            ) : (
-              <Tooltip title="Add Plant">
-                <ArrowDropDownOutlinedIcon /> {/* Icon to add a plant */}
-              </Tooltip>
-            )}
-          </IconButton>
-          {/* Title of the section */}
-          <Typography sx={{ fontWeight: 600 }}>Plant Configuration</Typography>
+            {/* Button to show or hide the form */}
+            <IconButton
+              variant="contained"
+              onClick={() => setShowForm(!showForm)} // Toggle the form visibility
+              sx={{
+                backgroundColor: "#77c0f1", // Button color
+                borderRadius: "50px", // Round the corners of the button
+              }}
+            >
+              {/* Show different icons based on whether the form is shown or not */}
+              {showForm ? (
+                <Tooltip title="Show All Plant">
+                  <ArrowDropUpOutlinedIcon /> {/* Icon to show plants */}
+                </Tooltip>
+              ) : (
+                <Tooltip title="Add Plant">
+                  <ArrowDropDownOutlinedIcon /> {/* Icon to add a plant */}
+                </Tooltip>
+              )}
+            </IconButton>
+            {/* Title of the section */}
+            <Typography sx={{ fontWeight: 600 }}>
+              Plant Configuration
+            </Typography>
+          </div>
+          <div
+            style={{
+              display: "flex", // Use flexbox to arrange items in a row
+              alignItems: "center", // Center items vertically
+              columnGap: "1rem", // Space between columns
+              rowGap: "1rem", // Space between rows
+              margin: "1rem 0", // Margin around the container
+            }}
+          >
+            <Typography sx={{ fontWeight: 600 }}>
+              First Click <Link to="/tenant">here</Link> to create new Tenant
+            </Typography>
+          </div>
         </div>
         {/* If the form should be shown, display it */}
         {showForm && (
@@ -454,7 +477,7 @@ export default function PlantPage() {
                       setNewPlant({
                         ...newPlant,
                         plantID: removeAllSpecialChar(
-                          e.target.value.toUpperCase().trim()
+                          e.target.value.toUpperCase().trim(),
                         ), // Clean up the input
                       });
                       // Check for errors in the input
@@ -520,7 +543,7 @@ export default function PlantPage() {
                       setNewPlant({
                         ...newPlant,
                         customerName: removeAllSpecialChar(
-                          e.target.value.trim()
+                          e.target.value.trim(),
                         ),
                       });
                     }}
@@ -688,7 +711,7 @@ export default function PlantPage() {
                                           setFilteredPlantRows(plantList); // Reset the filtered list to show all plants
                                           console.log(
                                             "plantList : 5 : ",
-                                            plantList // Log the plant list for debugging
+                                            plantList, // Log the plant list for debugging
                                           );
                                         }}
                                       >

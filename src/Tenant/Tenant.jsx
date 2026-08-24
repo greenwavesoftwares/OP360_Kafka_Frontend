@@ -27,7 +27,7 @@ import {
 } from "./TenantApi"; // Functions for API calls
 import { Card } from "primereact/card"; // Card component from PrimeReact
 import { fetchAllUsers } from "../UserModuleUpdated/UsermoduleApi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -126,7 +126,7 @@ const Tenant = () => {
 
   function printAdminUserId(user) {
     const hasAdminAccess = user.allotedPages.some(
-      (page) => page.page === "Admin"
+      (page) => page.page === "Admin",
     );
     if (hasAdminAccess) {
       setAllGWAdminList((prev) => [...prev, user.userID]);
@@ -154,7 +154,7 @@ const Tenant = () => {
 
       // Filter the plant list to remove plants with name "NA"
       const filteredPlantList = data.filter(
-        (plant) => plant.plantName !== "NA"
+        (plant) => plant.plantName !== "NA",
       );
       console.log("filteredPlantList : ", filteredPlantList); // Log the filtered list
 
@@ -209,7 +209,7 @@ const Tenant = () => {
       // If a new plant is selected
       // Find the selected plant from the plant list
       const selectedPlant = plantList.find(
-        (plant) => plant.plantName === newValue
+        (plant) => plant.plantName === newValue,
       );
       console.log("selectedPlant : ", selectedPlant); // Log the selected plant
 
@@ -290,9 +290,41 @@ const Tenant = () => {
       <Card
         className="primeCardStyle"
         title={
-          <Typography sx={{ fontWeight: 600, marginBottom: "1rem" }}>
-            Tenant Creation Page
-          </Typography>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              style={{
+                display: "flex", // Use flexbox to arrange items in a row
+                alignItems: "center", // Center items vertically
+                columnGap: "1rem", // Space between columns
+                rowGap: "1rem", // Space between rows
+                margin: "1rem 0", // Margin around the container
+              }}
+            >
+              <Typography sx={{ fontWeight: 600 }}>
+                Tenant Creation Page
+              </Typography>
+            </div>
+            <div
+              style={{
+                display: "flex", // Use flexbox to arrange items in a row
+                alignItems: "center", // Center items vertically
+                columnGap: "1rem", // Space between columns
+                rowGap: "1rem", // Space between rows
+                margin: "1rem 0", // Margin around the container
+              }}
+            >
+              <Typography sx={{ fontWeight: 600 }}>
+                Before creating new Tenant Please Click{" "}
+                <Link to="/plant">here</Link> to Create Plant First
+              </Typography>
+            </div>
+          </div>
         }
       >
         <form onSubmit={handleSubmit}>
@@ -547,7 +579,7 @@ const Tenant = () => {
                       ...formData, // Keep existing form data
                       // Clean the email by removing numbers, special characters, spaces, and making it lowercase
                       email: removeNumberAndSpecialChar(
-                        removeSpaceAndLowerCase(e.target.value.trim())
+                        removeSpaceAndLowerCase(e.target.value.trim()),
                       ),
                     });
                   }}
@@ -557,7 +589,7 @@ const Tenant = () => {
                       ...formData, // Keep existing form data
                       // Clean the email as the user types
                       email: removeNumberAndSpecialChar(
-                        removeSpaceAndLowerCase(e.target.value.trim())
+                        removeSpaceAndLowerCase(e.target.value.trim()),
                       ),
                     });
 
@@ -576,7 +608,7 @@ const Tenant = () => {
                     // Log whether the email is valid or not in the console
                     console.log(
                       "isValidEmail : ",
-                      isValidEmail(e.target.value)
+                      isValidEmail(e.target.value),
                     );
                   }}
                   // Show an error message if there's an error
@@ -632,7 +664,7 @@ const Tenant = () => {
                       // Log whether the password matches the confirmation password
                       console.log(
                         "password !== cnfpass : ",
-                        password !== cnfpass
+                        password !== cnfpass,
                       );
                     }}
                     type={showPassword ? "text" : "password"} // Show text or password based on the state
