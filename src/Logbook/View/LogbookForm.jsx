@@ -4334,16 +4334,16 @@ function LogbookForm({ logData }) {
     }
   };
   const sendSql = async (sql) => {
-    try {
-      const res = await axios.post(
-        `http://localhost:8094/api/sql/execute`,
-        sql,
-        { headers: { "Content-Type": "text/plain" } },
-      );
-      console.log("Process Sql data : ", res.data);
-    } catch (err) {
-      console.log("❌ Error: " + err.message);
-    }
+    // try {
+    //   const res = await axios.post(
+    //     `http://localhost:8094/api/sql/execute`,
+    //     sql,
+    //     { headers: { "Content-Type": "text/plain" } },
+    //   );
+    //   console.log("Process Sql data : ", res.data);
+    // } catch (err) {
+    //   console.log("❌ Error: " + err.message);
+    // }
   };
 
   const onDependentCellUpdate = async (

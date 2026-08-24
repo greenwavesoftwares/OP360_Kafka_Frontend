@@ -34,6 +34,7 @@ import { Gauge, gaugeClasses } from "@mui/x-charts";
 import { decryptTokenId } from "../helper/AuthService";
 
 export default function TaskHome() {
+  const assetApi = `${process.env.REACT_APP_ASSETAPI}`;
   const [allTasks, setAllTasks] = useState([]);
   const [publishedTasks, setAllPublishedTasks] = useState([]);
   const [pendingTasks, setPendingTasks] = useState([]);
@@ -84,7 +85,7 @@ export default function TaskHome() {
         },
       };
 
-      await fetch("http://localhost:8095/tasks/alltasks", options)
+      await fetch(`${process.env.REACT_APP_TASKAPI}/tasks/alltasks`, options)
         .then((resp) => resp.json())
         .then((data) => {
           console.log("Newdata", data.payload);
@@ -129,9 +130,9 @@ export default function TaskHome() {
 
     const fetchData = async () => {
       await fetch(
-        "http://localhost:8082/usermodule/allusersbytenantid/" +
+        `${process.env.REACT_APP_USERMODULE}/usermodule/allusersbytenantid/` +
           decryptTokenId(localStorage.getItem("tenantId")),
-        options
+        options,
       )
         .then((resp) => resp.json())
         .then((data) => {
@@ -162,9 +163,9 @@ export default function TaskHome() {
 
     const fetchAllGroups = async () => {
       await fetch(
-        "http://localhost:8082/usermodule/getallgroupdetails/" +
+        `${process.env.REACT_APP_USERMODULE}/usermodule/getallgroupdetails/` +
           decryptTokenId(localStorage.getItem("tenantId")),
-        options
+        options,
       )
         .then((resp) => resp.json())
         .then((data) => {
@@ -189,8 +190,8 @@ export default function TaskHome() {
 
     const fetchAllDepts = async () => {
       await fetch(
-        "http://localhost:8082/usermodule/getalldeptartments",
-        options
+        `${process.env.REACT_APP_USERMODULE}/usermodule/getalldeptartments`,
+        options,
       )
         .then((resp) => resp.json())
         .then((data) => {
@@ -217,9 +218,9 @@ export default function TaskHome() {
 
     const fetchAllAssetGroups = async () => {
       await fetch(
-        "http://localhost:8088/api/assetgroups/" +
+        `${assetApi}/assetgroups/` +
           decryptTokenId(localStorage.getItem("tenantId")),
-        options
+        options,
       )
         .then((resp) => resp.json())
         .then((data) => {
@@ -244,9 +245,8 @@ export default function TaskHome() {
 
     const fetchAllActivityConnections = async () => {
       await fetch(
-        "http://localhost:8095/tasks/getAllActivityConnectionsByTaskId?taskId=" +
-          taskId,
-        options
+        `${process.env.REACT_APP_TASKAPI}/tasks/getAllActivityConnectionsByTaskId?taskId=${taskId}`,
+        options,
       )
         .then((resp) => resp.json())
         .then((data) => {
@@ -278,9 +278,8 @@ export default function TaskHome() {
     const fetchAllNodePositions = async () => {
       if (selectedTask)
         await fetch(
-          "http://localhost:8095/tasks/getAllActivityNodePositionsByTaskId?taskId=" +
-            selectedTask.taskId,
-          options
+          `${process.env.REACT_APP_TASKAPI}/tasks/getAllActivityNodePositionsByTaskId?taskId=${selectedTask.taskId}`,
+          options,
         )
           .then((resp) => resp.json())
           .then((data) => {
@@ -304,7 +303,7 @@ export default function TaskHome() {
     };
 
     const updateTask = async () => {
-      await fetch("http://localhost:8095/tasks/saveTask", options)
+      await fetch(`${process.env.REACT_APP_TASKAPI}/tasks/saveTask`, options)
         .then((resp) => resp.json())
         .then((data) => {
           console.log(data);
@@ -329,7 +328,7 @@ export default function TaskHome() {
     console.log("options", options);
 
     const addTask = async () => {
-      await fetch("http://localhost:8095/tasks/saveTask", options)
+      await fetch(`${process.env.REACT_APP_TASKAPI}/tasks/saveTask`, options)
         .then((resp) => resp.json())
         .then((data) => {
           console.log(data);
@@ -585,10 +584,10 @@ export default function TaskHome() {
             allUserStatus === "Published"
               ? "success"
               : allUserStatus === "Pending"
-              ? "info"
-              : allUserStatus === "Not Ready" || allUserStatus === "Rejected"
-              ? "danger"
-              : ""
+                ? "info"
+                : allUserStatus === "Not Ready" || allUserStatus === "Rejected"
+                  ? "danger"
+                  : ""
           }
         ></Tag>
       </>
@@ -630,7 +629,7 @@ export default function TaskHome() {
       // creatorNameLastName,
       creatorNameParts,
       creatorName,
-      creationTime
+      creationTime,
     );
     return (
       <>
@@ -714,9 +713,8 @@ export default function TaskHome() {
 
         if (selectedTask && selectedTask.taskId) {
           await fetch(
-            "http://localhost:8095/tasks/getAllActivityConnectionsByTaskId?taskId=" +
-              selectedTask.taskId,
-            option
+            `${process.env.REACT_APP_TASKAPI}/tasks/getAllActivityConnectionsByTaskId?taskId=${selectedTask.taskId}`,
+            option,
           )
             .then((resp) => resp.json())
             .then((data) => {

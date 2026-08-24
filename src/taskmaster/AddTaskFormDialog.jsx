@@ -111,7 +111,7 @@ export default function AddTaskFormDialog(props) {
   const dataRef = useRef(null);
 
   const location = useLocation();
-
+  const assetApi = `${process.env.REACT_APP_ASSETAPI}`;
   useEffect(() => {
     console.log(location);
     // console.log('Current Reviewers : ',location.state.users)
@@ -158,11 +158,11 @@ export default function AddTaskFormDialog(props) {
       setLogbooks("");
       if (selectedNode)
         await fetch(
-          "http://localhost:8088/api/logbookbyasset/" +
+          `${assetApi}/api/logbookbyasset/` +
             selectedNode.id +
             "/" +
             decryptTokenId(localStorage.getItem("tenantId")),
-          options
+          options,
         )
           .then((resp) => resp.json())
           .then((data) => {
@@ -204,11 +204,11 @@ export default function AddTaskFormDialog(props) {
     const fetchAssetTreeByAssetGroup = async () => {
       if (assetGroup)
         await fetch(
-          "http://localhost:8088/api/assetGroups/" +
+          `${assetApi}/api/assetGroups/` +
             assetGroup.groupId +
             "/" +
             decryptTokenId(localStorage.getItem("tenantId")),
-          options
+          options,
         )
           .then((resp) => resp.json())
           .then((data) => {
@@ -383,7 +383,7 @@ export default function AddTaskFormDialog(props) {
     console.log("options", options);
 
     const addTask = async () => {
-      await fetch("http://localhost:8095/tasks/saveTask", options)
+      await fetch(`${process.env.REACT_APP_TASKAPI}/tasks/saveTask`, options)
         .then((resp) => resp.json())
         .then((data) => {
           console.log(data);
@@ -537,7 +537,10 @@ export default function AddTaskFormDialog(props) {
     console.log(options.body);
 
     const addActivity = async () => {
-      await fetch("http://localhost:8095/tasks/saveActivity", options)
+      await fetch(
+        `${process.env.REACT_APP_TASKAPI}/tasks/saveActivity`,
+        options,
+      )
         .then((resp) => resp.json())
         .then((data) => {
           if (data.status_code === 200) {
@@ -631,8 +634,8 @@ export default function AddTaskFormDialog(props) {
 
     const fetchTask = async () => {
       await fetch(
-        "http://localhost:8095/tasks/getTaskByTaskId?taskId=" + task.taskId,
-        options
+        `${process.env.REACT_APP_TASKAPI}/tasks/getTaskByTaskId?taskId=${task.taskId}`,
+        options,
       )
         .then((resp) => resp.json())
         .then((data) => {
@@ -657,7 +660,7 @@ export default function AddTaskFormDialog(props) {
         activity.duration = activity.durationMin;
 
         return activity;
-      })
+      }),
     );
 
     task.activityList = activities;
@@ -711,8 +714,8 @@ export default function AddTaskFormDialog(props) {
       };
 
       await fetch(
-        "http://localhost:8095/tasks/saveAllActivityConnections",
-        options
+        `${process.env.REACT_APP_TASKAPI}/tasks/saveAllActivityConnections`,
+        options,
       )
         .then((resp) => resp.json())
         .then((data) => {
@@ -759,7 +762,10 @@ export default function AddTaskFormDialog(props) {
     console.log(options.body);
 
     const saveNodes = async () => {
-      await fetch("http://localhost:8095/tasks/saveActivityNodes", options)
+      await fetch(
+        `${process.env.REACT_APP_TASKAPI}/tasks/saveActivityNodes`,
+        options,
+      )
         .then((resp) => resp.json())
         .then((data) => {
           console.log("==========DATA ", data);
@@ -817,11 +823,8 @@ export default function AddTaskFormDialog(props) {
       };
 
       await fetch(
-        "http://localhost:8095/tasks/deleteActivity?activityId=" +
-          activity.activityId +
-          "&taskId=" +
-          task.taskId,
-        options
+        `${process.env.REACT_APP_TASKAPI}/tasks/deleteActivity?activityId=${activity.activityId}&taskId=${task.taskId}`,
+        options,
       )
         .then((resp) => resp.json())
         .then((data) => {
@@ -927,7 +930,10 @@ export default function AddTaskFormDialog(props) {
     };
 
     const addActivity = async () => {
-      await fetch("http://localhost:8095/tasks/saveActivity", options)
+      await fetch(
+        `${process.env.REACT_APP_TASKAPI}/tasks/saveActivity`,
+        options,
+      )
         .then((resp) => resp.json())
         .then((data) => {
           console.log(data);
@@ -958,9 +964,8 @@ export default function AddTaskFormDialog(props) {
 
     const fetchAllActivityConnections = async () => {
       await fetch(
-        "http://localhost:8095/tasks/getAllActivityConnectionsByTaskId?taskId=" +
-          task.taskId,
-        options
+        `${process.env.REACT_APP_TASKAPI}/tasks/getAllActivityConnectionsByTaskId?taskId=${task.taskId}`,
+        options,
       )
         .then((resp) => resp.json())
         .then((data) => {
@@ -1010,8 +1015,8 @@ export default function AddTaskFormDialog(props) {
       };
 
       await fetch(
-        "http://localhost:8095/tasks/saveAllActivityConnections",
-        options
+        `${process.env.REACT_APP_TASKAPI}/tasks/saveAllActivityConnections`,
+        options,
       )
         .then((resp) => resp.json())
         .then((data) => {
@@ -1032,11 +1037,11 @@ export default function AddTaskFormDialog(props) {
   useEffect(() => {
     if (selectedActivity) {
       setActivityName(
-        selectedActivity.activityName ? selectedActivity.activityName : ""
+        selectedActivity.activityName ? selectedActivity.activityName : "",
       );
 
       setActivityId(
-        selectedActivity.activityAbrv ? selectedActivity.activityAbrv : ""
+        selectedActivity.activityAbrv ? selectedActivity.activityAbrv : "",
       );
 
       if (selectedActivity.assetNameList) {
@@ -1052,14 +1057,14 @@ export default function AddTaskFormDialog(props) {
                 assetName: assetName,
                 logbook: selectedActivity.logbook,
               };
-            })
+            }),
           );
         }
         console.log(assetData);
       }
 
       let hour = Math.floor(
-        selectedActivity.duration ? selectedActivity.duration / 60 : 0
+        selectedActivity.duration ? selectedActivity.duration / 60 : 0,
       );
 
       setHour(hour ? hour : "");
@@ -1252,7 +1257,7 @@ export default function AddTaskFormDialog(props) {
             assetName: selectedAsset.assetName,
             logbook: selectedLogbook.lookbookname,
           };
-        })
+        }),
       );
     }
 
@@ -1379,7 +1384,7 @@ export default function AddTaskFormDialog(props) {
     }
     if (task && task.activityList) {
       const filActs = task.activityList.filter(
-        (activity) => activity.activityAbrv !== selectedActivity.activityAbrv
+        (activity) => activity.activityAbrv !== selectedActivity.activityAbrv,
       );
 
       console.log(filActs);
@@ -1424,7 +1429,10 @@ export default function AddTaskFormDialog(props) {
     };
 
     const addActivity = async () => {
-      await fetch("http://localhost:8095/tasks/saveActivity", options)
+      await fetch(
+        `${process.env.REACT_APP_TASKAPI}/tasks/saveActivity`,
+        options,
+      )
         .then((resp) => resp.json())
         .then((data) => {
           console.log(data);
@@ -1444,13 +1452,13 @@ export default function AddTaskFormDialog(props) {
               setActivityName(
                 selectedActivity.activityName
                   ? selectedActivity.activityName
-                  : ""
+                  : "",
               );
 
               setActivityId(
                 selectedActivity.activityAbrv
                   ? selectedActivity.activityAbrv
-                  : ""
+                  : "",
               );
 
               if (selectedActivity.assetNameList) {
@@ -1460,14 +1468,14 @@ export default function AddTaskFormDialog(props) {
                       assetName: assetName,
                       logbook: selectedActivity.logbook,
                     };
-                  })
+                  }),
                 );
 
                 console.log(assetData);
               }
 
               let hour = Math.floor(
-                selectedActivity.duration ? selectedActivity.duration / 60 : 0
+                selectedActivity.duration ? selectedActivity.duration / 60 : 0,
               );
 
               setHour(hour ? hour : 0);
@@ -1575,11 +1583,11 @@ export default function AddTaskFormDialog(props) {
   useEffect(() => {
     if (activitySelected) {
       setActivityName(
-        activitySelected.activityName ? activitySelected.activityName : ""
+        activitySelected.activityName ? activitySelected.activityName : "",
       );
 
       setActivityId(
-        activitySelected.activityAbrv ? activitySelected.activityAbrv : ""
+        activitySelected.activityAbrv ? activitySelected.activityAbrv : "",
       );
 
       if (activitySelected.assetNameList) {
@@ -1595,14 +1603,14 @@ export default function AddTaskFormDialog(props) {
                 assetName: assetName,
                 lookbookname: activitySelected.logbook,
               };
-            })
+            }),
           );
         }
         console.log(assetData);
       }
 
       let hour = Math.floor(
-        activitySelected.duration ? activitySelected.duration / 60 : 0
+        activitySelected.duration ? activitySelected.duration / 60 : 0,
       );
 
       setHour(hour ? hour : "");
@@ -1635,8 +1643,8 @@ export default function AddTaskFormDialog(props) {
     };
     try {
       const response = await fetch(
-        "http://localhost:8095/tasks/alltasks",
-        options
+        `${process.env.REACT_APP_TASKAPI}/tasks/alltasks`,
+        options,
       );
       if (response.ok) {
         const data = await response.json();
@@ -1828,7 +1836,7 @@ export default function AddTaskFormDialog(props) {
                               const isTaskAlreadyExist = allTaskDetails.find(
                                 (task) =>
                                   task.taskName.trim().toLowerCase() ===
-                                  taskName.toLowerCase()
+                                  taskName.toLowerCase(),
                               );
                               if (isTaskAlreadyExist) {
                                 toast.current.show({
@@ -2140,7 +2148,7 @@ export default function AddTaskFormDialog(props) {
                                         label="Delete Activity"
                                         onClick={() => {
                                           deleteActivityHandler(
-                                            selectedActivity
+                                            selectedActivity,
                                           );
 
                                           setSelectedActivity({});

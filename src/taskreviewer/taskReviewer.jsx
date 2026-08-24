@@ -45,12 +45,14 @@ export default function TaskReviewer() {
 
       const data = await getAllTaskByTenantId();
       console.log("Task data::", data);
+
       if (data) {
         const tasks = data.filter(
           (task) =>
             task.reviewer.toLowerCase() ===
-              decryptTokenId(userId).toLowerCase() && task.status === "Pending"
+              decryptTokenId(userId).toLowerCase() && task.status === "Pending",
         );
+
         console.log("Filtered Task : ", tasks);
         setAllTasks(tasks);
       }
@@ -58,14 +60,7 @@ export default function TaskReviewer() {
       setDataLoading(false);
     };
 
-    const intervalId = setInterval(() => {
-      fetchAllTasks();
-    }, 1000); // 3000 milliseconds = 5 seconds
-
-    // Cleanup function to clear the interval
-    return () => clearInterval(intervalId);
-
-    // fetchAllTasks();
+    fetchAllTasks();
   }, []);
 
   const getTenantID = () => {
@@ -88,7 +83,7 @@ export default function TaskReviewer() {
       const tenantId = getTenantID();
       await fetch(
         `${process.env.REACT_APP_TASKAPI}/task/acivityConnections/${selectedTask.taskId}/${tenantId}`,
-        options
+        options,
       )
         .then((resp) => resp.json())
         .then((data) => {
