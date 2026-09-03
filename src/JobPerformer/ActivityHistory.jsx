@@ -303,8 +303,8 @@ const ActivityHistory = ({
                           <Tooltip
                             title={
                               <>
-                                Job Name: {row.jobname} <br />
-                                Job ID: {row.jobid}
+                                Job Name: {row.jobName} <br />
+                                Job ID: {row.jobId}
                               </>
                             }
                             placement="right"
