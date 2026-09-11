@@ -8,6 +8,7 @@ import {
   CircularProgress,
   Container,
   Grid,
+  IconButton,
   LinearProgress,
   Modal,
   Paper,
@@ -25,6 +26,8 @@ import {
   styled,
   tableCellClasses,
 } from "@mui/material";
+import * as XLSX from "xlsx-js-style";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { Button as PrimeButton } from "primereact/button";
 import WarningIcon from "@mui/icons-material/Warning";
 import EditIcon from "@mui/icons-material/Edit";
@@ -339,9 +342,7 @@ function LogbookForm({ logData }) {
 
         if (cell.context) {
           newCellObjTest[cell.context] =
-            cell.fieldType === "File"
-              ? cell.fileContent || cell.value
-              : cell.value;
+            cell.fieldType === "File" ? cell.value || cell.value : cell.value;
         }
       });
     });
@@ -405,11 +406,11 @@ function LogbookForm({ logData }) {
               cellInfo.aliasId = cell.aliasId;
 
               const { byteArray, fileExtension } = normalizeToByteArray(
-                cell.fileContent,
+                cell.value,
                 cell.imagePath,
               );
 
-              cellInfo.fileContent = byteArray;
+              cellInfo.value = byteArray;
               cellInfo.fileExtension = fileExtension;
               cellInfo.fileName = cell.imagePath || `file.${fileExtension}`;
 
@@ -520,7 +521,7 @@ function LogbookForm({ logData }) {
         } else if (cell.fieldType === "File") {
           newCellObj[cell.cellId] = {
             remarks: cell.remarks || "NA",
-            value: cell.fileContent || cell.value,
+            value: cell.value || cell.value,
             disabled: cell.disabled,
             requiredfield: cell.requiredfield,
           };
@@ -536,9 +537,7 @@ function LogbookForm({ logData }) {
 
         if (cell.context) {
           newCellObjTest[cell.context] =
-            cell.fieldType === "File"
-              ? cell.fileContent || cell.value
-              : cell.value;
+            cell.fieldType === "File" ? cell.value || cell.value : cell.value;
         }
       });
     });
@@ -595,11 +594,11 @@ function LogbookForm({ logData }) {
               cellInfo.aliasId = cell.aliasId;
 
               const { byteArray, fileExtension } = normalizeToByteArray(
-                cell.fileContent,
+                cell.value,
                 cell.imagePath,
               );
 
-              cellInfo.fileContent = byteArray;
+              cellInfo.value = byteArray;
               cellInfo.fileExtension = fileExtension;
               cellInfo.fileName = cell.imagePath || `file.${fileExtension}`;
 
@@ -768,7 +767,7 @@ function LogbookForm({ logData }) {
               if (newVal !== undefined) {
                 const isFile = ["Image", "File"].includes(cell.fieldType);
                 const hasChanged = isFile
-                  ? cell.fileContent !== newVal
+                  ? cell.value !== newVal
                   : cell.value !== newVal;
 
                 if (hasChanged) {
@@ -776,7 +775,7 @@ function LogbookForm({ logData }) {
                     "🌐 [Step 2] Cell changed:",
                     cell.cellId,
                     "from",
-                    isFile ? cell.fileContent : cell.value,
+                    isFile ? cell.value : cell.value,
                     "to",
                     newVal,
                   );
@@ -1193,7 +1192,7 @@ function LogbookForm({ logData }) {
               if (newVal !== undefined) {
                 const isFile = ["Image", "File"].includes(cell.fieldType);
                 const hasChanged = isFile
-                  ? cell.fileContent !== newVal
+                  ? cell.value !== newVal
                   : cell.value !== newVal;
 
                 if (hasChanged) {
@@ -1201,7 +1200,7 @@ function LogbookForm({ logData }) {
                     "🌐 [Step 2] Cell changed:",
                     cell.cellId,
                     "from",
-                    isFile ? cell.fileContent : cell.value,
+                    isFile ? cell.value : cell.value,
                     "to",
                     newVal,
                   );
@@ -1596,7 +1595,7 @@ function LogbookForm({ logData }) {
               if (newVal !== undefined) {
                 const isFile = ["Image", "File"].includes(cell.fieldType);
                 const hasChanged = isFile
-                  ? cell.fileContent !== newVal
+                  ? cell.value !== newVal
                   : cell.value !== newVal;
 
                 if (hasChanged) {
@@ -1604,7 +1603,7 @@ function LogbookForm({ logData }) {
                     "🌐 [Step 2] Cell changed:",
                     cell.cellId,
                     "from",
-                    isFile ? cell.fileContent : cell.value,
+                    isFile ? cell.value : cell.value,
                     "to",
                     newVal,
                   );
@@ -1992,7 +1991,7 @@ function LogbookForm({ logData }) {
               if (newVal !== undefined) {
                 const isFile = ["Image", "File"].includes(cell.fieldType);
                 const hasChanged = isFile
-                  ? cell.fileContent !== newVal
+                  ? cell.value !== newVal
                   : cell.value !== newVal;
 
                 if (hasChanged) {
@@ -2000,7 +1999,7 @@ function LogbookForm({ logData }) {
                     "🌐 [Step 2] Cell changed:",
                     cell.cellId,
                     "from",
-                    isFile ? cell.fileContent : cell.value,
+                    isFile ? cell.value : cell.value,
                     "to",
                     newVal,
                   );
@@ -2415,7 +2414,7 @@ function LogbookForm({ logData }) {
             if (newVal !== undefined) {
               const isFile = ["Image", "File"].includes(cell.fieldType);
               const hasChanged = isFile
-                ? cell.fileContent !== newVal
+                ? cell.value !== newVal
                 : cell.value !== newVal;
 
               if (hasChanged) {
@@ -2824,6 +2823,293 @@ function LogbookForm({ logData }) {
     return updatedGridData;
   };
 
+  // ----------------------------------------------------
+  // EXCEL EXPORT HELPERS
+  // ----------------------------------------------------
+
+  // 1. Helper to extract display value based on field type
+  // Helper to extract display value with fallback to aliasId if value is not present
+  const getExcelCellDisplayValue = (elem) => {
+    if (!elem) return "";
+
+    // Fallback if value is missing/empty
+    const fallback =
+      elem.aliasId !== null && elem.aliasId !== undefined
+        ? String(elem.aliasId)
+        : "";
+
+    switch (elem.fieldType) {
+      case "Boolean":
+        if (elem.value === true || elem.value === "true" || elem.value === 1) {
+          return "Yes";
+        }
+        if (
+          elem.value === false ||
+          elem.value === "false" ||
+          elem.value === 0
+        ) {
+          return "No";
+        }
+        return fallback;
+
+      case "Dropdown":
+        if (
+          elem.value !== null &&
+          elem.value !== undefined &&
+          elem.value !== ""
+        ) {
+          const matchedOption = elem.dropDownFields?.find(
+            (opt) =>
+              String(opt.itemValue).toLowerCase() ===
+              String(elem.value).toLowerCase(),
+          );
+          return matchedOption?.itemLabel || String(elem.value);
+        }
+        return fallback;
+
+      case "File":
+        return elem.imagePath || (elem.value ? "Attached File" : fallback);
+
+      case "Image":
+        return elem.imagePath || fallback || "Image";
+
+      case "Button":
+        return elem.buttonKeyValue || elem.aliasId || "Button";
+
+      case "URL":
+        return elem.url || elem.value || fallback;
+
+      case "Number":
+        if (
+          elem.value !== null &&
+          elem.value !== undefined &&
+          elem.value !== ""
+        ) {
+          const num = Number(elem.value);
+          return isNaN(num) ? String(elem.value) : num;
+        }
+        return fallback;
+
+      default:
+        if (
+          elem.value !== null &&
+          elem.value !== undefined &&
+          elem.value !== ""
+        ) {
+          return String(elem.value);
+        }
+        return fallback;
+    }
+  };
+
+  // 2. Helper to parse CSS string to xlsx-js-style format
+  const parseCssToExcelStyle = (cssString, isHeader = false) => {
+    const style = {
+      font: {
+        name: "Calibri",
+        sz: 11,
+        color: { rgb: "000000" },
+        bold: isHeader,
+      },
+      alignment: {
+        vertical: "center",
+        horizontal: "center",
+        wrapText: true,
+      },
+      border: {
+        top: { style: "thin", color: { rgb: "CCCCCC" } },
+        bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+        left: { style: "thin", color: { rgb: "CCCCCC" } },
+        right: { style: "thin", color: { rgb: "CCCCCC" } },
+      },
+    };
+
+    if (!cssString) return style;
+
+    const rules = cssString.split(";");
+    rules.forEach((rule) => {
+      const [prop, val] = rule.split(":").map((s) => s?.trim()?.toLowerCase());
+      if (!prop || !val) return;
+
+      // Text Alignment
+      if (prop === "text-align") {
+        if (["left", "center", "right"].includes(val)) {
+          style.alignment.horizontal = val;
+        }
+      }
+
+      // Font Weight
+      if (prop === "font-weight" && (val === "bold" || parseInt(val) >= 600)) {
+        style.font.bold = true;
+      }
+
+      // Font Color (Hex)
+      if (prop === "color" && val.startsWith("#")) {
+        const hex = val.replace("#", "").toUpperCase();
+        if (hex.length === 6) style.font.color = { rgb: hex };
+      }
+
+      // Background Color (Hex)
+      if (
+        (prop === "background-color" || prop === "background") &&
+        val.startsWith("#")
+      ) {
+        const hex = val.replace("#", "").toUpperCase();
+        if (hex.length === 6) {
+          style.fill = {
+            patternType: "solid",
+            fgColor: { rgb: hex },
+          };
+        }
+      }
+    });
+
+    return style;
+  };
+
+  // 3. Main Export Handler
+  const handleDownloadGridExcel = () => {
+    try {
+      const currentGrid = gridDataRef.current?.length
+        ? gridDataRef.current
+        : gridDataTest;
+
+      if (!currentGrid || currentGrid.length === 0) {
+        setsnackbarSeverity("error");
+        setSnackbarText("No grid data available to download");
+        setSnackbarOpen(true);
+        return;
+      }
+
+      const allCells = currentGrid.flatMap((row) => row.cellData || []);
+
+      if (allCells.length === 0) {
+        setsnackbarSeverity("error");
+        setSnackbarText("No cell data found");
+        setSnackbarOpen(true);
+        return;
+      }
+
+      // Calculate max row and max column
+      let maxRow = 1;
+      let maxCol = 1;
+
+      allCells.forEach((cell) => {
+        const r =
+          (parseInt(cell.rowNum, 10) || 1) +
+          (parseInt(cell.rowSpan, 10) || 1) -
+          1;
+        const c =
+          (parseInt(cell.colNum, 10) || 1) +
+          (parseInt(cell.colSpan, 10) || 1) -
+          1;
+        if (r > maxRow) maxRow = r;
+        if (c > maxCol) maxCol = c;
+      });
+
+      const worksheet = {};
+      const merges = [];
+      const colWidths = Array(maxCol).fill(16); // Default column width
+
+      // Initialize blank cells with borders across the whole grid
+      for (let r = 0; r < maxRow; r++) {
+        for (let c = 0; c < maxCol; c++) {
+          const cellAddress = XLSX.utils.encode_cell({ r, c });
+          worksheet[cellAddress] = {
+            v: "",
+            t: "s",
+            s: {
+              border: {
+                top: { style: "thin", color: { rgb: "E0E0E0" } },
+                bottom: { style: "thin", color: { rgb: "E0E0E0" } },
+                left: { style: "thin", color: { rgb: "E0E0E0" } },
+                right: { style: "thin", color: { rgb: "E0E0E0" } },
+              },
+            },
+          };
+        }
+      }
+
+      // Populate each grid cell
+      allCells.forEach((cell) => {
+        const rowStart = (parseInt(cell.rowNum, 10) || 1) - 1;
+        const colStart = (parseInt(cell.colNum, 10) || 1) - 1;
+        const rowSpan = parseInt(cell.rowSpan, 10) || 1;
+        const colSpan = parseInt(cell.colSpan, 10) || 1;
+        const rowEnd = rowStart + rowSpan - 1;
+        const colEnd = colStart + colSpan - 1;
+
+        const rawVal = getExcelCellDisplayValue(cell);
+        const isNumber = typeof rawVal === "number";
+        const cellStyle = parseCssToExcelStyle(cell.cellCSS, !cell.editable);
+
+        // Handle Merges if cell spans multiple rows or columns
+        if (rowSpan > 1 || colSpan > 1) {
+          merges.push({
+            s: { r: rowStart, c: colStart },
+            e: { r: rowEnd, c: colEnd },
+          });
+
+          // Apply style across all cells in merge block for clean borders
+          for (let r = rowStart; r <= rowEnd; r++) {
+            for (let c = colStart; c <= colEnd; c++) {
+              const addr = XLSX.utils.encode_cell({ r, c });
+              worksheet[addr] = {
+                v: r === rowStart && c === colStart ? rawVal : "",
+                t: isNumber && r === rowStart && c === colStart ? "n" : "s",
+                s: cellStyle,
+              };
+            }
+          }
+        } else {
+          const cellAddress = XLSX.utils.encode_cell({
+            r: rowStart,
+            c: colStart,
+          });
+          worksheet[cellAddress] = {
+            v: rawVal,
+            t: isNumber ? "n" : "s",
+            s: cellStyle,
+          };
+        }
+
+        // Adjust column width for content
+        const textLen = String(rawVal || "").length;
+        if (textLen > colWidths[colStart]) {
+          colWidths[colStart] = Math.min(Math.max(textLen + 4, 16), 50);
+        }
+      });
+
+      // Set worksheet range, merges, and column widths
+      worksheet["!ref"] = XLSX.utils.encode_range({
+        s: { r: 0, c: 0 },
+        e: { r: maxRow - 1, c: maxCol - 1 },
+      });
+      worksheet["!merges"] = merges;
+      worksheet["!cols"] = colWidths.map((w) => ({ wch: w }));
+
+      // Create workbook and download file
+      const workbook = XLSX.utils.book_new();
+      const sheetTitle = (formName || "Logbook").substring(0, 31);
+      XLSX.utils.book_append_sheet(workbook, worksheet, sheetTitle);
+
+      const fileName = `${formName || "Logbook"}_v${versionNumber || "1"}_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+
+      setsnackbarSeverity("success");
+      setSnackbarText("Excel downloaded successfully");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error(
+        "❌ [handleDownloadGridExcel] Error downloading Excel:",
+        error,
+      );
+      setsnackbarSeverity("error");
+      setSnackbarText("Failed to generate Excel file");
+      setSnackbarOpen(true);
+    }
+  };
+
   const handleRefreshDropdown = async (elem) => {
     try {
       console.log(
@@ -2990,7 +3276,7 @@ function LogbookForm({ logData }) {
               if (newVal !== undefined) {
                 const isFile = ["File", "Image"].includes(cell.fieldType);
                 const hasChanged = isFile
-                  ? cell.fileContent !== newVal
+                  ? cell.value !== newVal
                   : cell.value !== newVal;
 
                 if (hasChanged) {
@@ -2998,7 +3284,7 @@ function LogbookForm({ logData }) {
                     "🌐 [Step 2] Cell changed:",
                     cell.cellId,
                     "from",
-                    isFile ? cell.fileContent : cell.value,
+                    isFile ? cell.value : cell.value,
                     "to",
                     newVal,
                   );
@@ -3577,28 +3863,12 @@ function LogbookForm({ logData }) {
           const fieldType = cell.fieldType;
 
           if (fieldType === "File" || fieldType === "Image") {
-            const fileContent = cell.fileContent;
-
-            if (cell.value) {
-              return `'${cell.value}'` || "null";
-            }
-            if (
-              !fileContent ||
-              fileContent === "" ||
-              fileContent === null ||
-              fileContent === undefined
-            ) {
-              console.log(
-                "🔎 [findCellValue] File/Image is empty, returning null",
-              );
+            if (!cell.value || cell.value === "" || cell.value === null) {
               return "null";
             }
-
-            const hexValue = toHexForSQLServer(fileContent);
-            console.log("🔎 [findCellValue] File/Image hex value");
+            const hexValue = toHexForSQLServer(cell.value);
             return hexValue;
           }
-
           if (fieldType === "Number") {
             if (val === null || val === undefined || val === "") {
               console.log("🔎 [findCellValue] Number is empty, returning null");
@@ -3659,7 +3929,7 @@ function LogbookForm({ logData }) {
           newCellObj[cell.cellId] = {
             ...(newCellObj[cell.cellId] || {}),
             remarks: cell.remarks || "NA",
-            value: cell.fileContent || cell.value,
+            value: cell.value || cell.value,
             disabled: cell.disabled,
             requiredfield: cell.requiredfield,
           };
@@ -3682,9 +3952,7 @@ function LogbookForm({ logData }) {
       item.cellData.forEach((cell) => {
         if (cell.context) {
           newCellObjTest[cell.context] =
-            cell.fieldType === "File"
-              ? cell.fileContent || cell.value
-              : cell.value;
+            cell.fieldType === "File" ? cell.value || cell.value : cell.value;
         }
       });
     });
@@ -3994,11 +4262,11 @@ function LogbookForm({ logData }) {
               cellInfo.aliasId = cell.aliasId;
 
               const { byteArray, fileExtension } = normalizeToByteArray(
-                cell.fileContent,
+                cell.value,
                 cell.imagePath,
               );
 
-              cellInfo.fileContent = byteArray;
+              cellInfo.value = byteArray;
               cellInfo.fileExtension = fileExtension;
               cellInfo.fileName = cell.imagePath || `file.${fileExtension}`;
 
@@ -4112,7 +4380,7 @@ function LogbookForm({ logData }) {
             (cell.value === "" ||
               cell.value === null ||
               cell.value === undefined) &&
-            (!cell.fileContent || cell.fileContent.length === 0)
+            (!cell.value || cell.value.length === 0)
           ) {
             newErrors[cell.cellId] = "A file must be uploaded"; // Set error message for file
           }
@@ -4218,11 +4486,11 @@ function LogbookForm({ logData }) {
                 cellInfo.aliasId = cell.aliasId;
 
                 const { byteArray, fileExtension } = normalizeToByteArray(
-                  cell.fileContent,
+                  cell.value,
                   cell.imagePath,
                 );
 
-                cellInfo.fileContent = byteArray;
+                cellInfo.value = byteArray;
                 cellInfo.fileExtension = fileExtension;
                 cellInfo.fileName = cell.imagePath || `file.${fileExtension}`;
 
@@ -5088,7 +5356,7 @@ function LogbookForm({ logData }) {
               const isFile = c.fieldType === "File" || c.fieldType === "Image";
 
               const hasChanged = isFile
-                ? c.fileContent !== newVal
+                ? c.value !== newVal
                 : c.value !== newVal;
 
               if (hasChanged) {
@@ -5380,7 +5648,7 @@ function LogbookForm({ logData }) {
                   const newValue = sqlResult[key];
                   const isFile = ["Image", "File"].includes(cell.fieldType);
                   const hasChanged = isFile
-                    ? cell.fileContent !== newValue
+                    ? cell.value !== newValue
                     : cell.value !== newValue;
 
                   if (hasChanged) {
@@ -5504,7 +5772,7 @@ function LogbookForm({ logData }) {
                   const newValue = apiResult[key];
                   const isFile = ["Image", "File"].includes(cell.fieldType);
                   const hasChanged = isFile
-                    ? cell.fileContent !== newValue
+                    ? cell.value !== newValue
                     : cell.value !== newValue;
 
                   if (hasChanged) {
@@ -6187,7 +6455,7 @@ function LogbookForm({ logData }) {
         }
       }
     } else {
-      const file = createFile(elem?.fileContent);
+      const file = createFile(elem?.value);
       if (file) {
         console.log("File for download:", file); // Debugging to check the file object
 
@@ -6527,7 +6795,7 @@ function LogbookForm({ logData }) {
           cell.cellId === elem.cellId
             ? {
                 ...cell,
-                fileContent: byteArray,
+                value: byteArray,
                 imagePath: fileName,
               }
             : cell,
@@ -6767,14 +7035,21 @@ function LogbookForm({ logData }) {
               />
             )}
             {!Object.keys(logData ?? {}).length > 0 && (
-              <>
+              <Box
+                sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}
+              >
                 <i
                   className="pi pi-arrow-circle-left"
                   onClick={() => {
                     navigate(-1, { replace: true });
                   }}
-                  style={{ paddingRight: ".45rem", cursor: "pointer" }}
+                  style={{
+                    paddingRight: ".45rem",
+                    cursor: "pointer",
+                    fontSize: "1.2rem",
+                  }}
                 />
+
                 <Badge
                   badgeContent={
                     isTransactionError ? (
@@ -6807,7 +7082,29 @@ function LogbookForm({ logData }) {
                     {formName}
                   </Typography>
                 </Badge>
-              </>
+                {versionPart && selectedLogbookPart && (
+                  <>
+                    {/* Download Excel Icon Button */}
+                    <Tooltip title="Download Excel" placement="top">
+                      <IconButton
+                        onClick={handleDownloadGridExcel}
+                        size="small"
+                        sx={{
+                          bgcolor: "primary.light",
+                          color: "primary.contrastText",
+                          p: "4px",
+                          "&:hover": {
+                            bgcolor: "primary.main",
+                            color: "white",
+                          },
+                        }}
+                      >
+                        <DownloadForOfflineIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                )}
+              </Box>
             )}
             {!(versionPart && selectedLogbookPart) && (
               <>
@@ -7030,7 +7327,7 @@ function LogbookForm({ logData }) {
                             setGridDataTest,
                           )
                         }
-                        byteArray={elem.fileContent}
+                        byteArray={elem.value}
                         fileNamePath={elem.imagePath}
                         error={errors[elem.cellId]}
                         editable={elem.editable}
@@ -7050,7 +7347,7 @@ function LogbookForm({ logData }) {
                               setGridDataTest,
                             )
                           }
-                          byteArray={elem.fileContent}
+                          byteArray={elem.value}
                           fileNamePath={elem.imagePath}
                           error={errors[elem.cellId]}
                           editable={elem.editable}
@@ -7359,7 +7656,23 @@ function LogbookForm({ logData }) {
                     </Button>
                   </div>
                 )}
-              <div style={{ margin: "1rem 0" }}>
+
+              <div
+                style={{
+                  margin: "1rem 0",
+                  display: "flex",
+                  gap: "12px",
+                  alignItems: "center",
+                }}
+              >
+                {/* <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<FileDownloadIcon />}
+                  onClick={handleDownloadGridExcel}
+                >
+                  Download Excel
+                </Button> */}
                 <Button
                   variant="contained"
                   color="primary"
