@@ -99,6 +99,7 @@
     "vis-timeline": "^7.7.3",
     "web-vitals": "^3.5.2",
     "xlsx": "^0.18.5",
+    "xlsx-js-style": "^1.2.0",
     "xlsx-preview": "^1.0.4",
     "yup": "^1.4.0"
   },
