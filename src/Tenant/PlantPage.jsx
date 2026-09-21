@@ -410,7 +410,7 @@ export default function PlantPage() {
             }}
           >
             <Typography sx={{ fontWeight: 600 }}>
-              First Click <Link to="/tenant">here</Link> to create new Tenant
+              Click <Link to="/tenant">here</Link> to create new Tenant
             </Typography>
           </div>
         </div>
