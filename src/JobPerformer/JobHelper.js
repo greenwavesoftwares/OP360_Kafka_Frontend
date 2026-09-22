@@ -160,9 +160,11 @@ export const fetchCurrentUser = () => {
 
   export async function emailPerformerForNextActivities(job){
     try{
+      console.log("Inside email performer")
+      console.log("Job:::",job)
     if(job && job.task.activityList[0].actvityStatus.toLowerCase() ===
         "Completed".toLowerCase()){
-          
+          console.log("Send mail ::",job.jobID)
           const response=await sendMailForNextActivities(job.jobID)
           
           if(response?.status===200)
