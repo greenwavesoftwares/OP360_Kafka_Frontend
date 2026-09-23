@@ -56,6 +56,33 @@ export default function LogbookReportViewComponent({
     occupiedGrid: [],
   });
 
+  const [
+    resolvedConditionalCssExpression,
+    setResolvedConditionalCssExpression,
+  ] = useState({});
+
+  useEffect(() => {
+    const resolveAll = async () => {
+      const resolved = {};
+      for (const row of cellData) {
+        for (const elem of row.cellData) {
+          if (elem.conditionalCssExpression?.includes("{{")) {
+            resolved[elem.cellId] = await findCSS(
+              elem.conditionalCssExpression,
+              elem,
+              cellData, // structure (for finding cellId/aliasId matches)
+              gridData, // <-- ADDED: the prop with logbookData, actual submitted values
+            );
+          } else {
+            resolved[elem.cellId] = elem.conditionalCssExpression;
+          }
+        }
+      }
+      setResolvedConditionalCssExpression(resolved);
+    };
+    resolveAll();
+  }, [cellData, gridData]);
+
   useEffect(() => {
     // This runs when the component mounts and when gridData changes.
     extendTokenExpiration(); // Keeps the user's session active.
@@ -74,6 +101,7 @@ export default function LogbookReportViewComponent({
         setErrorOpen(true); // Show Snackbar
         return;
       } else {
+        console.log("data ------- :::::: ", data);
         setCellData(data); // Save the data we got into state.
         // Calculate the total number of columns from the data.
         const maxCol = Math.max(
@@ -253,6 +281,155 @@ export default function LogbookReportViewComponent({
     return null;
   };
 
+  // async function findCSS(cssString, elem, structureData, logbookGridData) {
+  //   try {
+  //     if (!cssString || !structureData) {
+  //       return cssString || "";
+  //     }
+
+  //     const regex = /\{\s*\{\s*([^}]+?)\s*\}\s*\}/g;
+  //     let processedCSS = cssString;
+  //     let match;
+  //     const matches = [];
+
+  //     while ((match = regex.exec(cssString)) !== null) {
+  //       matches.push({
+  //         fullMatch: match[0],
+  //         cellId: match[1].trim(),
+  //       });
+  //     }
+
+  //     console.log(
+  //       `[findCSS] cellId=${elem.cellId} expression="${cssString}" placeholders:`,
+  //       matches,
+  //     );
+
+  //     for (const matchInfo of matches) {
+  //       const { fullMatch, cellId } = matchInfo;
+  //       const rawValue = findCellValueRaw(
+  //         cellId,
+  //         structureData,
+  //         logbookGridData,
+  //       );
+
+  //       console.log(
+  //         `[findCSS] "${fullMatch}" -> cellId "${cellId}" resolved to:`,
+  //         rawValue,
+  //         `(type: ${typeof rawValue})`,
+  //       );
+
+  //       const escapedPlaceholder = fullMatch.replace(
+  //         /[.*+?^${}()|[\]\\]/g,
+  //         "\\$&",
+  //       );
+  //       const replacementRegex = new RegExp(escapedPlaceholder, "g");
+  //       processedCSS = processedCSS.replace(replacementRegex, rawValue);
+  //     }
+
+  //     console.log(`[findCSS] cellId=${elem.cellId} final CSS:`, processedCSS);
+
+  //     return processedCSS;
+  //   } catch (error) {
+  //     console.error("❌ [findCSS] Error:", error);
+  //     return cssString || "";
+  //   }
+  // }
+
+  async function findCSS(cssString, elem, structureData, logbookGridData) {
+    try {
+      if (!cssString || !structureData) {
+        return cssString || "";
+      }
+
+      const regex = /\{\s*\{\s*([^}]+?)\s*\}\s*\}/g;
+      let processedExpr = cssString;
+      let match;
+      const matches = [];
+
+      while ((match = regex.exec(cssString)) !== null) {
+        matches.push({ fullMatch: match[0], cellId: match[1].trim() });
+      }
+
+      for (const matchInfo of matches) {
+        const { fullMatch, cellId } = matchInfo;
+        const rawValue = findCellValueRaw(
+          cellId,
+          structureData,
+          logbookGridData,
+        );
+
+        // Quote it if it's a string, so the resulting JS is syntactically valid
+        const jsLiteral =
+          typeof rawValue === "number"
+            ? rawValue
+            : `'${String(rawValue).replace(/'/g, "\\'")}'`;
+
+        const escapedPlaceholder = fullMatch.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          "\\$&",
+        );
+        const replacementRegex = new RegExp(escapedPlaceholder, "g");
+        processedExpr = processedExpr.replace(replacementRegex, jsLiteral);
+      }
+
+      console.log(
+        `[findCSS] cellId=${elem.cellId} expression to evaluate:`,
+        processedExpr,
+      );
+
+      // Now actually EVALUATE the if/else block to get a real CSS string back
+      // Wrap so backtick-template blocks act as return values
+      const evaluator = new Function(`
+      ${processedExpr.replace(/`([^`]*)`/g, "return \`$1\`;")}
+    `);
+
+      const finalCss = evaluator();
+      console.log(
+        `[findCSS] cellId=${elem.cellId} EVALUATED result:`,
+        finalCss,
+      );
+
+      return finalCss ?? "";
+    } catch (error) {
+      console.error(
+        "❌ [findCSS] Error evaluating expression:",
+        error,
+        "cssString was:",
+        cssString,
+      );
+      return "";
+    }
+  }
+
+  function findCellValueRaw(cellId, structureData, logbookGridData) {
+    if (cellId.startsWith("lv_")) {
+      return logbookGridData?.[cellId] ?? "";
+    }
+
+    // Find the matching cellId/aliasId in the structure to normalize the id
+    for (let rowNum = 0; rowNum < structureData?.length; rowNum++) {
+      const rowData = structureData[rowNum];
+      for (let colNum = 0; colNum < rowData?.cellData?.length; colNum++) {
+        const cell = rowData.cellData[colNum];
+        const cid = cell.cellId?.trim();
+        const aid = cell.aliasId?.trim();
+
+        if (cid === cellId.trim() || aid === cellId.trim()) {
+          // pull the REAL submitted value the same way renderContent does
+          const actualValue = logbookGridData?.logbookData?.[cid]?.value;
+          console.log(
+            `[findCellValueRaw] matched "${cellId}" -> normalized cellId "${cid}", actual submitted value:`,
+            actualValue,
+          );
+          return actualValue ?? "";
+        }
+      }
+    }
+
+    console.warn(`[findCellValueRaw] no structural match for "${cellId}"`);
+    return "";
+  }
+
   return (
     <div>
       <AnimatePresence>
@@ -324,13 +501,24 @@ export default function LogbookReportViewComponent({
                             //   justifyContent: "center", // Center horizontally
                             //   alignItems: "center", // Center vertically
                             // }}
+                            // sx={{
+                            //   padding: "0.8rem",
+                            //   fontSize: "0.8rem",
+                            //   gridColumn: `span ${elem.colSpan}`,
+                            //   gridRow: `span ${elem.rowSpan}`,
+                            //   alignContent: "center",
+                            //   ...convertCssStringToMuiStyles(elem.cellCSS),
+                            // }}
                             sx={{
                               padding: "0.8rem",
                               fontSize: "0.8rem",
                               gridColumn: `span ${elem.colSpan}`,
                               gridRow: `span ${elem.rowSpan}`,
                               alignContent: "center",
-                              ...convertCssStringToMuiStyles(elem.cellCSS),
+                              ...convertCssStringToMuiStyles(
+                                resolvedConditionalCssExpression[elem.cellId] ??
+                                  elem.cellCSS,
+                              ),
                             }}
                           >
                             {renderContent(elem)}
