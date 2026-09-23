@@ -16,14 +16,13 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 // Importing CloseIcon from Material UI for a close button icon
 import DeleteIcon from "@mui/icons-material/Delete"; // Icon for delete action
 
-import SaveIcon from '@mui/icons-material/Save';
+import SaveIcon from "@mui/icons-material/Save";
 
 // import DangerousIcon from '@mui/icons-material/Dangerous';  // Icon for danger or error states
-import EngineeringIcon from '@mui/icons-material/Engineering'; // Icon for engineering or technical tasks
-import InfoIcon from '@mui/icons-material/Info'; // Icon for informational states
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'; // Icon for play or start actions
+import EngineeringIcon from "@mui/icons-material/Engineering"; // Icon for engineering or technical tasks
+import InfoIcon from "@mui/icons-material/Info"; // Icon for informational states
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline"; // Icon for play or start actions
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges"; // Icon for indicating changes or updates
-
 
 // Importing various Material UI components for layout, input, dialogs, lists, buttons, etc.
 import {
@@ -34,7 +33,8 @@ import {
   Chip, // Chip component for labels or status tags
   Container, // Dialog title component
   Divider, // Divider for separating content
-  Grid, IconButton, // Button component with an icon
+  Grid,
+  IconButton, // Button component with an icon
   List, // List component to display items
   ListItem, // List item component for individual items in the list
   ListItemText, // Modal component for popups
@@ -45,10 +45,10 @@ import {
   Tooltip, // Tooltip component for providing additional information on hover
   Typography,
   useMediaQuery,
-  useTheme
+  useTheme,
 } from "@mui/material";
 
-import { Button as AntButton, Flex } from 'antd';
+import { Button as AntButton, Flex } from "antd";
 // Importing React along with useEffect and useState hooks
 import React, { useEffect, useRef, useState } from "react";
 // Importing additional Material UI icons for UI elements
@@ -91,9 +91,11 @@ import EventModal from "./EventModal";
 
 //** Importing API functions for handling job assignments and fetching calendar events
 import {
-  geAllJobsByTenant, getCalendarData, getJobsByDateAndUser, //** API to get calendar events assigned to jobs
+  geAllJobsByTenant,
+  getCalendarData,
+  getJobsByDateAndUser, //** API to get calendar events assigned to jobs
   getOnEventClickJob, //** API to get job details when clicking on an event
-  sendEmail
+  sendEmail,
 } from "./JobAssignAPI";
 
 //** Importing custom component to display job details inside a modal
@@ -128,7 +130,7 @@ import {
   createTask, //** Helper function to create user dropdown list
   fetchCurrentActivityList, //** Helper function to fetch current activity list
   formatDatetime,
-  generateToMailUsers
+  generateToMailUsers,
 } from "./helper";
 
 // Importing DangerousIcon from Material UI to display a warning/error icon
@@ -141,22 +143,23 @@ import JobOverview from "./JobOverview";
 import JobOverviewForMobile from "./JobOverviewForMobile";
 import { getCurrentUser } from "../UserModuleUpdated/helper";
 import { useNetwork } from "react-haiku";
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import {  message } from 'antd';
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { message } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sendNotification } from "../pwa/pushNotification";
-import { PoweroffOutlined, SyncOutlined } from '@ant-design/icons';
+import { PoweroffOutlined, SyncOutlined } from "@ant-design/icons";
 
 //** */ PLEASE ADD 'BETTER COMMENTS' EXTENSION FOR BETTER READABILITY
 
-const steps = ["Job Details", "Activity Details","Job Overview","Repeat Jobs"]; //** the steps header while assigning a job through the dialog
-
-
-
+const steps = [
+  "Job Details",
+  "Activity Details",
+  "Job Overview",
+  "Repeat Jobs",
+]; //** the steps header while assigning a job through the dialog
 
 const JobAssign = () => {
   const env_userId = process.env.REACT_APP_USERID; // Environment variable for user ID
-
 
   const [openDialog, setOpenDialog] = useState(false); // State for controlling whether the job dialog is open or not
   const [activeStep, setActiveStep] = useState(0); // State to track the current active step in a stepper component
@@ -181,7 +184,7 @@ const JobAssign = () => {
     "Low",
   ];
 
-  const jobStartMin=3
+  const jobStartMin = 3;
   // arg.event.extendedProps.priority?.toLowerCase() ===
   // "critical"
   //   ? "#ffcdd2" //showing the priority of job
@@ -190,11 +193,11 @@ const JobAssign = () => {
   //   ? "#bbdefb"
   //   : "#ffe0b2",
 
-  const eventBackgroundColor={
-    Critical:"#ffcdd2",
-    Normal:"#ffe0b2",
-    Low:"#bbdefb"
-  }
+  const eventBackgroundColor = {
+    Critical: "#ffcdd2",
+    Normal: "#ffe0b2",
+    Low: "#bbdefb",
+  };
   const [tag, setTag] = useState(""); // State for managing the tag field
   const [finalJob, setFinalJob] = useState({}); // State for storing the final job details
 
@@ -272,16 +275,18 @@ const JobAssign = () => {
   // Checking if the screen size is mobile based on theme breakpoints
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-   const [confirmationDialog, setConfirmationDialog] = useState(false);
+  const [confirmationDialog, setConfirmationDialog] = useState(false);
 
-   const [currentCalendarDate,setCurrentCalendarDate]=useState({month:dayjs().month()+1,year:dayjs().year()});
+  const [currentCalendarDate, setCurrentCalendarDate] = useState({
+    month: dayjs().month() + 1,
+    year: dayjs().year(),
+  });
 
   //  console.log('Current Calendar Date State Changed',currentCalendarDate);
 
-   const eventSourceRef = useRef(null); // Ref to hold the EventSource instance
+  const eventSourceRef = useRef(null); // Ref to hold the EventSource instance
 
-  const [copyMode,setCopyMode]=useState(false); // State for managing copy mode
-
+  const [copyMode, setCopyMode] = useState(false); // State for managing copy mode
 
   //  const [messageApi, contextHolder] = message.useMessage();
 
@@ -339,39 +344,37 @@ const JobAssign = () => {
     setCopyMode(false);
   };
 
-/**
- * fetchAllCalendarEvents
- * To access all the calendarEvents which is visible in UI
- * @param {array} eventsList - eventsList is an array of events which is fetched from the getAllCalendarAssignedEvents API
- * @returns {void} - This function does not return any value
- */
-  const fetchAllCalendarEvents =  (eventsList) => {
+  /**
+   * fetchAllCalendarEvents
+   * To access all the calendarEvents which is visible in UI
+   * @param {array} eventsList - eventsList is an array of events which is fetched from the getAllCalendarAssignedEvents API
+   * @returns {void} - This function does not return any value
+   */
+  const fetchAllCalendarEvents = (eventsList) => {
     // console.log('Event List : ',eventsList)
-   
+
     //Currently all jobs are showing
     if (eventsList) {
       const calendarEvents = eventsList
         // .filter(event => event.assigner === getCurrentUser()) // Filter first
-        .map(event => ({
-          id: event.jobID, 
-          title: event.jobName, 
-          start: event.scheduledJobStartTime, 
-          end: event.scheduledJobEndTime, 
-          jobId: event.jobID, 
-          eventStatus: event.jobStatus, 
-          eventEndTime: event.scheduledJobEndTime, 
-          priority: event.priority, 
+        .map((event) => ({
+          id: event.jobID,
+          title: event.jobName,
+          start: event.scheduledJobStartTime,
+          end: event.scheduledJobEndTime,
+          jobId: event.jobID,
+          eventStatus: event.jobStatus,
+          eventEndTime: event.scheduledJobEndTime,
+          priority: event.priority,
           description: `Priority: ${event.priority} Job ID: ${event.jobID} JobName: ${event.jobName}`,
           adhoc: event.adhoc,
         }));
 
-        console.log('Final Calendar Events : ',calendarEvents)
-    
+      console.log("Final Calendar Events : ", calendarEvents);
+
       setCurrentEvents(calendarEvents);
     }
-    
   };
- 
 
   /**
    ** This function fetches all the users from the user module and filters them based on
@@ -396,11 +399,11 @@ const JobAssign = () => {
         .forEach((user) => {
           if (
             user.allotedPages.some(
-              (data) => data?.page?.toLowerCase() === "job reviewer"
+              (data) => data?.page?.toLowerCase() === "job reviewer",
             )
           )
             approverList.push(
-              user //pushing the data into the approverList into a custom object
+              user, //pushing the data into the approverList into a custom object
             );
         });
       // console.log("Final Approver List : ", approverList);
@@ -445,7 +448,7 @@ const JobAssign = () => {
       const current_path = location.pathname; // the current path i.e current URL
       const index = allotedPages.findIndex(
         //the index of the page is  fetched from the array
-        (data) => data.toLowerCase() === current_path
+        (data) => data.toLowerCase() === current_path,
       );
       if (index === -1) {
         //if the  index  is not found then it will be -1, then the user will be navigated to '/restricted'
@@ -462,90 +465,87 @@ const JobAssign = () => {
     //  fetchAllJobs();
     const now = new Date();
 
-const year = now.getFullYear();
-const month = now.getMonth() + 1; // 1-12
-handleDatesSet(month, year);
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1; // 1-12
+    handleDatesSet(month, year);
     getAllApprover();
     handleFilterEvents(new Date());
   }, []);
 
-  
   const createEventSource = () => {
-    console.log('CreateEventSource called')
+    console.log("CreateEventSource called");
     const tenantId = getTenantID();
     const JOB_API = process.env.REACT_APP_JOBAPI;
-    console.log('Current Calendar Date in SSE',currentCalendarDate);
-    const encodedDateRange = encodeURIComponent(JSON.stringify(currentCalendarDate));
-    const eventSource = new EventSourcePolyfill(`${JOB_API}/jobs/sse/user/${tenantId}?user=${getCurrentUser()}&dateRangeJson=${encodedDateRange}`, {
+    console.log("Current Calendar Date in SSE", currentCalendarDate);
+    const encodedDateRange = encodeURIComponent(
+      JSON.stringify(currentCalendarDate),
+    );
+    const eventSource = new EventSourcePolyfill(
+      `${JOB_API}/jobs/sse/user/${tenantId}?user=${getCurrentUser()}&dateRangeJson=${encodedDateRange}`,
+      {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-    });
+      },
+    );
 
     // Event listener for incoming messages
     eventSource.onmessage = (event) => {
-        try {
-          
-            const newJobs = JSON.parse(event.data); // Assuming the server sends JSON data
-            console.log("New job data received:",newJobs); // Logs the message and object
-          //   console.dir(newJobs, { depth: null }); // Expands object fully
-          //  console.log("New job data received:", JSON.stringify(newJobs, null, 2));
-           
+      try {
+        const newJobs = JSON.parse(event.data); // Assuming the server sends JSON data
+        console.log("New job data received:", newJobs); // Logs the message and object
+        //   console.dir(newJobs, { depth: null }); // Expands object fully
+        //  console.log("New job data received:", JSON.stringify(newJobs, null, 2));
 
-
-         if (newJobs) {
+        if (newJobs) {
           // console.warn('Main Jobs are updated')
-          const regularJobs = newJobs.filter(job => !job.adhoc || job?.jobStatus?.toLowerCase() !== 'aborted');
-           fetchAllCalendarEvents(regularJobs);
+          const regularJobs = newJobs.filter(
+            (job) => !job.adhoc || job?.jobStatus?.toLowerCase() !== "aborted",
+          );
+          fetchAllCalendarEvents(regularJobs);
           //  fetchAllCalendarEvents(newJobs);
           //  console.log('newJobs',newJobs);
-            // Filter first
+          // Filter first
           setAllJobs(newJobs); // Update state with new jobs
-            }
-           
-        } catch (error) {
-            // console.error("Error parsing job data:", error);
-           
         }
+      } catch (error) {
+        // console.error("Error parsing job data:", error);
+      }
     };
 
     // Error handling for EventSource
     eventSource.onerror = (error) => {
       console.error("Error in SSE connection:", error);
       // if(eventSource)
-        eventSource.close();  // Close the current connection
-console.log('eventSource.readyState',eventSource.readyState)
+      eventSource.close(); // Close the current connection
+      console.log("eventSource.readyState", eventSource.readyState);
       if (eventSource.readyState === EventSource.CONNECTING) {
         console.warn("SSE connection is trying to connect.");
-    } else{
+      } else {
         console.warn("SSE connection is closed.");
-        eventSource.close(); 
-    }
-      
+        eventSource.close();
+      }
+
       // Re-attempt connection after delay
       // setTimeout(createEventSource, 5000); // Reconnect after 5 seconds
+    };
+
+    console.log("Returned Emitter : ", eventSource);
+    return eventSource;
   };
 
-  console.log('Returned Emitter : ',eventSource);
-    return eventSource;
-};
+  // useEffect(() => {
 
-// useEffect(() => {
-   
- 
-//     // Function to create a new EventSource
-   
- 
-//     const eventSource = createEventSource();
- 
-//     // Cleanup function to close the EventSource connection when the component unmounts
-//     return () => {
-// // console.log("Closing SSE connection");
-//         eventSource.close();
-//     };
-// }, [currentCalendarDate]);
+  //     // Function to create a new EventSource
 
- 
+  //     const eventSource = createEventSource();
+
+  //     // Cleanup function to close the EventSource connection when the component unmounts
+  //     return () => {
+  // // console.log("Closing SSE connection");
+  //         eventSource.close();
+  //     };
+  // }, [currentCalendarDate]);
 
   /**
    ** Handles a date click event from the calendar. If the selected date is in the
@@ -559,22 +559,21 @@ console.log('eventSource.readyState',eventSource.readyState)
    ** @param {Function} setSeverityType - A callback function to set the snackbar
    *                                    error type
    */
-  
-   const handleDateClick = (
+
+  const handleDateClick = (
     dateselected,
     setSnackbarOpen,
     setSeverityText,
-    setSeverityType
+    setSeverityType,
   ) => {
-    
     const selectedDate = dateselected.start;
     const selectedDay = selectedDate.getDate();
     const selectedMonth = selectedDate.getMonth() + 1; // Adding 1 to get 1-indexed months
     const selectedYear = selectedDate.getFullYear();
-   
+
     const today = dayjs();
     const currentSelectionDate = dayjs(
-      `${selectedYear}-${selectedMonth}-${selectedDay}`
+      `${selectedYear}-${selectedMonth}-${selectedDay}`,
     );
 
     const isSelectedDateInPast = currentSelectionDate.isBefore(today, "day"); //whether the date selected is past is getting checked here
@@ -611,20 +610,14 @@ console.log('eventSource.readyState',eventSource.readyState)
       // );
       if (dayjs().format("YYYY-MM-DD") === dateselected.startStr)
         setFromdate(new Date(dayjs().add(jobStartMin, "minute"))); //adding 2 minutes ahead of the current time because it will take sometime for the user to assign the job
-      
     }
     // }
     // handleClick();
   };
 
-
-
-
-  const handleDatesSet=async(month,year)=>{
-    console.log("handleDatesSet() called",month,year);
-    console.log('Current Calendar Date : ',currentCalendarDate)
-
-    
+  const handleDatesSet = async (month, year) => {
+    console.log("handleDatesSet() called", month, year);
+    console.log("Current Calendar Date : ", currentCalendarDate);
 
     // const month = arg.end.getMonth(); // 1 = January, 12 = December
     //     const year = arg.end.getFullYear();
@@ -634,34 +627,32 @@ console.log('eventSource.readyState',eventSource.readyState)
     //     console.log("Month changed to:", month, year);
     //     console.log("type of month..",typeof(month))
 
-       
+    console.log("handleDatesSet ", month, year);
+    setCurrentCalendarDate(null);
+    const newJobs = await getCalendarData(month, year);
+    setCurrentCalendarDate({
+      ...currentCalendarDate,
+      month: month,
+      year: year,
+    });
+    console.log("Jobs fetched on handleDatesSet : ", newJobs);
 
-        console.log('handleDatesSet ',month,year);
-        setCurrentCalendarDate(null);
-        const newJobs=await getCalendarData(month,year);
-         setCurrentCalendarDate({...currentCalendarDate,month:month ,year:year});
-          console.log('Jobs fetched on handleDatesSet : ',newJobs);
-          
+    console.log("New job data received:", newJobs); // Logs the message and object
+    //   console.dir(newJobs, { depth: null }); // Expands object fully
+    //  console.log("New job data received:", JSON.stringify(newJobs, null, 2));
 
-
-         
-            console.log("New job data received:",newJobs); // Logs the message and object
-          //   console.dir(newJobs, { depth: null }); // Expands object fully
-          //  console.log("New job data received:", JSON.stringify(newJobs, null, 2));
-           
-
-
-         if (newJobs) {
-          // console.warn('Main Jobs are updated')
-          const regularJobs = newJobs.filter(job => !job.adhoc || job?.jobStatus?.toLowerCase() !== 'aborted');
-           fetchAllCalendarEvents(regularJobs);
-          //  fetchAllCalendarEvents(newJobs);
-          //  console.log('newJobs',newJobs);
-            // Filter first
-          setAllJobs(newJobs); // Update state with new jobs
-            }
-
-  }
+    if (newJobs) {
+      // console.warn('Main Jobs are updated')
+      const regularJobs = newJobs.filter(
+        (job) => !job.adhoc || job?.jobStatus?.toLowerCase() !== "aborted",
+      );
+      fetchAllCalendarEvents(regularJobs);
+      //  fetchAllCalendarEvents(newJobs);
+      //  console.log('newJobs',newJobs);
+      // Filter first
+      setAllJobs(newJobs); // Update state with new jobs
+    }
+  };
 
   /**
    * *Handles an event click event from the calendar. If the selected event is in the
@@ -680,8 +671,7 @@ console.log('eventSource.readyState',eventSource.readyState)
    *                                       modal open state
    */
   const handleEventClick = async (info) => {
-   
-    message.loading('Fetching Job Details...');
+    message.loading("Fetching Job Details...");
     // let eventStart = dayjs(info.event.start).format("YYYY-MM-DD HH:mm:ss.SSS");
     // let eventStop = dayjs(info.event.extendedProps.eventEndTime).format(
     //   "YYYY-MM-DD HH:mm:ss.SSS"
@@ -695,9 +685,8 @@ console.log('eventSource.readyState',eventSource.readyState)
 
     const eventJobId = info.event.extendedProps.jobId;
     const fetchedEventJob = await getOnEventClickJob(
-     
       info.event.title,
-      eventJobId
+      eventJobId,
     );
     message.destroy();
     // fetchedEventJob.jobID=null
@@ -706,37 +695,35 @@ console.log('eventSource.readyState',eventSource.readyState)
       // console.log("Stringified Job", JSON.stringify(fetchedEventJob));
 
       setEventJobDetails(fetchedEventJob);
-      message.success('Success', 1.5);
+      message.success("Success", 1.5);
       setEventModalClick(true);
-
     } else {
       // console.error("Error fetching details of the event !");
       // setSeverityText(`Error! `);
       // setSeverityType("error");
-      message.error('Error', 1);
+      message.error("Error", 1);
       // setSnackbarOpen(true);
       return;
     }
   };
 
   const handleCopyEvent = async () => {
-    message.loading('Copying...');
+    message.loading("Copying...");
 
     setCopyMode(true);
-    const copyJobData=structuredClone(eventJobDetails);
-    copyJobData.jobID='J'+dayjs().format("YYYYMMDDTHHmmssSSS")+'C' // C for Copy Job
+    const copyJobData = structuredClone(eventJobDetails);
+    copyJobData.jobID = "J" + dayjs().format("YYYYMMDDTHHmmssSSS") + "C"; // C for Copy Job
     copyJobData.task?.activityList?.forEach((activity) => {
-  activity.activityStatus = "Not Started";
-});
-copyJobData.jobStatus="Not Started";
+      activity.actvityStatus = "Not Started";
+    });
+    copyJobData.jobStatus = "Not Started";
     setFinalJob(copyJobData);
 
-    
     // setTimeout(()=>setOpenDialog(true),2000);
-   
-          // setAssetDataFromDb(publishedTasks ?? []);
-          // console.log('Current Event Job Details in Copy Mode : ',eventJobDetails)
-          // const foundTask=publishedTasks.find((task)=>task.taskId===eventJobDetails?.task.taskId);
+
+    // setAssetDataFromDb(publishedTasks ?? []);
+    // console.log('Current Event Job Details in Copy Mode : ',eventJobDetails)
+    // const foundTask=publishedTasks.find((task)=>task.taskId===eventJobDetails?.task.taskId);
     setAssetGroup(copyJobData?.task?.assetGroup ?? "");
     setCurrentJobName(copyJobData?.jobName ?? "");
     setPriority(copyJobData?.priority ?? "");
@@ -744,21 +731,28 @@ copyJobData.jobStatus="Not Started";
     setApprover(copyJobData?.approver ?? "");
     setWeekdays(copyJobData?.weekdays ?? "7");
     setCurrentAssetForSelectedTask(copyJobData?.task ?? {});
-   setCurrentTotalActivityDuration(
-  (new Date(copyJobData.scheduledJobEndTime) - new Date(copyJobData.scheduledJobStartTime)) / (1000 * 60) // in minutes
-);
+    setCurrentTotalActivityDuration(
+      (new Date(copyJobData.scheduledJobEndTime) -
+        new Date(copyJobData.scheduledJobStartTime)) /
+        (1000 * 60), // in minutes
+    );
 
-setFromdate(new Date(copyJobData.scheduledJobStartTime));
-setTodate(new Date(copyJobData.scheduledJobEndTime));
+    setFromdate(new Date(copyJobData.scheduledJobStartTime));
+    setTodate(new Date(copyJobData.scheduledJobEndTime));
 
-
-    console.log('Current Start : ',new Date(eventJobDetails.scheduledJobStartTime));
-    console.log('Current End : ',new Date(eventJobDetails.scheduledJobEndTime));
+    console.log(
+      "Current Start : ",
+      new Date(eventJobDetails.scheduledJobStartTime),
+    );
+    console.log(
+      "Current End : ",
+      new Date(eventJobDetails.scheduledJobEndTime),
+    );
     // setFromdate(new Date(dayjs().add(2, "minute"))); //setting the from date 2 minutes ahead of current time
-     message.destroy();
-      message.success('Job Copied successfully', 2.5);
+    message.destroy();
+    message.success("Job Copied successfully", 2.5);
     setOpenDialog(true);
-  }
+  };
 
   /**
    * *Handles the snackbar close event.
@@ -797,7 +791,7 @@ setTodate(new Date(copyJobData.scheduledJobEndTime));
    */
   const createFinalJsonForPost = () => {
     const currentCopyActivityDetailsObject = JSON.parse(
-      JSON.stringify(currentActivityDetailsObject)
+      JSON.stringify(currentActivityDetailsObject),
     );
     const updatedCopyActivityDetailsObject =
       currentCopyActivityDetailsObject.map((item) => {
@@ -811,7 +805,7 @@ setTodate(new Date(copyJobData.scheduledJobEndTime));
         return rest;
       }); //! this is necessary to remove some custom properties which was used in the ActivityDetails  page
 
-      console.log("Updated Activity List : ",updatedCopyActivityDetailsObject)
+    console.log("Updated Activity List : ", updatedCopyActivityDetailsObject);
 
     let currentTaskObj = createTask(
       //**  Creating Task
@@ -827,7 +821,7 @@ setTodate(new Date(copyJobData.scheduledJobEndTime));
       null,
       null,
       // toggleChecked ? currentActivityDetailsObject : groupOrDeptTaskObj
-      updatedCopyActivityDetailsObject //** injecting the activity details object */
+      updatedCopyActivityDetailsObject, //** injecting the activity details object */
     );
 
     let finalJob = createJobDetails(
@@ -845,7 +839,7 @@ setTodate(new Date(copyJobData.scheduledJobEndTime));
       null,
       priority,
       tag,
-      weekdays
+      weekdays,
     );
     // console.log("Final JSON for post : ", finalJob);
     return finalJob;
@@ -858,7 +852,7 @@ setTodate(new Date(copyJobData.scheduledJobEndTime));
  //** Otherwise, it returns true indicating the validation is successful.
  */
   const checkForValidationsJobDetailsModal = () => {
-    if(copyMode) return true; //in copy mode the validations are not required because the data is already present
+    if (copyMode) return true; //in copy mode the validations are not required because the data is already present
     if (
       assetGroup === "" ||
       !(task?.taskId ?? "") ||
@@ -872,91 +866,97 @@ setTodate(new Date(copyJobData.scheduledJobEndTime));
     return true;
   };
 
-
   const handleEventUpdateClick = async () => {
     // console.log("handleEventUpdateClick() called");
     // console.log("Final Json to PUT : ", eventJobDetails);
-        let copyEventJob = { ...eventJobDetails };
-        setIsLoading(true)
-    
-        if (
-          eventJobDetails.weekdays === "5" &&
-          (dayjs(copyEventJob.scheduledJobStartTime).day() === 6 || dayjs(copyEventJob.scheduledJobStartTime).day() === 0)
-        ) {
-          //i.e saturday or sunday selection need to be checked
-          // console.log(
-          //   "User is selecting  exclude Saturday and Sunday and also selecting the from date on saturday or sunday "
-          // );
-          setSeverityText("Weekdays and Start Time selection is not valid !");
-          setSeverityType("error");
-          setSnackbarOpen(true);
-          return;
-        } else if (eventJobDetails.weekdays === "6" && dayjs(copyEventJob.scheduledJobStartTime).day() === 0) {
-    // console.log("User is selecting Sunday and Fromdate is also Sunday !  ");
-          setSeverityText("Weekdays and From Date selection is not valid !");
-          setSeverityType("error");
-          setSnackbarOpen(true);
-          return;
-        }
-    
-    
+    let copyEventJob = { ...eventJobDetails };
+    setIsLoading(true);
+
+    if (
+      eventJobDetails.weekdays === "5" &&
+      (dayjs(copyEventJob.scheduledJobStartTime).day() === 6 ||
+        dayjs(copyEventJob.scheduledJobStartTime).day() === 0)
+    ) {
+      //i.e saturday or sunday selection need to be checked
+      // console.log(
+      //   "User is selecting  exclude Saturday and Sunday and also selecting the from date on saturday or sunday "
+      // );
+      setSeverityText("Weekdays and Start Time selection is not valid !");
+      setSeverityType("error");
+      setSnackbarOpen(true);
+      return;
+    } else if (
+      eventJobDetails.weekdays === "6" &&
+      dayjs(copyEventJob.scheduledJobStartTime).day() === 0
+    ) {
+      // console.log("User is selecting Sunday and Fromdate is also Sunday !  ");
+      setSeverityText("Weekdays and From Date selection is not valid !");
+      setSeverityType("error");
+      setSnackbarOpen(true);
+      return;
+    }
+
     // console.log("Start Time Event : ", eventJobDetails.scheduledJobStartTime);
-        copyEventJob.scheduledJobStartTime = dayjs(
-          eventJobDetails.scheduledJobStartTime
-        ).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
-        copyEventJob.scheduledJobEndTime = dayjs(
-          eventJobDetails.scheduledJobEndTime
-        ).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+    copyEventJob.scheduledJobStartTime = dayjs(
+      eventJobDetails.scheduledJobStartTime,
+    ).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+    copyEventJob.scheduledJobEndTime = dayjs(
+      eventJobDetails.scheduledJobEndTime,
+    ).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
     // console.log("Job Details sent for Update => ", copyEventJob);
-    
-        const newList=fetchCurrentActivityList(copyEventJob.task.activityList,copyEventJob.scheduledJobStartTime,copyEventJob.weekdays)
-        copyEventJob.task.activityList=newList
-        const success = await updateJobAndActivity(copyEventJob);
-        if (success.status === 200) {
-          setEventModalClick(false);
-          
-        const month = dayjs(copyEventJob.scheduledJobStartTime).month() + 1; // 1-12
-const year = dayjs(copyEventJob.scheduledJobStartTime).year();
-console.log("Month and Year to set after saving repeatable jobs : ", month, year);
-        handleDatesSet(month, year);
-          setSeverityText("Data Updated successfully ! ");
-          setSeverityType("success");
-          setSnackbarOpen(true);
-          setRefreshData(!refreshData);//* toggling the refreshData to show the updated data because it will trigger the useEffect for fetching the data
-          await notifyUsers(copyEventJob,"The Job Details has been updated");
-        } else {
-          // setEventModalClick(false);
-          setSeverityText("Data Updation Failed ! ");
-          setSeverityType("error");
-          setSnackbarOpen(true);
-          // setRefreshData(!refreshData);
-        }
-        // handleFilterEvents(listEventDate);
-        setIsLoading(false)
-      };
 
+    const newList = fetchCurrentActivityList(
+      copyEventJob.task.activityList,
+      copyEventJob.scheduledJobStartTime,
+      copyEventJob.weekdays,
+    );
+    copyEventJob.task.activityList = newList;
+    const success = await updateJobAndActivity(copyEventJob);
+    if (success.status === 200) {
+      setEventModalClick(false);
 
-
-      const notifyUsers = async(copyEventJob, header) => {
-         const toMailList = generateToMailUsers([copyEventJob],allUsersData); //*generate the toMailList users to whom the mail will be forwarded
-      const emailSuccess = await  sendEmailNotificationsForAssignedJobs(
-        [copyEventJob],
-        [...toMailList],
-        header,
+      const month = dayjs(copyEventJob.scheduledJobStartTime).month() + 1; // 1-12
+      const year = dayjs(copyEventJob.scheduledJobStartTime).year();
+      console.log(
+        "Month and Year to set after saving repeatable jobs : ",
+        month,
+        year,
       );
+      handleDatesSet(month, year);
+      setSeverityText("Data Updated successfully ! ");
+      setSeverityType("success");
+      setSnackbarOpen(true);
+      setRefreshData(!refreshData); //* toggling the refreshData to show the updated data because it will trigger the useEffect for fetching the data
+      await notifyUsers(copyEventJob, "The Job Details has been updated");
+    } else {
+      // setEventModalClick(false);
+      setSeverityText("Data Updation Failed ! ");
+      setSeverityType("error");
+      setSnackbarOpen(true);
+      // setRefreshData(!refreshData);
+    }
+    // handleFilterEvents(listEventDate);
+    setIsLoading(false);
+  };
 
-      console.log('Email has been sent : ',emailSuccess,toMailList)
+  const notifyUsers = async (copyEventJob, header) => {
+    const toMailList = generateToMailUsers([copyEventJob], allUsersData); //*generate the toMailList users to whom the mail will be forwarded
+    const emailSuccess = await sendEmailNotificationsForAssignedJobs(
+      [copyEventJob],
+      [...toMailList],
+      header,
+    );
 
-       const notificationBody = {
-  title: "Activity",
-  body: header,
-  url: "/workflow/performer",
-};
+    console.log("Email has been sent : ", emailSuccess, toMailList);
 
-      sendBrowserNotification(toMailList,notificationBody);
+    const notificationBody = {
+      title: "Activity",
+      body: header,
+      url: "/workflow/performer",
+    };
 
-
-      }
+    sendBrowserNotification(toMailList, notificationBody);
+  };
 
   /**
    * * Handles the next button click event in the Job Assignment modal.
@@ -981,7 +981,7 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
         // console.log("From Date  should not be in past ! ");
         setSeverityText(
           "Job can't be assigned in past ! Selected Time : " +
-            dayjs(fromdate).format("YYYY-MM-DD HH:mm")
+            dayjs(fromdate).format("YYYY-MM-DD HH:mm"),
         );
         setSeverityType("error"); //** indication to the user */
         setSnackbarOpen(true);
@@ -998,7 +998,7 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
       ) {
         //i.e saturday or sunday selection need to be checked
         console.log(
-          "User is selecting  exclude Saturday and Sunday and also selecting the from date on saturday or sunday "
+          "User is selecting  exclude Saturday and Sunday and also selecting the from date on saturday or sunday ",
         );
         setSeverityText("Weekdays and Start Time selection is not valid !");
         setSeverityType("error");
@@ -1025,7 +1025,7 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
           //* finding any jobname that was previously used
           (data) =>
             data?.jobName?.trim()?.toLowerCase() ===
-            currentJobName?.toLowerCase()?.trim()
+            currentJobName?.toLowerCase()?.trim(),
         );
         if (foundJobName) {
           //** the jobname needs to be unique */
@@ -1043,16 +1043,16 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
       //* this is for the second step
 
       const blankapprover = currentActivityDetailsObject.find(
-        (data) => data.approver === ""
+        (data) => data.approver === "",
       ); //** finding any activity for which the approver might be left unselected */
 
       const blankasset = currentActivityDetailsObject.find(
         //* finding any activity asset that has been left unselected if there is any
-        (data) => data.assetName === "" && data.assetIDList.length > 0
+        (data) => data.assetName === "" && data.assetIDList.length > 0,
       );
 
       const isBlankPerformerAvailable = currentActivityDetailsObject.find(
-        (data) => data?.groupOrDept === false && data.performer === ""
+        (data) => data?.groupOrDept === false && data.performer === "",
       ); //** finding any activity where the performer has not been selected in case of the performer type is individual */
 
       //* Even if the performer is unavailable it will be allowed to perform | usecase when the performer is associated with multiple projects
@@ -1079,7 +1079,7 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
         setSnackbarOpen(true);
         return;
       }
-      console.log('Active Step proceeding')
+      console.log("Active Step proceeding");
       setActiveStep((prevActiveStep) => prevActiveStep + 1); //** proceeding to next step */
       // }
     }
@@ -1088,7 +1088,6 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
       //* this is for the third step
       setActiveStep((prevActiveStep) => prevActiveStep + 1); //** proceeding to next step */
     }
-
   };
 
   /**
@@ -1227,7 +1226,7 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
         // console.log("Current Final Job :", finalJob);
         let currentnewJob = await createNewJob(
           //** creating new Job based on calculated scheduled start and stop */
-          futureJobStartTime
+          futureJobStartTime,
           // futureJobStopTime
           // jobcount
         );
@@ -1239,7 +1238,6 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
       //}
     }
 
-   
     finalRepeatableJobsArray.unshift(finalJob); //** injecting the first job created into the first index */
     finalRepeatableJobsArray = finalRepeatableJobsArray.map((job, index) => {
       const copyJob = { ...job };
@@ -1270,7 +1268,7 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
             // console.error("Error saving job:", error);
             throw error; // Rethrow the error to be caught in the outer catch block
           }
-        })
+        }),
       );
     } catch (e) {
       // console.error("Error in pushing jobs to the database:", e);
@@ -1286,21 +1284,20 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
       //* if the length of resolved promises is equal to the length of target repeatable jobs then all the data has been processed successfully
       //Now a mail will be send to inform the performers of the assigned jobs
 
-      const toMailList = generateToMailUsers(finalRepeatableJobsArray,allUsersData); //*generate the toMailList users to whom the mail will be forwarded
+      const toMailList = generateToMailUsers(
+        finalRepeatableJobsArray,
+        allUsersData,
+      ); //*generate the toMailList users to whom the mail will be forwarded
       const emailSuccess = await sendEmailNotificationsForAssignedJobs(
         finalRepeatableJobsArray,
-        [...toMailList]
+        [...toMailList],
       );
 
-      
-    
       // console.error('Email Service has been deactivated for repeatable jobs')
       // const emailSuccess = true;
       if (emailSuccess) {
         // console.log("All Emails have been processed successfully ! ");
         //Now notifications will be pushed to the users for the assigned jobs
-
-       
       } else {
         // console.error("Error in sending mails");
       }
@@ -1365,17 +1362,18 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
    *
    * @param {Array} finalRepeatableJobsArray - The array of final repeatable jobs
    * @param {Set} toMailList - The Set of userIds to whom the email notifications will be sent
+   * @param {Set} header - Header for the email notification
    * @returns {boolean} - Returns true if the email notifications are sent successfully, otherwise false
    */
   const sendEmailNotificationsForAssignedJobs = async (
     finalRepeatableJobsArray,
     toMailList,
-    header
+    header = "Job Assignment Notification",
   ) => {
     // console.log("sendEmailNotificationsForAssignedJobs() called ");
     console.log(
       "toMailList in sendEmailNotificationsForAssignedJobs",
-      toMailList
+      toMailList,
     );
     const homePage = process.env.REACT_APP_PERFORMERPAGE;
 
@@ -1385,7 +1383,7 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
       const emailNotifications = await Promise.all(
         finalRepeatableJobsArray.map(async (data) => {
           try {
-            let finalMailHtml = createHtmlString(data, homePage,header); //** generating the HTML page for sending the data in email */
+            let finalMailHtml = createHtmlString(data, homePage, header); //** generating the HTML page for sending the data in email */
             finalMailHtml = finalMailHtml
               .replace(/^<div>/, "") //**replacing the surrounding outer divs */
               .replace(/<\/div>$/, "");
@@ -1394,7 +1392,7 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
               toMailIds: toMailList,
               messageSubject: header ?? "You have been assigned to a Job",
               htmlPage: finalMailHtml,
-              emailCc:[data.approver] //** adding the approver in cc because the approver also needs to be notified about the assigned job */
+              emailCc: [data.approver], //** adding the approver in cc because the approver also needs to be notified about the assigned job */
             };
             const success = await sendEmail(mailObject);
             if (success?.status === 200) {
@@ -1407,31 +1405,30 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
             // console.error("Error sending mail:", error);
             throw error; // Rethrow the error to be caught in the outer catch block
           }
-        })
+        }),
       );
 
-//       console.log('Notifying..')
+      //       console.log('Notifying..')
 
+      //        const notificationBody = {
+      //   title: "Activity",
+      //   body: "You have a new activity to perform",
+      //   url: "/workflow/performer",
+      // };
 
-//        const notificationBody = {
-//   title: "Activity",
-//   body: "You have a new activity to perform",
-//   url: "/workflow/performer",
-// };
+      // const notifications=await Promise.all(
+      //   [...toMailList].map(user =>
+      //     sendNotification(getTenantID(),user, notificationBody)
+      //   )
+      // );
 
-// const notifications=await Promise.all(
-//   [...toMailList].map(user =>
-//     sendNotification(getTenantID(),user, notificationBody)
-//   )
-// );
-
-// console.log('Notifications : ',notifications)
- const notificationBody = {
-  title: "Activity",
-  body: "You have a new activity to perform",
-  url: "/workflow/performer",
-};
-sendBrowserNotification(toMailList, notificationBody);
+      // console.log('Notifications : ',notifications)
+      const notificationBody = {
+        title: "Activity",
+        body: "You have a new activity to perform",
+        url: "/workflow/performer",
+      };
+      sendBrowserNotification(toMailList, notificationBody);
       if (emailNotifications.length > 0) return true; //i.e all the emails have been processed successfully because on encountering an error it will go to the catch block
     } catch (e) {
       // console.error("Error in sending  mails :", e);
@@ -1447,29 +1444,26 @@ sendBrowserNotification(toMailList, notificationBody);
    * @param {string} forwardLink the home page link to be included in the email
    * @returns {string} HTML string
    */
-  const createHtmlString = (data, forwardLink,header) => {
+  const createHtmlString = (data, forwardLink, header) => {
     // console.log("forwardLink in createHtml", forwardLink);
-    const updatedData = { ...data, forwardLink: forwardLink,header: header };
+    const updatedData = { ...data, forwardLink: forwardLink, header: header };
     const htmlData = ReactDOMServer.renderToString(
-      <EmailJobAssign data={updatedData} />
+      <EmailJobAssign data={updatedData} />,
     );
     return htmlData;
   };
 
+  const sendBrowserNotification = (toMailList, notificationBody) => {
+    console.log("Notifying..");
 
-  const sendBrowserNotification = (toMailList,notificationBody) => {
- console.log('Notifying..')
+    //       s
 
-
-//       s
-
-const notifications= Promise.all(
-  [...toMailList].map(user =>
-    sendNotification(getTenantID(),user, notificationBody)
-  )
-);
-
-  }
+    const notifications = Promise.all(
+      [...toMailList].map((user) =>
+        sendNotification(getTenantID(), user, notificationBody),
+      ),
+    );
+  };
 
   /**
    * Creates a new job based on the given future job start time and stop time.
@@ -1479,7 +1473,7 @@ const notifications= Promise.all(
    * @returns {Object} - Returns the newly created job with updated details
    */
   const createNewJob = async (
-    futureJobStartTime
+    futureJobStartTime,
     // futureJobStopTime
     // jobcount
   ) => {
@@ -1494,20 +1488,20 @@ const notifications= Promise.all(
     // let current_starttime = dayjs(futureJobStartTime);
 
     copyJob.scheduledJobStartTime = futureJobStartTime.format(
-      "YYYY-MM-DDTHH:mm:ss.SSSZ"
+      "YYYY-MM-DDTHH:mm:ss.SSSZ",
     );
     copyJob.jobID = "J" + dayjs().format("YYYYMMDDTHHmmssSSS");
     // copyJob.jobName = copyJob.jobName + "_" + jobcount; //*since  the jobname should be unique
     console.log(
       "copyJob after just changing the main start and stop : ",
-      copyJob
+      copyJob,
     );
 
     const newActivityList = fetchCurrentActivityList(
       // ** scheduling the activities start and stop and injecting the new activityList
       copyJob.task.activityList,
       copyJob.scheduledJobStartTime,
-      weekdays
+      weekdays,
     );
     // console.log("newActivityList:", newActivityList);
     copyJob.task.activityList = newActivityList;
@@ -1517,10 +1511,10 @@ const notifications= Promise.all(
       //
       copyJob.scheduledJobStartTime,
       currentTotalActivityDuration,
-      weekdays
+      weekdays,
     ); //** this method is necessary to calculate the job endTime after adjusting the weekdays and handling all the parametes */
     copyJob.scheduledJobEndTime = adjustedJobEndDateTime.format(
-      "YYYY-MM-DDTHH:mm:ss.SSSZ"
+      "YYYY-MM-DDTHH:mm:ss.SSSZ",
     );
     return copyJob; //* returning the copyJob
   };
@@ -1544,7 +1538,7 @@ const notifications= Promise.all(
       // console.log("From Date  should not be in past ! ");
       setSeverityText(
         "Job can't be assigned in past ! Selected Time : " +
-          dayjs(fromdate).format("YYYY-MM-DD HH:mm")
+          dayjs(fromdate).format("YYYY-MM-DD HH:mm"),
       );
       setSeverityType("error");
       setSnackbarOpen(true);
@@ -1558,7 +1552,7 @@ const notifications= Promise.all(
       // console.log("Repeat till can't be assigned in past ! ");
       setSeverityText(
         "Repeat till can't be assigned in past ! Repeat Till Time : " +
-          repeatJobDate.format("YYYY-MM-DD HH:mm")
+          repeatJobDate.format("YYYY-MM-DD HH:mm"),
       );
       setSeverityType("error");
       setSnackbarOpen(true);
@@ -1580,7 +1574,7 @@ const notifications= Promise.all(
       //Posting multiple jobs
       const success = await postMultipleJobs(
         finalJob.scheduledJobStartTime,
-        finalJob.scheduledJobEndTime
+        finalJob.scheduledJobEndTime,
       ); //snackbar info is already grtting invoked in the above method
 
       if (success) {
@@ -1590,12 +1584,16 @@ const notifications= Promise.all(
         setIsSaveDisabled(false);
         setRefreshData(!refreshData);
         setOpenDialog(false);
-    
+
         const month = dayjs(finalJob.scheduledJobStartTime).month() + 1; // 1-12
-const year = dayjs(finalJob.scheduledJobStartTime).year();
-console.log("Month and Year to set after saving repeatable jobs : ", month, year);
+        const year = dayjs(finalJob.scheduledJobStartTime).year();
+        console.log(
+          "Month and Year to set after saving repeatable jobs : ",
+          month,
+          year,
+        );
         handleDatesSet(month, year);
-         handleFilterEvents(dayjs(fromdate).format("YYYY-MM-DD"));
+        handleFilterEvents(dayjs(fromdate).format("YYYY-MM-DD"));
         handleReset();
       } else {
         setSeverityText("Error !");
@@ -1606,33 +1604,40 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
 
       return; //* returning concluding the save for multiple jobs
     }
-    console.log('Final Job :',finalJob);
+    console.log("Final Job :", finalJob);
     //* when a single job need to be processed
     const success = await updateJobAndActivity(finalJob);
 
-
-        const month = dayjs(finalJob.scheduledJobStartTime).month() + 1; // 1-12
-const year = dayjs(finalJob.scheduledJobStartTime).year();
-console.log("Month and Year to set after saving repeatable jobs : ", month, year);
-        handleDatesSet(month, year);
-         handleFilterEvents(dayjs(fromdate).format("YYYY-MM-DD"));
+    const month = dayjs(finalJob.scheduledJobStartTime).month() + 1; // 1-12
+    const year = dayjs(finalJob.scheduledJobStartTime).year();
+    console.log(
+      "Month and Year to set after saving repeatable jobs : ",
+      month,
+      year,
+    );
+    handleDatesSet(month, year);
+    handleFilterEvents(dayjs(fromdate).format("YYYY-MM-DD"));
     //const success=true
     //! MAIL SERVICE
     if (success?.status === 200) {
       //process mail
       const finalRepeatableJobsArray = [];
       finalRepeatableJobsArray.push(finalJob);
-      const toMailList = generateToMailUsers(finalRepeatableJobsArray,allUsersData); //*generate the toMailList users to whom the mail will be forwarded
-      const emailSuccess =  sendEmailNotificationsForAssignedJobs(
+      const toMailList = generateToMailUsers(
         finalRepeatableJobsArray,
-        [...toMailList]
+        allUsersData,
+      ); //*generate the toMailList users to whom the mail will be forwarded
+      const emailSuccess = sendEmailNotificationsForAssignedJobs(
+        finalRepeatableJobsArray,
+        [...toMailList],
+        "A new Job has been assigned",
       );
       // console.error("Mail Service is deactivated");
       //const emailSuccess = true;
       // if (emailSuccess) {
-        // console.log("Single Mail have been processed successfully ! ");
+      // console.log("Single Mail have been processed successfully ! ");
       // } else {
-        // console.error("Error in sending mails");
+      // console.error("Error in sending mails");
       // }
       // console.log("Data has been posted successfully !");
       setSeverityText("Data saved successfully ! ");
@@ -1661,40 +1666,41 @@ console.log("Month and Year to set after saving repeatable jobs : ", month, year
    * @param {Date} newValue - The new selected date from the date picker
    * @returns {array} - The filtered events array
    */
-  const handleFilterEvents = async(newValue) => {
+  const handleFilterEvents = async (newValue) => {
     console.log("handleFilterEvents() called");
     console.log("Current New Value: ", newValue);
-    dayjs()
+    dayjs();
     // let filteredEvents = [];
-    let selectedTime = dayjs(newValue).startOf('day'); //** resetting the time to 00:00:00 for accurate comparison */
+    let selectedTime = dayjs(newValue).startOf("day"); //** resetting the time to 00:00:00 for accurate comparison */
     console.log("Month: ", selectedTime.month());
     console.log("Year: ", selectedTime.year());
-    console.log('Selected Date : ',selectedTime.format('YYYY-MM-DD'))
+    console.log("Selected Date : ", selectedTime.format("YYYY-MM-DD"));
     //console.log("Date: ", selectedTime.date());
 
     //* iterating the currentEvents and fetching the events based on the data selected
 
-    const filteredJobs=await getJobsByDateAndUser(getCurrentUser(),selectedTime.format('YYYY-MM-DD'));
-    console.log('Filtered Jobs : ',filteredJobs)
+    const filteredJobs = await getJobsByDateAndUser(
+      getCurrentUser(),
+      selectedTime.format("YYYY-MM-DD"),
+    );
+    console.log("Filtered Jobs : ", filteredJobs);
 
-const updatedJobs = filteredJobs
-  ?.map(event => ({
-    id: event.jobID,
-    title: event.jobName,
-    start: event.scheduledJobStartTime,
-    end: event.scheduledJobEndTime,
-    jobId: event.jobID,
-    eventStatus: event.jobStatus,
-    eventEndTime: event.scheduledJobEndTime,
-    priority: event.priority,
-    description: `Priority: ${event.priority} Job ID: ${event.jobID} JobName: ${event.jobName}`
-  }));
-
+    const updatedJobs = filteredJobs?.map((event) => ({
+      id: event.jobID,
+      title: event.jobName,
+      start: event.scheduledJobStartTime,
+      end: event.scheduledJobEndTime,
+      jobId: event.jobID,
+      eventStatus: event.jobStatus,
+      eventEndTime: event.scheduledJobEndTime,
+      priority: event.priority,
+      description: `Priority: ${event.priority} Job ID: ${event.jobID} JobName: ${event.jobName}`,
+    }));
 
     // currentEvents.forEach((data) => {
     //   //console.log("Data: ", data);
     //   let currentDate = dayjs(data.start);
-    //   if (  
+    //   if (
     //     currentDate.date() === selectedTime.date() &&
     //     currentDate.month() === selectedTime.month() &&
     //     currentDate.year() === selectedTime.year()
@@ -1703,7 +1709,6 @@ const updatedJobs = filteredJobs
     //     filteredEvents.push(data);
     //   }
     // });
-
 
     // setCurrentCalendarDate({...currentCalendarDate,selectedCalendarDate:{month:selectedTime.month()+1,year:selectedTime.year()}});
     // console.log('current Calendar Date : ',currentCalendarDate)
@@ -1728,7 +1733,7 @@ const updatedJobs = filteredJobs
     //console.log(" Event Title : ", data.title); //remember this is the taskname which will be used to get data from the database
     //console.log(" Event Start : ", data.start);
     //console.log(" Event Stop : ", data.eventEndTime);
-    message.loading('Fetching Job Details...');
+    message.loading("Fetching Job Details...");
     let eventStart = dayjs(data.start).format("YYYY-MM-DD HH:mm:ss.SSS");
     let eventStop = dayjs(data.eventEndTime).format("YYYY-MM-DD HH:mm:ss.SSS");
     //console.log(
@@ -1789,21 +1794,21 @@ const updatedJobs = filteredJobs
       // eventStart,
       // eventStop,
       data.title,
-      data.id
+      data.id,
     );
     // console.log('Fetched Event Job : ',fetchedEventJob)
-     message.destroy();
+    message.destroy();
     //  fetchedEventJob.jobID=null
     if (fetchedEventJob?.jobID) {
       // console.log("Fetched Event Jobs : ", fetchedEventJob);
       setEventJobDetails(fetchedEventJob);
-        message.success('Success', 1.5);
+      message.success("Success", 1.5);
     } else {
       // console.log("The selected event job has no jobID !");
       // setSeverityText("Error ! ");
       // setSeverityType("error");
       // setSnackbarOpen(true);
-       message.error('Error', 1);
+      message.error("Error", 1);
       return; //** after encountering an error return */
     }
 
@@ -1831,65 +1836,57 @@ const updatedJobs = filteredJobs
     },
   };
 
-
-/**
- * This function is called after the event component has been rendered.
- * It's used to style the event based on its priority.
- * @param {Object} info - The event component and its properties.
- * @returns {void}
- */
+  /**
+   * This function is called after the event component has been rendered.
+   * It's used to style the event based on its priority.
+   * @param {Object} info - The event component and its properties.
+   * @returns {void}
+   */
   const handleEventDidMount = (info) => {
     // Get event start and end times
     // const start = new Date(info.event.start);
-   const  backgroundColor=
-   info.event.extendedProps.priority?.toLowerCase() ===
-    "critical"
-      ? "#ffcdd2" //showing the priority of job
-      : info.event.extendedProps.priority?.toLowerCase() ===
-        "low"
-      ? "#bbdefb"
-      : "#ffe0b2"
-  
+    const backgroundColor =
+      info.event.extendedProps.priority?.toLowerCase() === "critical"
+        ? "#ffcdd2" //showing the priority of job
+        : info.event.extendedProps.priority?.toLowerCase() === "low"
+          ? "#bbdefb"
+          : "#ffe0b2";
+
     info.el.style.backgroundColor = backgroundColor;
     // info.el.style.border = "1px solid black";
     info.el.style.boxShadow = "1px 1px 3px 1px rgba(0, 0, 0, 0.2)";
-
-
-
   };
   //   // Set border color based on priority
 
-  //Passing the props 
-  const eventContent=(arg) => {
-    console.log('Arg :',arg)
+  //Passing the props
+  const eventContent = (arg) => {
+    console.log("Arg :", arg);
     return (
       <>
-     
-      <Box
-        sx={{
-          display: isMobile ? "grid" : "flex",
-          alignItems: "center",
-          padding: "2px 6px", // Smaller padding
-          // border: ".1px solid black",
-          //
-          backgroundColor:
-            arg.event.extendedProps.priority?.toLowerCase() ===
-            "critical"
-              ? eventBackgroundColor["Critical"] //showing the priority of job
-              : arg.event.extendedProps.priority?.toLowerCase() ===
-              eventBackgroundColor["Low"]
-              ? "#bbdefb"
-              : eventBackgroundColor["Normal"],
-          borderRadius: "6px", // Slight rounding for a clean look
-          fontSize: "0.7rem", // Smaller text for concise appearance
-          // maxWidth: '1.5rem', // Limit width to prevent long overflow
-          overflow: "hidden", // Ensures no overflow
-          // textOverflow: 'ellipsis', // Add ellipsis for overflow
-          // whiteSpace: 'nowrap', // Keep everything on one line
-          cursor: "pointer",
-        }}
-      >
-        {/* {
+        <Box
+          sx={{
+            display: isMobile ? "grid" : "flex",
+            alignItems: "center",
+            padding: "2px 6px", // Smaller padding
+            // border: ".1px solid black",
+            //
+            backgroundColor:
+              arg.event.extendedProps.priority?.toLowerCase() === "critical"
+                ? eventBackgroundColor["Critical"] //showing the priority of job
+                : arg.event.extendedProps.priority?.toLowerCase() ===
+                    eventBackgroundColor["Low"]
+                  ? "#bbdefb"
+                  : eventBackgroundColor["Normal"],
+            borderRadius: "6px", // Slight rounding for a clean look
+            fontSize: "0.7rem", // Smaller text for concise appearance
+            // maxWidth: '1.5rem', // Limit width to prevent long overflow
+            overflow: "hidden", // Ensures no overflow
+            // textOverflow: 'ellipsis', // Add ellipsis for overflow
+            // whiteSpace: 'nowrap', // Keep everything on one line
+            cursor: "pointer",
+          }}
+        >
+          {/* {
         arg.event.extendedProps.eventStatus.toLowerCase()==="started"?
         (
         <div style={{width:".5rem"}}>
@@ -1904,122 +1901,121 @@ const updatedJobs = filteredJobs
         />
         </div>)
        } */}
-        {isMobile || (
-          <div>
-            <FiberManualRecordIcon
-              fontSize="small"
-              sx={{
-                color:
-                  arg.event.extendedProps.priority?.toLowerCase() ===
-                  "critical"
-                    ? "red"
-                    : arg.event.extendedProps.priority?.toLowerCase() ===
-                      "low"
-                    ? "blue"
-                    : "orange",
+          {isMobile || (
+            <div>
+              <FiberManualRecordIcon
+                fontSize="small"
+                sx={{
+                  color:
+                    arg.event.extendedProps.priority?.toLowerCase() ===
+                    "critical"
+                      ? "red"
+                      : arg.event.extendedProps.priority?.toLowerCase() ===
+                          "low"
+                        ? "blue"
+                        : "orange",
 
-                marginRight: "4px",
-                fontSize: ".7rem",
-              }}
-            />
+                  marginRight: "4px",
+                  fontSize: ".7rem",
+                }}
+              />
 
-            {/* {arg.event.extendedProps.eventStatus.toLowerCase()} */}
-          </div>
-        )}
-        {/* {JSON.stringify(arg)+'hello'} */}
+              {/* {arg.event.extendedProps.eventStatus.toLowerCase()} */}
+            </div>
+          )}
+          {/* {JSON.stringify(arg)+'hello'} */}
 
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
-        >
-          <strong
-            style={{
-              color: "#333",
-              fontWeight: 700,
-              paddingLeft: isMobile ? "0.1rem" : ".4rem",
-              paddingRight: isMobile ? "0.1rem" : ".4rem",
-              whiteSpace: "nowrap",
-              // wordWrap: "break-word",
-              //overflowWrap: "break-word",
-              textOverflow: "ellipsis",
-              //fontSize: "clamp(0.8rem, 2.5vw, 1.2rem)"
-              //width:"20px"
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
               overflow: "hidden",
             }}
           >
-            {arg.event.title}
-             {/* {arg.event.extendedProps?.adhoc &&  <FontAwesomeIcon color="black" icon={"fa-solid fa-clipboard-list"} />} */}
-          </strong>
-          
-        </Box>
+            <strong
+              style={{
+                color: "#333",
+                fontWeight: 700,
+                paddingLeft: isMobile ? "0.1rem" : ".4rem",
+                paddingRight: isMobile ? "0.1rem" : ".4rem",
+                whiteSpace: "nowrap",
+                // wordWrap: "break-word",
+                //overflowWrap: "break-word",
+                textOverflow: "ellipsis",
+                //fontSize: "clamp(0.8rem, 2.5vw, 1.2rem)"
+                //width:"20px"
+                overflow: "hidden",
+              }}
+            >
+              {arg.event.title}
+              {/* {arg.event.extendedProps?.adhoc &&  <FontAwesomeIcon color="black" icon={"fa-solid fa-clipboard-list"} />} */}
+            </strong>
+          </Box>
 
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: isMobile ? "center" : "",
-          }}
-        >
-          {(arg.event.extendedProps.eventStatus?.toLowerCase() ===
-            "rejected" || arg.event.extendedProps.eventStatus?.toLowerCase() ===
-            "aborted") && (
-            <Tooltip title="Job Rejected">
-              <DangerousIcon
-                fontSize="small"
-                color="error"
-                sx={{
-                  width: "0.9rem",
-                  height: "0.9rem",
-                  marginRight: "0.2rem",
-                }}
-              />
-            </Tooltip>
-          )}
-          {arg.event.extendedProps.eventStatus?.toLowerCase() ===
-            "completed" && (
-            <Tooltip title="Job Completed">
-              <CheckCircleRoundedIcon
-                fontSize="small"
-                color="success"
-                sx={{
-                  width: "0.9rem",
-                  height: "0.9rem",
-                  marginRight: "0.2rem",
-                }}
-              />
-            </Tooltip>
-          )}
-          {arg.event.extendedProps.eventStatus?.toLowerCase() ===
-            "started" && (
-            <Tooltip title="Job Started">
-              {/* <LinearProgress
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: isMobile ? "center" : "",
+            }}
+          >
+            {(arg.event.extendedProps.eventStatus?.toLowerCase() ===
+              "rejected" ||
+              arg.event.extendedProps.eventStatus?.toLowerCase() ===
+                "aborted") && (
+              <Tooltip title="Job Rejected">
+                <DangerousIcon
+                  fontSize="small"
+                  color="error"
+                  sx={{
+                    width: "0.9rem",
+                    height: "0.9rem",
+                    marginRight: "0.2rem",
+                  }}
+                />
+              </Tooltip>
+            )}
+            {arg.event.extendedProps.eventStatus?.toLowerCase() ===
+              "completed" && (
+              <Tooltip title="Job Completed">
+                <CheckCircleRoundedIcon
+                  fontSize="small"
+                  color="success"
+                  sx={{
+                    width: "0.9rem",
+                    height: "0.9rem",
+                    marginRight: "0.2rem",
+                  }}
+                />
+              </Tooltip>
+            )}
+            {arg.event.extendedProps.eventStatus?.toLowerCase() ===
+              "started" && (
+              <Tooltip title="Job Started">
+                {/* <LinearProgress
                 sx={{
                   width: "0.5rem",
                   height: "0.5rem",
                   marginRight: "0.2rem",
                 }}
               /> */}
-              <div style={{ display: isMobile ? "grid" : "" }}>
-                <Hourglass
-                  visible={true}
-                  height={isMobile ? "9" : "12"}
-                  width={isMobile ? "9" : "12"}
-                  colors={["green", "lightgreen"]}
-                />
-              </div>
-            </Tooltip>
-          )}
+                <div style={{ display: isMobile ? "grid" : "" }}>
+                  <Hourglass
+                    visible={true}
+                    height={isMobile ? "9" : "12"}
+                    width={isMobile ? "9" : "12"}
+                    colors={["green", "lightgreen"]}
+                  />
+                </div>
+              </Tooltip>
+            )}
+          </Box>
         </Box>
-      </Box>
       </>
     );
-  }
+  };
 
-
- // Passing as props
+  // Passing as props
   const repeatJobProps = {
     fromdate,
     repeatJobDate,
@@ -2033,7 +2029,6 @@ const updatedJobs = filteredJobs
     currentTotalActivityDuration,
     weekdays,
   };
-
 
   const jobDetailsProps = {
     assetGroup,
@@ -2099,7 +2094,7 @@ const updatedJobs = filteredJobs
     setCopyMode,
     eventJobDetails,
     setEventJobDetails,
-    allJobs
+    allJobs,
   };
 
   const activityDetailsProps = {
@@ -2133,8 +2128,7 @@ const updatedJobs = filteredJobs
     weekdays,
     currentTotalActivityDuration,
   };
-  
-  
+
   const eventJobProps = {
     eventJobDetails,
     setEventJobDetails,
@@ -2162,14 +2156,11 @@ const updatedJobs = filteredJobs
     listEventDate,
     handleFilterEvents,
     notifyUsers,
-    handleDatesSet
-
+    handleDatesSet,
   };
 
-  
   // const isOnline = useNetwork();
-  
-  
+
   return (
     <Container
       maxWidth="lg"
@@ -2180,7 +2171,7 @@ const updatedJobs = filteredJobs
         borderRadiusadius: "0.3rem",
       }}
     >
-{/* {isOnline ? "Online": "Offline"} */}
+      {/* {isOnline ? "Online": "Offline"} */}
       <>
         {/* alert for any updates or errors */}
         <Snackbar
@@ -2245,8 +2236,6 @@ const updatedJobs = filteredJobs
                     Date :
                   </Typography>
 
-          
-                 
                   <Calendar
                     value={listEventDate}
                     style={{ width: "100%" }}
@@ -2405,27 +2394,27 @@ const updatedJobs = filteredJobs
                   >
                     Events
                   </Typography>
-                      <> 
+                  <>
+                    <AntButton
+                      type="primary"
+                      variant="outlined"
+                      size="small"
+                      icon={<SyncOutlined />}
+                      loading={!currentCalendarDate}
+                      onClick={() => {
+                        handleDatesSet(
+                          currentCalendarDate.month,
+                          currentCalendarDate.year,
+                        );
+                      }}
+                    />
 
-                      <AntButton
-  type="primary"
-   variant="outlined"
-   size="small"
-  icon={<SyncOutlined />}
-  loading={!currentCalendarDate}
-  onClick={()=>
-  {
-    handleDatesSet(currentCalendarDate.month,currentCalendarDate.year)
-  }
-}
-/>
-
-{/* <i className={!currentCalendarDate ? "pi pi-spin pi-sync": "pi pi-sync"} onClick={()=>
+                    {/* <i className={!currentCalendarDate ? "pi pi-spin pi-sync": "pi pi-sync"} onClick={()=>
   {
     handleDatesSet(currentCalendarDate.month,currentCalendarDate.year)
   }
 }></i> */}
-</>      
+                  </>
                   <div>
                     <Tooltip title="Critical priority">
                       <FiberManualRecordIcon
@@ -2463,7 +2452,6 @@ const updatedJobs = filteredJobs
                       />
                     </Tooltip>
                   </div>
-                
                 </div>
                 <Divider sx={{ borderColor: "#bdbdbd" }} />
                 <div style={{ padding: "7px 15px 15px 15px" }}>
@@ -2475,7 +2463,7 @@ const updatedJobs = filteredJobs
                   >
                     Date :
                   </Typography>
-                 
+
                   <Calendar
                     value={listEventDate}
                     dateFormat="dd/mm/yy"
@@ -2501,87 +2489,87 @@ const updatedJobs = filteredJobs
                       List of Events :
                     </ListSubheader>
                     {filteredEventsList?.map((data) => (
-                        <ListItem
-                          key={data.id}
-                          sx={{
-                            backgroundColor: "#607d8b", //colors.greenAccent[500],
-                            margin: "10px 0",
-                            borderRadius: 2,
-                            cursor: "pointer",
-                          }}
-                          onClick={() => {
-                            handleListItemClick(data);
-                          }}
-                        >
-                          <ListItemText
-                            primary={
-                              <Box
+                      <ListItem
+                        key={data.id}
+                        sx={{
+                          backgroundColor: "#607d8b", //colors.greenAccent[500],
+                          margin: "10px 0",
+                          borderRadius: 2,
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          handleListItemClick(data);
+                        }}
+                      >
+                        <ListItemText
+                          primary={
+                            <Box
+                              sx={{
+                                display: "grid",
+                                alignItems: "center",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
                                 sx={{
-                                  display: "grid",
-                                  alignItems: "center",
-                                  whiteSpace: "nowrap",
+                                  marginRight: "0.3rem",
+                                  fontSize: "0.7rem",
+                                  color: "#ffffffeb",
+                                  // fontWeight: "bold",
+                                  //color:"black"
                                 }}
                               >
-                                <Typography
-                                  variant="caption"
-                                  sx={{
-                                    marginRight: "0.3rem",
-                                    fontSize: "0.7rem",
-                                    color: "#ffffffeb",
-                                    // fontWeight: "bold",
-                                    //color:"black"
-                                  }}
-                                >
-                                  Job Name:
-                                </Typography>
-                                <Typography
-                                  variant="caption"
-                                  sx={{
-                                    fontSize: "0.7rem",
-                                    whiteSpace: "pre-wrap",
-                                    fontWeight: "bold",
-                                    color: "white",
-                                  }}
-                                >
-                                  {data.title}
-                                </Typography>
-                              </Box>
-                            }
-                            secondary={
-                              <Box
-                                sx={{ display: "grid", alignItems: "center" }}
-                                component="span"
+                                Job Name:
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontSize: "0.7rem",
+                                  whiteSpace: "pre-wrap",
+                                  fontWeight: "bold",
+                                  color: "white",
+                                }}
                               >
-                                <Typography
-                                  variant="caption"
-                                  component="span"
-                                  sx={{
-                                    marginRight: "0.3rem",
-                                    fontSize: "0.7rem",
-                                    color: "#ffffffeb",
-                                    //fontWeight: "bold",
-                                    // color:"black"
-                                  }}
-                                >
-                                  Start:
-                                </Typography>
-                                <Chip
+                                {data.title}
+                              </Typography>
+                            </Box>
+                          }
+                          secondary={
+                            <Box
+                              sx={{ display: "grid", alignItems: "center" }}
+                              component="span"
+                            >
+                              <Typography
+                                variant="caption"
                                 component="span"
-                                  label={formatDatetime(dayjs(data.start))}
-                                  size="small"
-                                  sx={{
-                                    fontSize: "0.7rem",
-                                    height: "18px", // Adjusted height for smaller chip
-                                    padding: "10px 5px", // Tighter padding
-                                    backgroundColor: "#e0e0e0",
-                                    color: "#333",
-                                  }}
-                                />
-                              </Box>
-                            }
-                          />
-                        </ListItem>
-                      ))}
+                                sx={{
+                                  marginRight: "0.3rem",
+                                  fontSize: "0.7rem",
+                                  color: "#ffffffeb",
+                                  //fontWeight: "bold",
+                                  // color:"black"
+                                }}
+                              >
+                                Start:
+                              </Typography>
+                              <Chip
+                                component="span"
+                                label={formatDatetime(dayjs(data.start))}
+                                size="small"
+                                sx={{
+                                  fontSize: "0.7rem",
+                                  height: "18px", // Adjusted height for smaller chip
+                                  padding: "10px 5px", // Tighter padding
+                                  backgroundColor: "#e0e0e0",
+                                  color: "#333",
+                                }}
+                              />
+                            </Box>
+                          }
+                        />
+                      </ListItem>
+                    ))}
                   </List>
                 </div>
               </Box>
@@ -2610,12 +2598,12 @@ const updatedJobs = filteredJobs
                   center: "title",
                   right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
                 }}
-                
                 initialView="dayGridMonth"
-                datesSet={(arg)=>{
-                   const month=arg.startStr.split('-')[1];
-        const year=arg.startStr.split('-')[0];
-                  handleDatesSet(month,year)}}
+                datesSet={(arg) => {
+                  const month = arg.startStr.split("-")[1];
+                  const year = arg.startStr.split("-")[0];
+                  handleDatesSet(month, year);
+                }}
                 // editable={true}
                 selectable={true}
                 selectMirror={true}
@@ -2625,7 +2613,7 @@ const updatedJobs = filteredJobs
                     dateselected,
                     setSnackbarOpen,
                     setSeverityText,
-                    setSeverityType
+                    setSeverityType,
                   );
                 }}
                 eventClick={(e) => handleEventClick(e)}
@@ -2640,14 +2628,12 @@ const updatedJobs = filteredJobs
                 //   customDiv.style.marginTop = "5px";
                 //   info.el.appendChild(customDiv); // Attach the div to the date cell
                 // }}
-
-                
               />
             </Box>
           </Box>
         </Box>
         {/* Main Modal Dialog */}
-        
+
         <Dialog
           visible={openDialog}
           maximizable
@@ -2655,29 +2641,30 @@ const updatedJobs = filteredJobs
             maxHeight: isMobile ? "78vh" : "",
             width: isMobile ? "95vw" : "60vw",
           }}
-          header={<>
-          <div style={{ display: "flex" }}>
-                      <EngineeringIcon fontSize="small" />
-                      <div style={{ fontSize: ".7rem", fontWeight: "bold" }}>
-                        Job Information
-                      </div>
-                      {(isLoading || !taskList) && (
-                        <RotatingLines
-                          visible={true}
-                          height="20"
-                          width="20"
-                          strokeWidth="5"
-                        />
-                      )}
-                    </div>
-          </>}
+          header={
+            <>
+              <div style={{ display: "flex" }}>
+                <EngineeringIcon fontSize="small" />
+                <div style={{ fontSize: ".7rem", fontWeight: "bold" }}>
+                  Job Information
+                </div>
+                {(isLoading || !taskList) && (
+                  <RotatingLines
+                    visible={true}
+                    height="20"
+                    width="20"
+                    strokeWidth="5"
+                  />
+                )}
+              </div>
+            </>
+          }
           onHide={() => {
             if (!openDialog) return;
             setOpenDialog(false);
             handleReset();
           }}
         >
-         
           {isMobile || (
             <Stepper activeStep={activeStep}>
               {/* showing the step label names */}
@@ -2686,7 +2673,6 @@ const updatedJobs = filteredJobs
                 return (
                   <Step sx={{ mb: 2 }} key={label}>
                     <StepLabel>{label}</StepLabel>
-                   
                   </Step>
                 );
               })}
@@ -2745,10 +2731,7 @@ const updatedJobs = filteredJobs
                   <Grid item xs={12}>
                     <Container maxWidth="md">
                       {/*  */}
-                      <JobDetailForModal
-                       
-                        {...jobDetailsProps}
-                      />
+                      <JobDetailForModal {...jobDetailsProps} />
                     </Container>
                   </Grid>
                 </Grid>
@@ -2836,10 +2819,7 @@ const updatedJobs = filteredJobs
                   </div>
                 )}
                 <div style={{ width: isMobile ? "92vw" : "" }}>
-                  <ActivityDetails
-                    
-                    {...activityDetailsProps}
-                  />
+                  <ActivityDetails {...activityDetailsProps} />
                 </div>
                 <Box
                   sx={{
@@ -2865,8 +2845,11 @@ const updatedJobs = filteredJobs
                     variant="contained"
                     color="primary"
                     onClick={handleNext}
-                    disabled={!currentActivityDetailsObject || (currentActivityDetailsObject?.length === 0 && activeStep === 1)}
-
+                    disabled={
+                      !currentActivityDetailsObject ||
+                      (currentActivityDetailsObject?.length === 0 &&
+                        activeStep === 1)
+                    }
                   >
                     {activeStep === steps.length - 1 ? "Finish" : "Next"}
                   </Button>
@@ -2874,66 +2857,67 @@ const updatedJobs = filteredJobs
               </React.Fragment>
             </motion.div>
           )}
-         {activeStep === 2 && <>
-         {isMobile?<JobOverviewForMobile 
-         activityList={currentActivityDetailsObject} 
-         setActivityList={setCurrentActivityDetailsObject} 
-         setFinalJob={setFinalJob}
-          finalJob={finalJob}
-          allUsersData={allUsersData}
-          weekdays={weekdays}
-          setSnackbarOpen={setSnackbarOpen}
-          setSeverityText={setSeverityText}
-          setSeverityType={setSeverityType}
-          jobStartTime={fromdate}
+          {activeStep === 2 && (
+            <>
+              {isMobile ? (
+                <JobOverviewForMobile
+                  activityList={currentActivityDetailsObject}
+                  setActivityList={setCurrentActivityDetailsObject}
+                  setFinalJob={setFinalJob}
+                  finalJob={finalJob}
+                  allUsersData={allUsersData}
+                  weekdays={weekdays}
+                  setSnackbarOpen={setSnackbarOpen}
+                  setSeverityText={setSeverityText}
+                  setSeverityType={setSeverityType}
+                  jobStartTime={fromdate}
+                />
+              ) : (
+                <JobOverview
+                  activityList={currentActivityDetailsObject}
+                  setActivityList={setCurrentActivityDetailsObject}
+                  setFinalJob={setFinalJob}
+                  finalJob={finalJob}
+                  allUsersData={allUsersData}
+                  weekdays={weekdays}
+                  setSnackbarOpen={setSnackbarOpen}
+                  setSeverityText={setSeverityText}
+                  setSeverityType={setSeverityType}
+                  // priorityListColor={priorityListColor}
+                />
+              )}
 
-          />
-          :
-         <JobOverview 
-         activityList={currentActivityDetailsObject} 
-         setActivityList={setCurrentActivityDetailsObject} 
-         setFinalJob={setFinalJob}
-          finalJob={finalJob}
-          allUsersData={allUsersData}
-          weekdays={weekdays}
-          setSnackbarOpen={setSnackbarOpen}
-          setSeverityText={setSeverityText}
-          setSeverityType={setSeverityType}
-          // priorityListColor={priorityListColor}
-          
-          />}
-
-
-          <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    pt: 2,
-                  }}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  pt: 2,
+                }}
+              >
+                {/* Button for going tot the previous step */}
+                <Button
+                  color="info"
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  sx={{ mr: 1 }}
+                  variant="contained"
                 >
-                  {/* Button for going tot the previous step */}
-                  <Button
-                    color="info"
-                    disabled={activeStep === 0}
-                    onClick={handleBack}
-                    sx={{ mr: 1 }}
-                    variant="contained"
-                  >
-                    Back
-                  </Button>
-                  <Box sx={{ flex: "1 1 auto" }} />
+                  Back
+                </Button>
+                <Box sx={{ flex: "1 1 auto" }} />
 
-                  {/* Button for going to nextStep */}
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleNext}
-                    // disabled={!currentActivityDetailsObject || (currentActivityDetailsObject?.length === 0 && activeStep === 1)}
-
-                  >
-                    {activeStep === steps.length - 1 ? "Finish" : "Next"}
-                  </Button>
-                </Box></>}
+                {/* Button for going to nextStep */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleNext}
+                  // disabled={!currentActivityDetailsObject || (currentActivityDetailsObject?.length === 0 && activeStep === 1)}
+                >
+                  {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                </Button>
+              </Box>
+            </>
+          )}
           {activeStep === 3 && (
             <React.Fragment>
               {isMobile && (
@@ -3050,11 +3034,10 @@ const updatedJobs = filteredJobs
               </Box>
             </React.Fragment>
           )}
-        
         </Dialog>
 
         {/* This is the modal when the user clicks on any calendar event or listItem click */}
-        
+
         {/* This is the EventModal jsx */}
         <Dialog
           visible={eventModalClick}
@@ -3076,20 +3059,32 @@ const updatedJobs = filteredJobs
                     display: "flex",
                     alignItems: "center", // Ensures both elements are vertically aligned
                     flex: 1,
-                   // justifyContent: "space-between", // Makes sure Job Details is on the left, and the status chip is on the right
+                    // justifyContent: "space-between", // Makes sure Job Details is on the left, and the status chip is on the right
                     marginRight: "1rem", // Space between Job Details and the buttons
                   }}
                 >
                   <div style={{ display: "flex" }}>
-                    {eventJobDetails?.adhoc ?  <FontAwesomeIcon   style={{paddingRight : '.5rem'}} color="black" icon={"fa-solid fa-clipboard-list"} />:<EngineeringIcon fontSize="small" />}
-                    
+                    {eventJobDetails?.adhoc ? (
+                      <FontAwesomeIcon
+                        style={{ paddingRight: ".5rem" }}
+                        color="black"
+                        icon={"fa-solid fa-clipboard-list"}
+                      />
+                    ) : (
+                      <EngineeringIcon fontSize="small" />
+                    )}
+
                     <div style={{ fontSize: ".7rem", fontWeight: "bold" }}>
                       Job Details
                     </div>
-                     
-                      <IconButton onClick={handleCopyEvent} size="small" sx={{padding:0}}>
-                                      <ContentCopyIcon fontSize="small"/>
-                                      </IconButton>
+
+                    <IconButton
+                      onClick={handleCopyEvent}
+                      size="small"
+                      sx={{ padding: 0 }}
+                    >
+                      <ContentCopyIcon fontSize="small" />
+                    </IconButton>
                   </div>
 
                   <div>
@@ -3103,7 +3098,6 @@ const updatedJobs = filteredJobs
                           color="success"
                           label="Job Started"
                           size="small"
-                         
                           icon={<PlayCircleOutlineIcon />}
                         />
                       </div>
@@ -3115,19 +3109,22 @@ const updatedJobs = filteredJobs
                           variant="contained"
                           size="small"
                           color={
-                           ( eventJobDetails.jobStatus.toLowerCase() ===
-                            "rejected" || eventJobDetails.jobStatus.toLowerCase() === 'aborted')
+                            eventJobDetails.jobStatus.toLowerCase() ===
+                              "rejected" ||
+                            eventJobDetails.jobStatus.toLowerCase() ===
+                              "aborted"
                               ? "error"
                               : eventJobDetails.jobStatus.toLowerCase() ===
-                                "completed"
-                              ? "success"
-                              : "info"
+                                  "completed"
+                                ? "success"
+                                : "info"
                           }
                           label={eventJobDetails.jobStatus}
                           icon={
-                           ( eventJobDetails.jobStatus.toLowerCase() ===
-                            "rejected" ||eventJobDetails.jobStatus.toLowerCase() ===
-                            "aborted")? (
+                            eventJobDetails.jobStatus.toLowerCase() ===
+                              "rejected" ||
+                            eventJobDetails.jobStatus.toLowerCase() ===
+                              "aborted" ? (
                               <DangerousIcon />
                             ) : eventJobDetails.jobStatus.toLowerCase() ===
                               "completed" ? (
@@ -3148,8 +3145,8 @@ const updatedJobs = filteredJobs
                   alignItems: "center",
                   columnGap: "1rem",
                   justifyContent: "center",
-                 // margin: "0.7rem 0rem",
-                 marginRight: "1rem",
+                  // margin: "0.7rem 0rem",
+                  marginRight: "1rem",
                 }}
               >
                 {isLoading && (
@@ -3161,81 +3158,85 @@ const updatedJobs = filteredJobs
                   />
                 )}
 
-               
-    {!isMobile && <div style={{display:"flex",columnGap:"1rem"}}>
-                <Button
-                  variant="contained"
-                  onClick={handleEventUpdateClick}
-                  disabled={
-                    isLoading || // The component is disabled if the data is still loading.
-                    eventJobDetails.jobStatus === null || // Disabled if the job status is not set (null).
-                    (eventJobDetails.jobStatus &&
-                      eventJobDetails.jobStatus.toLowerCase() !==
-                        "not started") ||
-                    // Disabled if job status is present and not "not started".
+                {!isMobile && (
+                  <div style={{ display: "flex", columnGap: "1rem" }}>
+                    <Button
+                      variant="contained"
+                      onClick={handleEventUpdateClick}
+                      disabled={
+                        isLoading || // The component is disabled if the data is still loading.
+                        eventJobDetails.jobStatus === null || // Disabled if the job status is not set (null).
+                        (eventJobDetails.jobStatus &&
+                          eventJobDetails.jobStatus.toLowerCase() !==
+                            "not started") ||
+                        // Disabled if job status is present and not "not started".
 
-                    (eventJobDetails.weekdays === "5" &&
-                      (dayjs(eventJobDetails.scheduledJobStartTime).day() ===
-                        6 ||
-                        dayjs(eventJobDetails.scheduledJobStartTime).day() ===
-                          0)) ||
-                    // Disabled if the job is supposed to run on weekdays ("5") but the scheduled start time falls on a Saturday (6) or Sunday (0).
+                        (eventJobDetails.weekdays === "5" &&
+                          (dayjs(
+                            eventJobDetails.scheduledJobStartTime,
+                          ).day() === 6 ||
+                            dayjs(
+                              eventJobDetails.scheduledJobStartTime,
+                            ).day() === 0)) ||
+                        // Disabled if the job is supposed to run on weekdays ("5") but the scheduled start time falls on a Saturday (6) or Sunday (0).
 
-                    (eventJobDetails.weekdays === "6" &&
-                      dayjs(eventJobDetails.scheduledJobStartTime).day() === 0)
-                    // Disabled if the job is set to run on "weekdays + Saturday" ("6") but the scheduled start time falls on a Sunday (0).
-                  }
-                  startIcon={<PublishedWithChangesIcon />}
-                >
-                  Update
-                </Button>
-                {/* </motion.div> */}
+                        (eventJobDetails.weekdays === "6" &&
+                          dayjs(eventJobDetails.scheduledJobStartTime).day() ===
+                            0)
+                        // Disabled if the job is set to run on "weekdays + Saturday" ("6") but the scheduled start time falls on a Sunday (0).
+                      }
+                      startIcon={<PublishedWithChangesIcon />}
+                    >
+                      Update
+                    </Button>
+                    {/* </motion.div> */}
 
-                {/* <motion.div
+                    {/* <motion.div
       whileHover={{
         scale: 1.1,
         boxShadow: "0px 0px 8px rgb(255, 255, 255)",
       }}
     > */}
-                <Button
-                  onClick={() => {
-                    setConfirmationDialog(true);
-                  }}
-                  variant="contained"
-                  sx={{
-                    background: "red",
-                    "&:hover": {
-                      background: "darkred", // Change to the desired hover color
-                    },
-                  }}
-                  disabled={
-                    isLoading ||
-                    eventJobDetails.jobStatus === null ||
-                    (eventJobDetails.jobStatus &&
-                      eventJobDetails.jobStatus.toLowerCase() !==
-                        "not started") ||
-                    (eventJobDetails.weekdays === "5" &&
-                      (dayjs(eventJobDetails.scheduledJobStartTime).day() ===
-                        6 ||
-                        dayjs(eventJobDetails.scheduledJobStartTime).day() ===
-                          0)) ||
-                    (eventJobDetails.weekdays === "6" &&
-                      dayjs(eventJobDetails.scheduledJobStartTime).day() === 0)
-                  }
-                  startIcon={<DeleteIcon />}
-                >
-                  Delete
-                </Button>
-                </div>}
+                    <Button
+                      onClick={() => {
+                        setConfirmationDialog(true);
+                      }}
+                      variant="contained"
+                      sx={{
+                        background: "red",
+                        "&:hover": {
+                          background: "darkred", // Change to the desired hover color
+                        },
+                      }}
+                      disabled={
+                        isLoading ||
+                        eventJobDetails.jobStatus === null ||
+                        (eventJobDetails.jobStatus &&
+                          eventJobDetails.jobStatus.toLowerCase() !==
+                            "not started") ||
+                        (eventJobDetails.weekdays === "5" &&
+                          (dayjs(
+                            eventJobDetails.scheduledJobStartTime,
+                          ).day() === 6 ||
+                            dayjs(
+                              eventJobDetails.scheduledJobStartTime,
+                            ).day() === 0)) ||
+                        (eventJobDetails.weekdays === "6" &&
+                          dayjs(eventJobDetails.scheduledJobStartTime).day() ===
+                            0)
+                      }
+                      startIcon={<DeleteIcon />}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           }
         >
-          <EventModal
-            {...eventJobProps}
-          />
+          <EventModal {...eventJobProps} />
         </Dialog>
-       
       </>
     </Container>
   );

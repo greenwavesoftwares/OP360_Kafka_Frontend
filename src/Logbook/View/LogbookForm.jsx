@@ -110,6 +110,90 @@ import { formatDatetime } from "../../JobAssign/helper";
 import TipsAndUpdatesRoundedIcon from "@mui/icons-material/TipsAndUpdatesRounded";
 import { getCurrentUser } from "../../UserModuleUpdated/helper";
 
+let transactionObjDb = {};
+
+function deepEqual(obj1, obj2, path = "") {
+  console.log("Obj 1 : ", obj1);
+  console.log("Obj 2 : ", obj2);
+  // Same reference / primitive
+  if (obj1 === obj2) {
+    return true;
+  }
+
+  // Treat null and undefined as equivalent
+  if (obj1 == null && obj2 == null) {
+    return true;
+  }
+
+  // One is null/undefined
+  if (obj1 == null || obj2 == null) {
+    console.log(`Change detected at "${path}"`);
+    console.log("Object 1:", obj1);
+    console.log("Object 2:", obj2);
+
+    return false;
+  }
+
+  // Primitive values
+  if (typeof obj1 !== "object" || typeof obj2 !== "object") {
+    console.log(`Change detected at "${path}"`);
+    console.log("Object 1:", obj1);
+    console.log("Object 2:", obj2);
+
+    return false;
+  }
+
+  // Arrays
+  if (Array.isArray(obj1) || Array.isArray(obj2)) {
+    if (!Array.isArray(obj1) || !Array.isArray(obj2)) {
+      console.log(`Change detected at "${path}"`);
+      console.log("Object 1:", obj1);
+      console.log("Object 2:", obj2);
+
+      return false;
+    }
+
+    if (obj1.length !== obj2.length) {
+      console.log(`Array length changed at "${path}"`);
+      console.log("Object 1 length:", obj1.length);
+      console.log("Object 2 length:", obj2.length);
+
+      return false;
+    }
+
+    for (let i = 0; i < obj1.length; i++) {
+      const currentPath = `${path}[${i}]`;
+
+      if (!deepEqual(obj1[i], obj2[i], currentPath)) {
+        return false; // Early exit
+      }
+    }
+
+    return true;
+  }
+
+  // Compare union of keys
+  const keys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
+
+  for (const key of keys) {
+    const currentPath = path ? `${path}.${key}` : key;
+
+    const value1 = obj1[key];
+    const value2 = obj2[key];
+
+    // Missing property and null/undefined are considered equal
+    if (value1 == null && value2 == null) {
+      continue;
+    }
+
+    if (!deepEqual(value1, value2, currentPath)) {
+      return false; // Early exit
+    }
+  }
+
+  return true;
+}
+
 function LogbookForm({ logData }) {
   console.log("LogbookForm History State : ", window.history.state);
   console.log("Hii i am Logbook Form");
@@ -441,7 +525,13 @@ function LogbookForm({ logData }) {
     console.log("TransactionObj:", transactionObj);
 
     let status = 500;
-    if (isOnline.online) {
+    console.log(
+      "Deep Equal Method called at 538",
+      transactionObjDb,
+      transactionObj,
+    );
+    const isSameObj = deepEqual(transactionObjDb, transactionObj.logbookData);
+    if (isOnline.online && !isSameObj) {
       status = await SaveTransaction(transactionObj);
     }
     const status1 = 200; // await handleSaveTransactionAttachment(blobFileList);
@@ -4309,7 +4399,12 @@ function LogbookForm({ logData }) {
       return;
     }
 
-    const status = await SaveTransaction(obj); //save the transaction to DB as draft
+    let status = null;
+    console.log("Deep Equal Method called at 4409", transactionObjDb, obj);
+    const isSameObj = deepEqual(transactionObjDb, obj);
+    if (!isSameObj) {
+      status = await SaveTransaction(obj); //save the transaction to DB as draft
+    }
     const status1 = 200; //await handleSaveTransactionAttachment(blobFileList);
     if (status === 200 && status1 === 200) {
       setLoading(false);
@@ -4505,7 +4600,12 @@ function LogbookForm({ logData }) {
 
       console.log("My Blob List for close : ", blobFileList);
       console.log("My Obj of transaction : ", objMongo);
-      const status = await SaveTransaction(obj); //api calling to save the transaction history
+      console.log("Deep Equal Method called at 4609", transactionObjDb, obj);
+      const isSameObj = deepEqual(transactionObjDb, obj);
+      let status = null;
+      if (!isSameObj) {
+        status = await SaveTransaction(obj); //api calling to save the transaction history
+      }
       const mongoApiStatus = 200;
 
       const status1 = 200; //await handleSaveTransactionAttachment(blobFileList);
@@ -6126,16 +6226,18 @@ function LogbookForm({ logData }) {
 
       setTransactionData(latestTransaction || {});
 
+      transactionObjDb = latestTransaction?.logbookData || {};
+
       data = await resolveDepExpressions(data);
       data = await resolveDependentFields(data, setGridDataTest);
 
       data = await resolveApiFields(data);
       data = await resolveDisabledExpressions(data);
-      data = await resolveCustomCssExpressions(data);
+      // data = await resolveCustomCssExpressions(data);
       await resolvePolling(data, setPollObj); // polling helper populates pollObj
 
       data = applyTransactionData(data, latestTransaction, attachments);
-
+      data = await resolveCustomCssExpressions(data);
       setGridDataTest(data);
       setColTot(() => maxCol);
       fillCell(data);
@@ -6159,7 +6261,8 @@ function LogbookForm({ logData }) {
   }
 
   const restoreOfflineTransactions = async (gridData, transactions) => {
-    const data = applyTransactionData(gridData, transactions, []);
+    let data = applyTransactionData(gridData, transactions, []);
+    data = await resolveCustomCssExpressions(data);
 
     setGridDataTest(data);
 
@@ -6566,6 +6669,7 @@ function LogbookForm({ logData }) {
 
     return data;
   }
+
   async function resolveDependentFields(data, setGridDataTest = () => {}) {
     if (!Array.isArray(data)) return data;
 
@@ -7673,30 +7777,32 @@ function LogbookForm({ logData }) {
                 >
                   Download Excel
                 </Button> */}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<CheckCircleIcon />}
-                  onClick={(e) =>
-                    handleSaveTransaction(
-                      "_",
-                      gridDataTest,
-                      setRemarkDiag,
-                      setCellChanges,
-                      setNewTransacData,
-                      setTransactionData,
-                      jobId,
-                      activityId,
-                      formName,
-                      versionNumber,
-                      userId,
-                      false,
-                      true,
-                    )
-                  }
-                >
-                  Save Manually
-                </Button>
+                {isTransactionError && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<CheckCircleIcon />}
+                    onClick={(e) =>
+                      handleSaveTransaction(
+                        "_",
+                        gridDataTest,
+                        setRemarkDiag,
+                        setCellChanges,
+                        setNewTransacData,
+                        setTransactionData,
+                        jobId,
+                        activityId,
+                        formName,
+                        versionNumber,
+                        userId,
+                        false,
+                        true,
+                      )
+                    }
+                  >
+                    Save Manually
+                  </Button>
+                )}
               </div>
             </Grid>
           </div>

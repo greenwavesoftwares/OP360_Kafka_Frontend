@@ -2,23 +2,21 @@ import dayjs from "dayjs";
 import React from "react";
 
 function EmailJobAssign(
-//   {
-//   jobId,
-//   jobName,
-//   jobStartTime,
-//   jobEndTime,
-//   activityName,
-//   activityID,
-// }
-data,
-header,
+  //   {
+  //   jobId,
+  //   jobName,
+  //   jobStartTime,
+  //   jobEndTime,
+  //   activityName,
+  //   activityID,
+  // }
+  data,
+  header,
 ) {
-const emailData=data;
+  const emailData = data;
 
+  console.log("emailData.data : ", emailData.data);
 
-
-console.log("emailData.data : ",emailData.data) 
-                      
   // const emailData.data = [
   //   {
   //     activityWaitingTime: 0,
@@ -402,10 +400,12 @@ console.log("emailData.data : ",emailData.data)
   //     weekdays: 5,
   //   },
   // ];
-  console.log("emailData.data",emailData.data.task.activityList.length)
-  console.log("forwardLink : ",emailData.data.forwardLink)   
+  console.log("emailData.data", emailData.data.task.activityList.length);
+  console.log("forwardLink : ", emailData.data.forwardLink);
   const repeat = emailData.data.task.activityList.length;
-  let activityDateSection =  emailData.data.task.activityList.map(activity =>`
+  let activityDateSection = emailData.data.task.activityList
+    .map(
+      (activity) => `
     <table
             align="center"
             border="0"
@@ -546,7 +546,7 @@ console.log("emailData.data : ",emailData.data)
                               </td>
                             </tr>
                             
-                            <tr>
+                           <tr>
                               <td
                                 class="pad"
                                 style="
@@ -570,14 +570,14 @@ console.log("emailData.data : ",emailData.data)
                                   "
                                 >
                                   <span class="tinyMce-placeholder"
-                                    >
-                                    <strong class="main-text" ">
-                                    Performer Name : <span style="background-color: #e4e3f4; color: black; padding: 2px,border-radius: 10px;>${activity.groupOrDept?activity.groupOrDeptName:activity.performer}</span>
-                                    </strong>
-                                    </span>
+                                    >Performer Name :${activity.groupOrDept ? activity.groupOrDeptName : activity.performer}</span
+                                  >
                                 </h1>
                               </td>
                             </tr>
+                          </table>
+                        </td>
+                      </tr>
                           </table>
                         </td>
                       </tr>
@@ -587,7 +587,7 @@ console.log("emailData.data : ",emailData.data)
               </tr>
             </tbody>
           </table>
-  `
+  `,
     )
     .join("");
 
@@ -1609,7 +1609,7 @@ console.log("emailData.data : ",emailData.data)
                                     "
                                   >
                                     <span class="tinyMce-placeholder"
-                                      >${dayjs(emailData.data.scheduledJobStartTime).format('D MMM YY h:mm A') }
+                                      >${dayjs(emailData.data.scheduledJobStartTime).format("D MMM YY h:mm A")}
                                     </span>
                                   </h1>
                                 </td>
@@ -1741,7 +1741,7 @@ console.log("emailData.data : ",emailData.data)
                                     "
                                   >
                                     <span class="tinyMce-placeholder">
-                                      ${dayjs(emailData.data.scheduledJobEndTime).format('D MMM YY h:mm A') }
+                                      ${dayjs(emailData.data.scheduledJobEndTime).format("D MMM YY h:mm A")}
                                     </span>
                                   </h1>
                                 </td>
