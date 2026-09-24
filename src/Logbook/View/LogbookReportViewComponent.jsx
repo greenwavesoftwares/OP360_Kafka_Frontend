@@ -515,9 +515,13 @@ export default function LogbookReportViewComponent({
                               gridColumn: `span ${elem.colSpan}`,
                               gridRow: `span ${elem.rowSpan}`,
                               alignContent: "center",
+                              // ...convertCssStringToMuiStyles(
+                              //   resolvedConditionalCssExpression[elem.cellId] ??
+                              //     elem.cellCSS,
+                              // ),
+                              ...convertCssStringToMuiStyles(elem.cellCSS),
                               ...convertCssStringToMuiStyles(
-                                resolvedConditionalCssExpression[elem.cellId] ??
-                                  elem.cellCSS,
+                                resolvedConditionalCssExpression[elem.cellId],
                               ),
                             }}
                           >
