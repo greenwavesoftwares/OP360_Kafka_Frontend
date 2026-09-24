@@ -421,7 +421,9 @@ export default function ActivityReviewTable({
       const jobInfo = await fetchJobDetails(job.jobID); //Function call to fetch all jobs
           
       const approver = jobInfo.approver; //add the approver
+      console.log("Prior to sending mail")
       await emailPerformerForNextActivities(jobInfo);
+      console.log("After sending mail")
       if (jobInfo.jobStatus === "Sent For Approval")
         sendEmailNotificationsToReviewJob(
           [jobInfo],

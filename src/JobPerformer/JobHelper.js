@@ -160,6 +160,7 @@ export const fetchCurrentUser = () => {
 
   export async function emailPerformerForNextActivities(job){
     try{
+      console.log("Inside send mail",job)
     if(job && job.task.activityList[0].actvityStatus.toLowerCase() ===
         "Completed".toLowerCase()){
           
@@ -172,7 +173,7 @@ export const fetchCurrentUser = () => {
           
         }
       }catch(e){
-        console.error("Error in sending mail")
+        console.error("Error in sending mail",e)
       }
   }
   export async function handleDownloadFileClick(key)  {

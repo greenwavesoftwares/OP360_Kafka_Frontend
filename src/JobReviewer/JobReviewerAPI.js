@@ -227,7 +227,7 @@ export async function fetchJobDetails(
       }
     );
     
-    return response;
+    return response.data;
   } catch (error) {
     console.log("Error in fetchJobDetails", error);
   }
