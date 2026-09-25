@@ -326,7 +326,8 @@ function LogbookForm({ logData }) {
 
       console.log("Latest transaction log : ", latestTransaction);
 
-      saveData(jobId, activityId, latestTransaction, "Data saved locally");
+ const isSameObj = deepEqual(transactionObjDb, latestTransaction.logbookData);
+ if(!isSameObj) saveData(jobId, activityId, latestTransaction, "Data saved locally");
     }
   }, [gridDataTest, firstRenderComplete]);
 
@@ -548,7 +549,8 @@ function LogbookForm({ logData }) {
     } else {
       setsnackbarSeverity("error");
       setSnackbarText("Database Error");
-
+       const isSameObj = deepEqual(transactionObjDb, transactionObj.logbookData);
+      if(!isSameObj)
       saveData(
         jobId,
         activityId,
@@ -4390,11 +4392,13 @@ function LogbookForm({ logData }) {
 
     if (!isOnline.online) {
       console.info("Offline mode: Saving transaction locally");
-
-      await saveData(obj.jobId, obj.activityId, obj);
+       const isSameObj = deepEqual(transactionObjDb, obj.logbookData);
+      if(!isSameObj)
+        { await saveData(obj.jobId, obj.activityId, obj);
       console.log("Offline data stored successfully");
       setSnackbarText("Data saved locally");
       setsnackbarSeverity("success");
+        }
 
       return;
     }

@@ -369,7 +369,7 @@ const getPerformerAndAssetStatus = async (activityList, performers,approverList)
     const updatedObject = { ...updatedList[index] };//* create a copy of the object from activityList whose index is coming as a parameter
 
     //setting the values
-    updatedObject.performer = event.target.value;
+    updatedObject.performer = event.target.value ||'';
     
       // groupOrDeptName: newValue,
       // performerType: "Group",
@@ -427,7 +427,7 @@ const handleApproverChange= (event, row, index) => {
   // console.log('Approver => ',event.target.value)
   const updatedList = [...currentActivityDetailsObject];
   const updatedObject = { ...updatedList[index] };
-  updatedObject.approver = event.target.value;
+  updatedObject.approver = event.target.value || '';
   updatedList[index] = updatedObject;
   setCurrentActivityDetailsObject(updatedList)
   setUserEditedActivityDetails(true)
