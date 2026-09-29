@@ -326,8 +326,12 @@ function LogbookForm({ logData }) {
 
       console.log("Latest transaction log : ", latestTransaction);
 
- const isSameObj = deepEqual(transactionObjDb, latestTransaction.logbookData);
- if(!isSameObj) saveData(jobId, activityId, latestTransaction, "Data saved locally");
+      const isSameObj = deepEqual(
+        transactionObjDb,
+        latestTransaction.logbookData,
+      );
+      if (!isSameObj)
+        saveData(jobId, activityId, latestTransaction, "Data saved locally");
     }
   }, [gridDataTest, firstRenderComplete]);
 
@@ -549,15 +553,15 @@ function LogbookForm({ logData }) {
     } else {
       setsnackbarSeverity("error");
       setSnackbarText("Database Error");
-       const isSameObj = deepEqual(transactionObjDb, transactionObj.logbookData);
-      if(!isSameObj)
-      saveData(
-        jobId,
-        activityId,
-        transactionObj,
-        status?.message || "Error saving transaction",
-        true,
-      );
+      const isSameObj = deepEqual(transactionObjDb, transactionObj.logbookData);
+      if (!isSameObj)
+        saveData(
+          jobId,
+          activityId,
+          transactionObj,
+          status?.message || "Error saving transaction",
+          true,
+        );
     }
 
     setRemarkDiag(false);
@@ -4392,13 +4396,13 @@ function LogbookForm({ logData }) {
 
     if (!isOnline.online) {
       console.info("Offline mode: Saving transaction locally");
-       const isSameObj = deepEqual(transactionObjDb, obj.logbookData);
-      if(!isSameObj)
-        { await saveData(obj.jobId, obj.activityId, obj);
-      console.log("Offline data stored successfully");
-      setSnackbarText("Data saved locally");
-      setsnackbarSeverity("success");
-        }
+      const isSameObj = deepEqual(transactionObjDb, obj.logbookData);
+      if (!isSameObj) {
+        await saveData(obj.jobId, obj.activityId, obj);
+        console.log("Offline data stored successfully");
+        setSnackbarText("Data saved locally");
+        setsnackbarSeverity("success");
+      }
 
       return;
     }
@@ -5736,7 +5740,7 @@ function LogbookForm({ logData }) {
           const sqlResult = await getQueryResultForGlobalCellUpdate(sql);
           console.log("🧩 SQL Result:", sqlResult);
 
-          if (sqlResult) {
+          if (sqlResult || sqlResult === "") {
             const changedCells = [];
 
             updatedGridDataTest = updatedGridDataTest.map((form) => ({
