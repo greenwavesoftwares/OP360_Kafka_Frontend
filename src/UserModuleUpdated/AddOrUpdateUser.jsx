@@ -15,6 +15,10 @@ import TabContext from "@mui/lab/TabContext"; // Context component to manage tab
 import TabList from "@mui/lab/TabList"; // Component to create a list of tabs
 import TabPanel from "@mui/lab/TabPanel"; // Component to display tab content
 import { LoadingOutlined } from '@ant-design/icons';
+import {
+  Mail, User, Phone, Building2, Users, FileText, Leaf, Workflow,
+  ShieldCheck, Power, Clock, CalendarRange, CheckCircle2, XCircle,
+} from "lucide-react";
 
 // MUI Components
 import {
@@ -3052,225 +3056,202 @@ export default function AddOrUpdateUser() {
           </TabPanel>
 
           <TabPanel value="5">
-            <div
-              style={{
-                marginBottom: "20px",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ minWidth: "170px", fontWeight: "bold" }}>Email</div>
-              <div style={{ width: isMobile ? "100px" : "" }}>
-               <Chip
-  size="medium"
-  label={
-    <>
-      {userDetails.userID}{" "}
-      {userDetails.isGuest && <strong>(Guest)</strong>}
-    </>
-  }
-/>
-{userDetails.isGuest &&
-<Chip
-  size="medium"
-  label={
-    <>
-     {userDetails?.guestValidity&& formatDatetime(userDetails.guestValidity[0]) + " to " + formatDatetime(userDetails.guestValidity[1])}
-    </>
-  }
-/>}
-              </div>
-            </div>
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: "12px", padding: "4px 20px", background: "#fff" }}>
 
-            <div
-              style={{
-                marginBottom: "20px",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ minWidth: "170px", fontWeight: "bold" }}>
-                User Name
-              </div>
-              <div>{userDetails.userName}</div>
-            </div>
+  {/* Email */}
+  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "8px" : "16px", padding: "14px 0", borderBottom: "1px solid #f1f2f4" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "190px", fontWeight: 600, color: "#374151", fontSize: "14px" }}>
+      <span style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f3f4f6", color: "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Mail size={16} />
+      </span>
+      Email
+    </div>
+    <div style={{ flex: 1, minWidth: 0, display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", fontSize: "14px", color: "#111827", wordBreak: "break-word" }}>
+      <Chip
+        size="medium"
+        label={
+          <>
+            {userDetails.userID}{" "}
+            {userDetails.isGuest && <strong>(Guest)</strong>}
+          </>
+        }
+      />
+      {userDetails.isGuest && userDetails?.guestValidity && (
+        <Chip
+          size="medium"
+          variant="outlined"
+          color="warning"
+          icon={<CalendarRange size={14} />}
+          label={
+            formatDatetime(userDetails.guestValidity[0]) +
+            " to " +
+            formatDatetime(userDetails.guestValidity[1])
+          }
+        />
+      )}
+    </div>
+  </div>
 
-            <div
-              style={{
-                marginBottom: "20px",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ minWidth: "170px", fontWeight: "bold" }}>
-                Phone Number
-              </div>
-              <div>{userDetails.phone}</div>
-            </div>
+  {/* User Name */}
+  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "8px" : "16px", padding: "14px 0", borderBottom: "1px solid #f1f2f4" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "190px", fontWeight: 600, color: "#374151", fontSize: "14px" }}>
+      <span style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f3f4f6", color: "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <User size={16} />
+      </span>
+      User Name
+    </div>
+    <div style={{ flex: 1, minWidth: 0, fontSize: "14px", color: "#111827", wordBreak: "break-word" }}>
+      {userDetails.userName}
+    </div>
+  </div>
 
-            <div
-              style={{
-                marginBottom: "20px",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ minWidth: "170px", fontWeight: "bold" }}>
-                User Department
-              </div>
-              <div>{userDetails?.department?.deptName}</div>
-            </div>
+  {/* Phone Number */}
+  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "8px" : "16px", padding: "14px 0", borderBottom: "1px solid #f1f2f4" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "190px", fontWeight: 600, color: "#374151", fontSize: "14px" }}>
+      <span style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f3f4f6", color: "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Phone size={16} />
+      </span>
+      Phone Number
+    </div>
+    <div style={{ flex: 1, minWidth: 0, fontSize: "14px", color: "#111827" }}>
+      {userDetails.phone}
+    </div>
+  </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                marginBottom: "20px",
-                columnGap: "0.5rem",
-              }}
-            >
-              <div
-                style={{
-                  minWidth: "170px",
-                  fontWeight: "bold",
-                  marginBottom: "5px",
-                }}
-              >
-                User Groups
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  columnGap: "0.5rem",
-                  rowGap: "0.5rem",
-                  width: isMobile ? "100px" : "",
-                }}
-              >
-                {userDetails.group.map((page, index) => (
-                  <Chip
-                    variant="outlined"
-                    color="warning"
-                    key={index}
-                    label={page.groupName}
-                  />
-                ))}
-              </div>
-            </div>
+  {/* User Department */}
+  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "8px" : "16px", padding: "14px 0", borderBottom: "1px solid #f1f2f4" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "190px", fontWeight: 600, color: "#374151", fontSize: "14px" }}>
+      <span style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f3f4f6", color: "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Building2 size={16} />
+      </span>
+      User Department
+    </div>
+    <div style={{ flex: 1, minWidth: 0, fontSize: "14px", color: "#111827" }}>
+      {userDetails?.department?.deptName}
+    </div>
+  </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <div
-                style={{
-                  minWidth: "170px",
-                  fontWeight: "bold",
-                  marginBottom: "5px",
-                }}
-              >
-                Alloted Pages
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  columnGap: "0.5rem",
-                  rowGap: "0.5rem",
-                  width: isMobile ? "100px" : "",
-                }}
-              >
-                {userDetails?.allotedPages?.map((group, index) => (
-                  <Chip
-                    variant="outlined"
-                    color="info"
-                    key={index}
-                    label={group?.page}
-                  />
-                ))}
-              </div>
-            </div>
+  {/* User Groups */}
+  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "8px" : "16px", padding: "14px 0", borderBottom: "1px solid #f1f2f4" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "190px", fontWeight: 600, color: "#374151", fontSize: "14px" }}>
+      <span style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f3f4f6", color: "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Users size={16} />
+      </span>
+      User Groups
+    </div>
+    <div style={{ flex: 1, minWidth: 0, display: "flex", flexWrap: "wrap", gap: "8px" }}>
+      {userDetails.group.map((page, index) => (
+        <Chip
+          key={index}
+          size="small"
+          variant="outlined"
+          color="warning"
+          label={page.groupName}
+        />
+      ))}
+    </div>
+  </div>
 
-            <div
-              style={{
-                marginBottom: "20px",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ minWidth: "170px", fontWeight: "bold" }}>
-                Green360 Homepage
-              </div>
-              <div>{userDetails.g360HomePage}</div>
-            </div>
+  {/* Alloted Pages */}
+  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "8px" : "16px", padding: "14px 0", borderBottom: "1px solid #f1f2f4" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "190px", fontWeight: 600, color: "#374151", fontSize: "14px" }}>
+      <span style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f3f4f6", color: "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <FileText size={16} />
+      </span>
+      Alloted Pages
+    </div>
+    <div style={{ flex: 1, minWidth: 0, display: "flex", flexWrap: "wrap", gap: "8px" }}>
+      {userDetails?.allotedPages?.map((group, index) => (
+        <Chip
+          key={index}
+          size="small"
+          variant="outlined"
+          color="info"
+          label={group?.page}
+        />
+      ))}
+    </div>
+  </div>
 
-            <div
-              style={{
-                marginBottom: "20px",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ minWidth: "170px", fontWeight: "bold" }}>
-                OP360 Homepage
-              </div>
-              <div>{userDetails.workFlowHomePage}</div>
-            </div>
+  {/* Green360 Homepage */}
+  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "8px" : "16px", padding: "14px 0", borderBottom: "1px solid #f1f2f4" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "190px", fontWeight: 600, color: "#374151", fontSize: "14px" }}>
+      <span style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f3f4f6", color: "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+         <Workflow size={16} />
+      </span>
+      Green360 Homepage
+    </div>
+    <div style={{ flex: 1, minWidth: 0, fontSize: "14px", color: "#111827", wordBreak: "break-word" }}>
+      {userDetails.g360HomePage}
+    </div>
+  </div>
 
-            <div
-              style={{
-                marginBottom: "20px",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ minWidth: "170px", fontWeight: "bold" }}>
-                Green360 Admin
-              </div>
-              {userDetails.g360Admin ? (
-                <CheckCircleOutlineIcon style={{ color: "green" }} />
-              ) : (
-                <CancelIcon style={{ color: "red" }} />
-              )}
-            </div>
+  {/* OP360 Homepage */}
+  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "8px" : "16px", padding: "14px 0", borderBottom: "1px solid #f1f2f4" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "190px", fontWeight: 600, color: "#374151", fontSize: "14px" }}>
+      <span style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f3f4f6", color: "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Workflow size={16} />
+      </span>
+      OP360 Homepage
+    </div>
+    <div style={{ flex: 1, minWidth: 0, fontSize: "14px", color: "#111827", wordBreak: "break-word" }}>
+      {userDetails.workFlowHomePage}
+    </div>
+  </div>
 
-            <div
-              style={{
-                marginBottom: "20px",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ minWidth: "170px", fontWeight: "bold" }}>
-                Status
-              </div>
-              {userDetails.active ? (
-                <CheckCircleOutlineIcon style={{ color: "green" }} />
-              ) : (
-                <CancelIcon style={{ color: "red" }} />
-              )}
-            </div>
+  {/* Green360 Admin */}
+  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "8px" : "16px", padding: "14px 0", borderBottom: "1px solid #f1f2f4" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "190px", fontWeight: 600, color: "#374151", fontSize: "14px" }}>
+      <span style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f3f4f6", color: "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <ShieldCheck size={16} />
+      </span>
+      Green360 Admin
+    </div>
+    <div style={{ flex: 1 }}>
+      <Chip
+        size="small"
+        variant="outlined"
+        color={userDetails.g360Admin ? "success" : "error"}
+        icon={userDetails.g360Admin ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
+        label={userDetails.g360Admin ? "Yes" : "No"}
+      />
+    </div>
+  </div>
 
-              <div
-              style={{
-                marginBottom: "20px",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ minWidth: "170px", fontWeight: "bold" }}>
-                Working Hours
-              </div>
-            { `${workingHours[0].format("HH:mm")}-${workingHours[1].format("HH:mm")}`}
-            </div>
-            
+  {/* Status */}
+  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "8px" : "16px", padding: "14px 0", borderBottom: "1px solid #f1f2f4" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "190px", fontWeight: 600, color: "#374151", fontSize: "14px" }}>
+      <span style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f3f4f6", color: "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Power size={16} />
+      </span>
+      Status
+    </div>
+    <div style={{ flex: 1 }}>
+      <Chip
+        size="small"
+        variant="outlined"
+        color={userDetails.active ? "success" : "error"}
+        icon={userDetails.active ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
+        label={userDetails.active ? "Active" : "Inactive"}
+      />
+    </div>
+  </div>
+
+  {/* Working Hours */}
+  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "8px" : "16px", padding: "14px 0" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "190px", fontWeight: 600, color: "#374151", fontSize: "14px" }}>
+      <span style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f3f4f6", color: "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <Clock size={16} />
+      </span>
+      Working Hours
+    </div>
+    <div style={{ flex: 1, fontSize: "14px", color: "#111827" }}>
+      {`${workingHours[0].format("HH:mm")} - ${workingHours[1].format("HH:mm")}`}
+    </div>
+  </div>
+
+</div>
+             
           </TabPanel>
         </TabContext>
         {/* <pre>{JSON.stringify(userDetails, null, 2)}</pre> */}

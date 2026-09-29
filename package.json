@@ -54,6 +54,7 @@
     "jspdf-autotable": "^3.8.4",
     "jszip": "^3.10.1",
     "localforage": "^1.10.0",
+    "lucide-react": "^1.48.0",
     "match-sorter": "^6.3.4",
     "microsoft-cognitiveservices-speech-sdk": "^1.42.0",
     "moment": "^2.30.1",

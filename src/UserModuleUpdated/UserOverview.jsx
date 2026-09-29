@@ -616,7 +616,7 @@ export default function UserOverview() {
           ></CurrentUserStatus>
         </Card> */}
 
-          <Card>
+          <Card sx={{  borderRadius: "1.7rem" }}>
             <DataTable
               value={filteredSearchData}
               paginator

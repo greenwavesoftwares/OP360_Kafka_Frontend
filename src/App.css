@@ -192,6 +192,7 @@ background-color: rgb(255, 0, 0) !important;
 .p-datatable .p-datatable-header {
   padding: 0.5rem 0.5rem;
   font-size: 0.87rem;
+  border-radius:5rem;
 }
 .UserInfoTableStyle.p-datatable .p-datatable-thead > tr > th {
   font-size: 0.87rem;
