@@ -55,7 +55,7 @@ import { useRef } from 'react';
 import { areActivityIdsMatching, fetchCurrentActivityList, formatDatetime, formatDuration } from "./helper";
 import UserValueTemplate from './UserValueTemplate';
 
-import { ClipboardCheck   } from 'lucide-react';
+import { Clipboard   } from 'lucide-react';
 import { CircleX } from 'lucide-react';
 import { BadgeCheck } from 'lucide-react';
 
@@ -798,7 +798,7 @@ console.log('Asset Available : ', isAssetAvailable())
           className="dataTableStyle"
           sx={{ mt: 2 }}
         >
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+          <Table sx={{ minWidth: 700 }} aria-label="customized table" stickyHeader>
             <TableHead>
               {/* Table Headers */}
               <TableRow>
@@ -1114,9 +1114,10 @@ console.log('Asset Available : ', isAssetAvailable())
                           onClick={(e) => e.preventDefault()}
                         />
                       )}
-                     {copyPerformer?.rowIndex === index ? (
+                     {copyPerformer?.rowIndex === index ? 
   // Selected row
-  <i
+ <> { row?.performer?.length>0 &&
+  (<i
     className="pi pi-copy"
     style={{
       fontSize: "1rem",
@@ -1125,8 +1126,8 @@ console.log('Asset Available : ', isAssetAvailable())
       cursor: "pointer"
     }}
     onClick={() => handleRowPerformerCopy(row, index)}
-  ></i>
-) : copyPerformer?.rowIndex >= 0 ? (
+  ></i>)}</>
+ : copyPerformer?.rowIndex >= 0 ? (
   // Other rows when a row is selected
   // <i
   //   className="pi pi-check-circle"
@@ -1140,28 +1141,36 @@ console.log('Asset Available : ', isAssetAvailable())
   < div style={{ display: "flex", gap: "5px" }}>
     {
       !copyPerformer?.pastedPerformerIndexes?.includes(index) ? 
-<Tooltip title="Paste here"><ClipboardCheck    size={'1rem'} color="#3e9392"  onClick={()=> handlePastePerformer(row, index)}/></Tooltip>
+<Tooltip title="Paste here"><Clipboard    size={'1rem'} color="#9564DD"  onClick={()=> handlePastePerformer(row, index)}/></Tooltip>
 
 :
-<BadgeCheck size={'1rem'} color="#3e9392"/>
+<motion.div
+  initial={{ scale: 0, opacity: 0 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{
+    duration: 0.4,
+    ease: "backOut",
+  }}
+  style={{ display: "inline-flex" }}
+>
+  <BadgeCheck size="1rem" color="#3e9392" />
+</motion.div>
 }
  {/* <Tooltip Tooltip title="Cancel CopyMode" ><CircleX size={'1rem'} color='#FFB2B2' onClick={()=> {setCopyPerformer(null)}}/></Tooltip> */}
     </div>
 ) : (
   // Default state
-  <>
-  <i
-  className="pi pi-copy"
-  style={{
-    fontSize: "1rem",
-    marginLeft: "5px",
+   <> { row?.performer?.length>0 &&
+  (<i
+    className="pi pi-copy"
+    style={{
+      fontSize: "1rem",
+      marginLeft: "5px",
       color: "var(--primary-color)",
       cursor: "pointer"
     }}
     onClick={() => handleRowPerformerCopy(row, index)}
-    ></i>
-   
-    </>
+  ></i>)}</>
   )}  
                      {/* { copyPerformer?.rowIndex !== index &&  <i className="pi pi-check-circle" style={{ fontSize: "1rem", marginLeft: "5px" }}></i>} */}
                     </div>
@@ -1240,14 +1249,25 @@ console.log('Asset Available : ', isAssetAvailable())
   <div style={{ display: "flex", gap: "5px" }}>
      {
       !copyApprover?.pastedApproverIndexes?.includes(index) ?
-  <Tooltip title="Paste here"><ClipboardCheck    size={'1rem'} color="#3e9392"  onClick={()=> handlePasteApprover(row, index)}/></Tooltip>
+  <Tooltip title="Paste here"><Clipboard   size={'1rem'} color="#9564DD"  onClick={()=> handlePasteApprover(row, index)}/></Tooltip>
   :
-  <BadgeCheck size={'1rem'} color="#3e9392"/>
+  <motion.div
+  initial={{ scale: 0, opacity: 0 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{
+    duration: 0.4,
+    ease: "backOut",
+  }}
+  style={{ display: "inline-flex" }}
+>
+  <BadgeCheck size="1rem" color="#3e9392" />
+</motion.div>
      }
   </div>
 ) : (
   // Default state
   <>
+  { row?.approver?.length>0 &&
   <i
     className="pi pi-copy"
     style={{
@@ -1257,7 +1277,7 @@ console.log('Asset Available : ', isAssetAvailable())
       cursor: "pointer"
     }}
     onClick={() => handleRowApproverCopy(row, index)}
-  ></i>
+  ></i>}
 
   
     </>
