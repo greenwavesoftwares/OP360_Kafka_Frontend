@@ -796,7 +796,7 @@ export default function UserOverview() {
               onRowUnselect={onRowUnselect}
               metaKeySelection={true}
               size={"small"}
-              className="UserInfoTableStyle HeaderColor"
+              className="UserInfoTableStyle adminDataTable HeaderColor"
               //tableStyle={{ fontSize: "0.9rem" }}
             >
               <Column
