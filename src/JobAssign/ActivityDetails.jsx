@@ -796,7 +796,11 @@ console.log('Asset Available : ', isAssetAvailable())
         <TableContainer
           component={Paper}
           className="dataTableStyle"
-          sx={{ mt: 2 }}
+          sx={{
+    mt: 2,
+    maxHeight: '70vh',
+    overflowY: 'auto',
+  }}
         >
           <Table sx={{ minWidth: 700 }} aria-label="customized table" stickyHeader>
             <TableHead>
