@@ -74,6 +74,7 @@ export async function fetchHistoricalActivities(
   fromDate,
   toDate
 ) {
+  
   try {
     console.log("Performer group list::",performergrouplist)
     // Get the tenant ID from session storage
