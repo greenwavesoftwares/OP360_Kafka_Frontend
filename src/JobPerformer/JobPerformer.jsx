@@ -1265,6 +1265,8 @@ const handleUseEffectFunctionsOnTringger=async()=>{
 
                                   <TabPanel value="5" sx={{ padding: 0 }}>
                                     <ActivityHistory
+                                    performer={performer}
+                                    groups={groupDetails}
                                       fromDate={
                                         selectedCalendarTabularDetails.startDate
                                       }

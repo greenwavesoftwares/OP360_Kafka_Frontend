@@ -75,6 +75,7 @@ export async function fetchHistoricalActivities(
   toDate
 ) {
   try {
+    console.log("Performer group list::",performergrouplist)
     // Get the tenant ID from session storage
     const tenant = localStorage.getItem(REACT_APP_TENANTID);
 
