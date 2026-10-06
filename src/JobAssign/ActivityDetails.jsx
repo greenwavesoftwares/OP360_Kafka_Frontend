@@ -231,7 +231,8 @@ const getPerformerAndAssetStatus = async (activityList, performers,approverList)
 
       // ✅ fetch performer availability once for the given window
       const allPerformerStatus = await getPerformerAvailability(start, stop, activityId, taskId);
-      const flattenedPerformersStatus = allPerformerStatus?.[0];
+      console.log('All Performer Status: ', allPerformerStatus);
+      const flattenedPerformersStatus =allPerformerStatus?.length === 0 ?[]: allPerformerStatus?.[0];
 
       console.log("Flattened Performer Status: ", flattenedPerformersStatus);
       console.log("Performers List: ", performers);
