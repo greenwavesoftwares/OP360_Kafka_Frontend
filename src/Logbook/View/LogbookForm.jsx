@@ -3912,7 +3912,7 @@ function LogbookForm({ logData }) {
 
         const cellValue = await findCellValue(cellId, elem, gridData);
 
-        console.log("🔍 [findSQL] Found value for", cellId, ":", cellValue);
+        // console.log("🔍 [findSQL] Found value for", cellId, ":", cellValue);
 
         const escapedPlaceholder = fullMatch.replace(
           /[.*+?^${}()|[\]\\]/g,
@@ -3922,10 +3922,10 @@ function LogbookForm({ logData }) {
 
         processedSQL = processedSQL.replace(replacementRegex, cellValue);
 
-        console.log("🔍 [findSQL] After replacing", cellId, ":", processedSQL);
+        // console.log("🔍 [findSQL] After replacing", cellId, ":", processedSQL);
       }
 
-      console.log("✅ [findSQL] Final processed SQL:", processedSQL);
+      // console.log("✅ [findSQL] Final processed SQL:", processedSQL);
       return processedSQL;
     } catch (error) {
       console.error("❌ [findSQL] Error:", error);
@@ -4792,12 +4792,12 @@ function LogbookForm({ logData }) {
               element,
               updatedGridDataTest,
             );
-            console.log(
-              "🔒 [STACK DEPTH:",
-              path.length,
-              "] Disable SQL =>",
-              disableSQL,
-            );
+            // console.log(
+            //   "🔒 [STACK DEPTH:",
+            //   path.length,
+            //   "] Disable SQL =>",
+            //   disableSQL,
+            // );
 
             let evaluatedDisabled;
 
@@ -4884,7 +4884,11 @@ function LogbookForm({ logData }) {
               element.cellId,
             );
           }
-
+          console.log(
+            "updatedGridDataTest in ondepcellupdate : ",
+            element,
+            updatedGridDataTest,
+          );
           if (["Image", "File"].includes(element.fieldType)) {
             console.log(
               "🖼️ [STACK DEPTH:",
@@ -5252,7 +5256,7 @@ function LogbookForm({ logData }) {
         "🔍 [RETURN CHECK] Dropdown fields in return data:",
         dropdownCheck,
       );
-
+      console.log("updatedGridDataTest at last : ", updatedGridDataTest);
       return updatedGridDataTest;
     } catch (error) {
       console.error("❌ Error:", error);
@@ -6885,6 +6889,7 @@ function LogbookForm({ logData }) {
 
     return data;
   }
+
   const handleFileUpload = async (
     byteArray,
     file,
@@ -6895,12 +6900,14 @@ function LogbookForm({ logData }) {
     setPollObj,
   ) => {
     try {
+      setIsProcessing(true);
       setLoading(true);
 
-      console.log("📂 handleFileUpload triggered for:", elem);
+      console.log("📂 handleFileUpload triggered for:", elem.cellId);
 
-      const fileName = file?.name ? file.name : "";
+      const fileName = file?.name ?? "";
 
+      // Step 1: Update the uploaded file cell.
       let updatedGridDataTest = gridDataTest.map((form) => ({
         ...form,
         cellData: form.cellData.map((cell) =>
@@ -6914,35 +6921,251 @@ function LogbookForm({ logData }) {
         ),
       }));
 
-      await setGridDataTest(updatedGridDataTest);
-
       console.log("📁 File uploaded:", {
         cellId: elem.cellId,
         fileName,
         byteArrayLength: byteArray?.length,
       });
 
+      // Step 2: Process conditional CSS.
+      if (elem.conditionalCssExpression?.trim()) {
+        try {
+          const logic = await findSQL(
+            elem.conditionalCssExpression,
+            elem,
+            updatedGridDataTest,
+          );
+
+          let customCss = "";
+
+          if (elem.conditionalCssExpType === "Expression") {
+            customCss = executeLogic(logic);
+          } else {
+            const res = await getQueryResultForGlobalCellUpdate(logic);
+            customCss = Object.values(res ?? {})[0] ?? "";
+          }
+
+          // Update the cell CSS without mutating elem.
+          updatedGridDataTest = updatedGridDataTest.map((form) => ({
+            ...form,
+            cellData: form.cellData.map((cell) =>
+              cell.cellId === elem.cellId
+                ? { ...cell, cellCSS: customCss }
+                : cell,
+            ),
+          }));
+
+          console.log("🎨 Conditional CSS applied:", customCss);
+        } catch (error) {
+          console.error(
+            `❌ Failed to resolve conditional CSS for ${elem.cellId}`,
+            error,
+          );
+        }
+      }
+
+      // Step 3: Process global expressions.
+      if (elem.globalExpressionLogic?.trim()) {
+        const sql = await findSQL(
+          elem.globalExpressionLogic,
+          elem,
+          updatedGridDataTest,
+        );
+
+        const sqlResult = await getQueryResultForGlobalCellUpdate(sql);
+
+        console.log("🌐 Global Expression SQL:", sql);
+        console.log("🧩 Global Expression Result:", sqlResult);
+
+        const changedCells = [];
+
+        updatedGridDataTest = updatedGridDataTest.map((form) => ({
+          ...form,
+          cellData: form.cellData.map((cell) => {
+            const newVal =
+              sqlResult?.[cell.cellId] ?? sqlResult?.[cell.aliasId];
+
+            if (newVal !== undefined && cell.value !== newVal) {
+              changedCells.push({ ...cell });
+
+              return {
+                ...cell,
+                value: newVal,
+              };
+            }
+
+            return cell;
+          }),
+        }));
+
+        // Step 4: Process passive updates sequentially.
+        for (const changed of changedCells) {
+          console.log("🔄 Running passive update for:", changed.cellId);
+
+          const passiveResult = await onPassiveFieldChange(
+            changed,
+            updatedGridDataTest,
+            () => {},
+            pollObj,
+            setPollObj,
+            [elem.cellId],
+          );
+
+          if (Array.isArray(passiveResult)) {
+            updatedGridDataTest = passiveResult;
+          }
+        }
+      }
+
+      // Step 5: Process dependent fields sequentially.
       if (
         Array.isArray(elem.dependentFields) &&
         elem.dependentFields.length > 0
       ) {
-        console.log("🔁 Running dependent updates for uploaded file...");
-        await Promise.all(
-          elem.dependentFields.map((dep) =>
-            onDependentCellUpdate(dep, updatedGridDataTest, setGridDataTest, [
-              elem.cellId,
-            ]),
+        for (const dep of elem.dependentFields) {
+          console.log("🔄 Processing dependent field:", dep.cellId);
+
+          const depResult = await onDependentCellUpdate(
+            dep,
+            updatedGridDataTest,
+            () => {},
+            [elem.cellId],
+            false,
+          );
+
+          if (Array.isArray(depResult)) {
+            updatedGridDataTest = depResult;
+          }
+        }
+      }
+
+      // Step 6: Evaluate the disable expression.
+      if (elem.disableExpressionLogic?.trim()) {
+        const isExpr = elem.disabledExpType === "Expression";
+
+        const disableVal = isExpr
+          ? eval(
+              await findSQL(
+                elem.disableExpressionLogic,
+                elem,
+                updatedGridDataTest,
+              ),
+            )
+          : await (async () => {
+              const sql = await findSQL(
+                elem.disableExpressionLogic,
+                elem,
+                updatedGridDataTest,
+              );
+
+              const sqlRes = await getQueryResultForGlobalCellUpdate(sql);
+
+              return sqlRes ? Object.values(sqlRes)[0] : 0;
+            })();
+
+        const isDisabled =
+          disableVal === 1 || disableVal === "1" || disableVal === true;
+
+        updatedGridDataTest = updatedGridDataTest.map((form) => ({
+          ...form,
+          cellData: form.cellData.map((cell) =>
+            cell.cellId === elem.cellId
+              ? { ...cell, disabled: isDisabled }
+              : cell,
+          ),
+        }));
+
+        console.log("🔒 Disable expression applied:", isDisabled);
+      }
+
+      // Step 7: Evaluate polling start/stop expressions.
+      for (const item of pollObj ?? []) {
+        const { cell } = item;
+
+        if (!cell?.cellId) continue;
+
+        const shouldStart = async () => {
+          if (!cell.pollStartExpressionLogic?.trim()) {
+            return false;
+          }
+
+          const expOrSql = await findSQL(
+            cell.pollStartExpressionLogic,
+            cell,
+            updatedGridDataTest,
+          );
+
+          if (cell.pollStartExpType === "Expression") {
+            return Boolean(eval(expOrSql));
+          }
+
+          const sqlRes = await getQueryResultForGlobalCellUpdate(expOrSql);
+
+          const result = sqlRes ? Object.values(sqlRes)[0] : 0;
+
+          return result === 1 || result === "1" || result === true;
+        };
+
+        const shouldStop = async () => {
+          if (!cell.pollStopExpressionLogic?.trim()) {
+            return false;
+          }
+
+          const expOrSql = await findSQL(
+            cell.pollStopExpressionLogic,
+            cell,
+            updatedGridDataTest,
+          );
+
+          // Use the stop expression's type when available.
+          const stopType = cell.pollStopExpType ?? cell.pollStartExpType;
+
+          if (stopType === "Expression") {
+            return Boolean(eval(expOrSql));
+          }
+
+          const sqlRes = await getQueryResultForGlobalCellUpdate(expOrSql);
+
+          const result = sqlRes ? Object.values(sqlRes)[0] : 0;
+
+          return result === 1 || result === "1" || result === true;
+        };
+
+        const start = await shouldStart();
+        const stop = await shouldStop();
+
+        setPollObj((prevState) =>
+          prevState.map((poll) =>
+            poll.cell.cellId === cell.cellId
+              ? {
+                  ...poll,
+                  autoRefresh: stop ? false : start,
+                  pollInterval: start ? cell.pollInterval : poll.pollInterval,
+                }
+              : poll,
           ),
         );
       }
 
+      // Step 8: Commit the final state once all processing is complete.
+      const finalGridDataTest = updatedGridDataTest.map((form) => ({
+        ...form,
+        cellData: form.cellData.map((cell) => ({
+          ...cell,
+        })),
+      }));
+
+      setGridDataTest(finalGridDataTest);
+
       console.log(
-        "✅ File upload and dependent updates complete for:",
+        "✅ File upload and all dependent processing complete:",
         elem.cellId,
       );
     } catch (error) {
       console.error("❌ Error in handleFileUpload:", error);
+      console.error("Stack:", error?.stack);
     } finally {
+      setIsProcessing(false);
       setLoading(false);
     }
   };
