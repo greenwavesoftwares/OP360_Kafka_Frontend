@@ -139,26 +139,35 @@ const getFileFromByteArray = async (byteArray, fileNamePath) => {
       mimeType = "application/pdf";
       fileExtension = "pdf";
     } else if (
-      uint8Array[0] === 0xd0 &&
-      uint8Array[1] === 0xcf &&
-      uint8Array[2] === 0x11 &&
-      uint8Array[3] === 0xe0
-    ) {
-      const headerString = new TextDecoder("utf-8", { fatal: false }).decode(
-        uint8Array.slice(0, 2000),
-      );
-      if (
-        headerString.includes("IPM.Note") ||
-        headerString.includes("Microsoft Outlook") ||
-        fileNamePath?.toLowerCase().endsWith(".msg")
-      ) {
-        mimeType = "application/vnd.ms-outlook";
-        fileExtension = "msg";
-      } else {
-        mimeType = "application/msword";
-        fileExtension = "doc";
-      }
-    } else if (uint8Array[0] === 0xff && uint8Array[1] === 0xd8) {
+  uint8Array[0] === 0xd0 &&
+  uint8Array[1] === 0xcf &&
+  uint8Array[2] === 0x11 &&
+  uint8Array[3] === 0xe0
+) {
+  const headerString = new TextDecoder("utf-8", { fatal: false }).decode(
+    uint8Array.slice(0, 2000),
+  );
+  const lowerPath = fileNamePath?.toLowerCase() || "";
+
+  if (
+    headerString.includes("IPM.Note") ||
+    headerString.includes("Microsoft Outlook") ||
+    lowerPath.endsWith(".msg")
+  ) {
+    mimeType = "application/vnd.ms-outlook";
+    fileExtension = "msg";
+  } else if (
+    headerString.includes("Workbook") ||
+    headerString.includes("Book") ||
+    lowerPath.endsWith(".xls")
+  ) {
+    mimeType = "application/vnd.ms-excel";
+    fileExtension = "xls";
+  } else {
+    mimeType = "application/msword";
+    fileExtension = "doc";
+  }
+} else if (uint8Array[0] === 0xff && uint8Array[1] === 0xd8) {
       mimeType = "image/jpeg";
       fileExtension = "jpg";
     } else if (uint8Array[0] === 0x89 && uint8Array[1] === 0x50) {
@@ -243,6 +252,10 @@ const getFileFromByteArray = async (byteArray, fileNamePath) => {
         mimeType =
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         fileExtension = "xlsx";
+      }
+       else if (lowerPath.endsWith(".xls")) {          // ← NEW
+        mimeType = "application/vnd.ms-excel";           // ← NEW
+        fileExtension = "xls";                           // ← NEW
       } else if (lowerPath.endsWith(".jpg") || lowerPath.endsWith(".jpeg")) {
         mimeType = "image/jpeg";
         fileExtension = "jpg";
