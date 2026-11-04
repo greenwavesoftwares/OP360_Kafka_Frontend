@@ -387,7 +387,7 @@ export async function uploadFile(file, jobid, activityid) {
   formData.append("jobid", jobid);
   formData.append("activityid", activityid);
   formData.append("tenantid", tenantid);
-  try {
+  try { 
     return axios.post(`${REACT_APP_JOBAPI}/jobperform/uploadFile`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -396,6 +396,39 @@ export async function uploadFile(file, jobid, activityid) {
     });
   } catch (e) {
     console.error("Error in uploadFile");
+    throw e;
+  }
+}
+export async function uploadFileToMinIO(file) {
+  const tenant = localStorage.getItem(REACT_APP_TENANTID);
+  const tenantid = decryptTokenId(tenant);
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("tenantid", tenantid);
+
+  try {
+    const response = await axios.post(
+      `${REACT_APP_JOBAPI}/jobperform/uploadFiletoMinIO`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    // Backend returns { key: "uuid_filename.ext" }
+    const key = response?.data?.key;
+
+    if (!key) {
+      throw new Error("Upload succeeded but no key returned from server");
+    }
+
+    return key;
+  } catch (e) {
+    console.error("Error in uploadFileToMinIO:", e);
     throw e;
   }
 }
@@ -426,6 +459,32 @@ export async function downloadFileFromMinIO(key) {
     return response;
   } catch (e) {
     console.error("Error in downLoadFile");
+    throw e;
+  }
+}
+
+export async function deleteFileFromMinIO(minioKey) {
+  const tenant = localStorage.getItem(REACT_APP_TENANTID);
+  const tenantid = decryptTokenId(tenant);
+
+  try {
+    const response = await axios.post(
+      `${REACT_APP_JOBAPI}/jobperform/deleteFileFromMinIO`,
+      null,
+      {
+        params: {
+          minioKey: minioKey,
+          tenantid: tenantid,
+        },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (e) {
+    console.error("Error in deleteFileFromMinIO:", e);
     throw e;
   }
 }

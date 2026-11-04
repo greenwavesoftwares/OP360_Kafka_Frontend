@@ -3962,8 +3962,8 @@ function LogbookForm({ logData }) {
             if (!cell.value || cell.value === "" || cell.value === null) {
               return "null";
             }
-            const hexValue = toHexForSQLServer(cell.value);
-            return hexValue;
+            // const hexValue = toHexForSQLServer(cell.value);
+            return `'${cell.value}'` || cell.value;
           }
           if (fieldType === "Number") {
             if (val === null || val === undefined || val === "") {
