@@ -52,7 +52,7 @@ import TokenComponent from "./TokenComponent";
 import AddOrUpdateUser from "./UserModuleUpdated/AddOrUpdateUser";
 import UserOverview from "./UserModuleUpdated/UserOverview";
 import UserProfile from "./UserProfile/UserProfile";
-import { getTokenExpirationTime, hastokenExpired } from "./helper";
+// import { getTokenExpirationTime, hastokenExpired } from "./helper";
 import { extendTokenExpiration } from "./helper/AuthService";
 import ChatUI from "./Logbook/ChatNotNew/ChatUI";
 import { useLocalStorage } from "react-haiku";
@@ -72,52 +72,52 @@ export default function WrappedRoutes() {
   //     return payload.exp * 1000; // Expiration time in milliseconds
   // };
 
-  const navigateToLogin = () => {
-    const currentTime = Date.now();
-    const expirationTime = getTokenExpirationTime(token);
-    console.log("Expiry Time : ", expirationTime);
-    const timeRemaining = expirationTime - currentTime;
-    console.log("Time remaining : ", timeRemaining);
-    if (timeRemaining <= 30000) {
-      const savedTenantBackup = localStorage.getItem("savedTenant");
-      localStorage.clear();
-      if (savedTenantBackup)
-        localStorage.setItem("savedTenant", savedTenantBackup);
-      navigate("/");
-    }
-  };
-  useEffect(() => {
-    console.log("WrappedRoutes mounted");
-    navigateToLogin();
+  // const navigateToLogin = () => {
+  //   const currentTime = Date.now();
+  //   const expirationTime = getTokenExpirationTime(token);
+  //   console.log("Expiry Time : ", expirationTime);
+  //   const timeRemaining = expirationTime - currentTime;
+  //   console.log("Time remaining : ", timeRemaining);
+  //   if (timeRemaining <= 30000) {
+  //     const savedTenantBackup = localStorage.getItem("savedTenant");
+  //     localStorage.clear();
+  //     if (savedTenantBackup)
+  //       localStorage.setItem("savedTenant", savedTenantBackup);
+  //     navigate("/");
+  //   }
+  // };
+  // useEffect(() => {
+  //   console.log("WrappedRoutes mounted");
+  //   // navigateToLogin();
 
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        console.log("Doc alive");
-        navigateToLogin();
-      }
-    };
+  //   const handleVisibilityChange = () => {
+  //     if (!document.hidden) {
+  //       console.log("Doc alive");
+  //       // navigateToLogin();
+  //     }
+  //   };
 
-    // Add the visibilitychange event listener
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    // Check every 10 seconds to see if the token is about to expire
-    const intervalId = setInterval(() => {
-      const tokenExpiired = hastokenExpired();
-      if (tokenExpiired) {
-        // If less than or equal to 120 seconds remaining
-        setVisible(true); // Show warning or prompt
-        clearInterval(intervalId);
-      } else {
-        setVisible(false); // Hide warning if token is still valid
-      }
-    }, 10000); // Check every 10 seconds
+  //   // Add the visibilitychange event listener
+  //   document.addEventListener("visibilitychange", handleVisibilityChange);
+  //   // Check every 10 seconds to see if the token is about to expire
+  //   const intervalId = setInterval(() => {
+  //     const tokenExpiired = hastokenExpired();
+  //     if (tokenExpiired) {
+  //       // If less than or equal to 120 seconds remaining
+  //       setVisible(true); // Show warning or prompt
+  //       clearInterval(intervalId);
+  //     } else {
+  //       setVisible(false); // Hide warning if token is still valid
+  //     }
+  //   }, 10000); // Check every 10 seconds
 
-    // Cleanup interval on component unmount
-    return () => {
-      clearInterval(intervalId);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, [visible]);
+  //   // Cleanup interval on component unmount
+  //   return () => {
+  //     clearInterval(intervalId);
+  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
+  //     window.removeEventListener("storage", handleStorageChange);
+  //   };
+  // }, [visible]);
 
   /**
    * Handles the storage event, checking if the token has been updated

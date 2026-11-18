@@ -211,55 +211,45 @@ export const isAuthenticated = () => {
 
 // Function to extend the token expiration time
 export const extendTokenExpiration = async () => {
-  console.log("extendTokenExpiration");
-  const tenantId = getTenantID(); //get Tenant Id information
-  try {
-    const token = localStorage.getItem("token"); // Get the token from session storage
-
-    // If there's no token, clear session storage and redirect to home
-    if (!token || !tenantId) {
-      // console.log('No token found ','tenantId',tenantId);
-
-      // if (tenantId) window.location.href = `/`;
-      // else window.location.href = "/";
-      window.location.href = "/";
-
-      const savedTenant = localStorage.getItem("savedTenant");
-      localStorage.clear();
-      if (savedTenant) localStorage.setItem("savedTenant", savedTenant);
-
-      return;
-    }
-
-    // Send a GET request to extend the token expiration
-    const response = await axios.get(`${AUTH_API}/auth/extendTokenExpiration`, {
-      params: { token }, // Include the token in the request
-    });
-
-    // If the response indicates forbidden access, clear session and redirect
-    if (response.status === 403) {
-      window.location.href = `/`;
-
-      const savedTenant = localStorage.getItem("savedTenant");
-      localStorage.clear();
-      if (savedTenant) localStorage.setItem("savedTenant", savedTenant);
-
-      // window.location.href = "/";
-      return;
-    }
-
-    // If there's no data in the response, redirect to home
-    if (!response.data) {
-      window.location.href = `/`;
-      return;
-    }
-
-    const newToken = response.data; // Get the new token from the response
-    localStorage.setItem("token", newToken); // Save the new token in session storage
-  } catch (error) {
-    console.error(error); // Log the error for debugging
-    window.location.href = `/`; // Redirect to home on error
-  }
+  // console.log("extendTokenExpiration");
+  // const tenantId = getTenantID(); //get Tenant Id information
+  // try {
+  //   const token = localStorage.getItem("token"); // Get the token from session storage
+  //   // If there's no token, clear session storage and redirect to home
+  //   if (!token || !tenantId) {
+  //     // console.log('No token found ','tenantId',tenantId);
+  //     // if (tenantId) window.location.href = `/`;
+  //     // else window.location.href = "/";
+  //     window.location.href = "/";
+  //     const savedTenant = localStorage.getItem("savedTenant");
+  //     localStorage.clear();
+  //     if (savedTenant) localStorage.setItem("savedTenant", savedTenant);
+  //     return;
+  //   }
+  //   // Send a GET request to extend the token expiration
+  //   const response = await axios.get(`${AUTH_API}/auth/extendTokenExpiration`, {
+  //     params: { token }, // Include the token in the request
+  //   });
+  //   // If the response indicates forbidden access, clear session and redirect
+  //   if (response.status === 403) {
+  //     window.location.href = `/`;
+  //     const savedTenant = localStorage.getItem("savedTenant");
+  //     localStorage.clear();
+  //     if (savedTenant) localStorage.setItem("savedTenant", savedTenant);
+  //     // window.location.href = "/";
+  //     return;
+  //   }
+  //   // If there's no data in the response, redirect to home
+  //   if (!response.data) {
+  //     window.location.href = `/`;
+  //     return;
+  //   }
+  //   const newToken = response.data; // Get the new token from the response
+  //   localStorage.setItem("token", newToken); // Save the new token in session storage
+  // } catch (error) {
+  //   console.error(error); // Log the error for debugging
+  //   window.location.href = `/`; // Redirect to home on error
+  // }
 };
 
 // Function to update the user's password
