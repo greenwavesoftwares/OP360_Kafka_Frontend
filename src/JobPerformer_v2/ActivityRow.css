@@ -1,0 +1,161 @@
+.jab-activity-row {
+  border-top: 1px solid var(--jab-border);
+}
+
+.jab-activity-row:hover {
+  background: var(--jab-surface-muted);
+}
+
+.jab-activity-row--mine {
+  background: var(--jab-primary-bg);
+  box-shadow: inset 3px 0 0 var(--jab-primary);
+}
+
+.jab-activity-row--mine:hover {
+  background: var(--jab-primary-bg);
+}
+
+.jab-activity-row__mine-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px 1px 5px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--jab-primary);
+  background: var(--jab-surface);
+  border: 1px solid var(--jab-primary);
+  white-space: nowrap;
+}
+
+.jab-activity-row td {
+  padding: 10px;
+  font-size: 12.5px;
+  color: var(--jab-text-secondary);
+  white-space: nowrap;
+}
+
+.jab-activity-row__seq {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--jab-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.jab-activity-row__name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--jab-text-primary);
+  font-weight: 500;
+}
+
+.jab-activity-row__remark-icon {
+  color: var(--jab-text-faint);
+}
+
+.jab-activity-row__people {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jab-activity-row__performer-tag {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--jab-neutral);
+  background: var(--jab-neutral-bg);
+  border: 1px solid var(--jab-neutral-border);
+  white-space: nowrap;
+}
+
+.jab-activity-row__muted {
+  color: var(--jab-text-muted);
+}
+
+/* Logbook cell links out to the logbook's own page instead of just
+   naming it in muted text. */
+.jab-activity-row__logbook-link {
+  color: var(--jab-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.jab-activity-row__logbook-link:hover {
+  text-decoration: underline;
+  color: var(--jab-primary-hover);
+}
+
+.jab-activity-row__duration {
+  font-variant-numeric: tabular-nums;
+}
+
+.jab-activity-row__detail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--jab-text-faint);
+  cursor: pointer;
+}
+
+.jab-activity-row__detail-btn:hover {
+  background: var(--jab-surface);
+  border-color: var(--jab-border);
+  color: var(--jab-text-secondary);
+}
+
+.jab-activity-action,
+.jab-activity-action-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.jab-activity-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid;
+  cursor: pointer;
+  background: transparent;
+}
+
+.jab-activity-action--start {
+  color: var(--jab-info);
+  background: var(--jab-info-bg);
+  border-color: var(--jab-info-border);
+}
+
+.jab-activity-action--pause {
+  color: var(--jab-orange);
+  background: var(--jab-orange-bg);
+  border-color: var(--jab-orange-border);
+}
+
+.jab-activity-action--complete {
+  color: var(--jab-danger);
+  background: var(--jab-danger-bg);
+  border-color: var(--jab-danger-border);
+}
+
+.jab-activity-action-none {
+  font-size: 11px;
+  color: var(--jab-text-faint);
+  padding: 0 4px;
+}

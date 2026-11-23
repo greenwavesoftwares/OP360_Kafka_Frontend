@@ -1,0 +1,528 @@
+.jab-activity-filters {
+  position: relative;
+  padding: 10px 16px;
+  background: var(--jab-surface-muted);
+  border-bottom: 1px solid var(--jab-border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+/* This strip is the mobile-only filter entry point: above the breakpoint
+   the table (with its own header-anchored filter chips) is in view
+   instead of the card list, so the standalone strip steps aside rather
+   than duplicating a second search row next to the headers. */
+@media (min-width: 641px) {
+  .jab-activity-filters {
+    display: none;
+  }
+}
+
+/* Invisible on desktop (just closes the popover on outside click), becomes
+   a real darkened overlay on mobile where the popover turns into a sheet. */
+.jab-activity-filters__backdrop {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 30;
+}
+
+.jab-activity-filters__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Mobile-only "Filters" button that opens the combined accordion sheet. */
+.jab-activity-filters__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: var(--jab-radius-sm);
+  border: 1px solid var(--jab-border);
+  background: var(--jab-surface);
+  color: var(--jab-text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.jab-activity-filters__trigger:hover {
+  border-color: var(--jab-border-strong);
+  color: var(--jab-text-primary);
+}
+
+.jab-activity-filters__trigger--active {
+  border-color: var(--jab-primary);
+  background: var(--jab-primary-bg);
+  color: var(--jab-primary);
+}
+
+.jab-activity-filters__chip-wrap {
+  position: relative;
+}
+
+.jab-activity-filters__chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--jab-border);
+  background: var(--jab-surface);
+  color: var(--jab-text-secondary);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.jab-activity-filters__chip:hover {
+  border-color: var(--jab-border-strong);
+  color: var(--jab-text-primary);
+}
+
+/* Icon variant: the compact button used inside a table <th>, right next
+   to the column label, instead of the full text pill used in the mobile
+   strip. Deliberately minimal so it doesn't compete with the header text. */
+.jab-activity-filters__chip--icon {
+  padding: 3px;
+  border-radius: var(--jab-radius-sm);
+  border-color: transparent;
+  background: transparent;
+  color: var(--jab-text-faint);
+}
+
+.jab-activity-filters__chip--icon:hover {
+  background: var(--jab-surface);
+  border-color: var(--jab-border);
+  color: var(--jab-text-secondary);
+}
+
+.jab-activity-filters__chip--icon.jab-activity-filters__chip--active {
+  background: var(--jab-primary-bg);
+  border-color: transparent;
+  color: var(--jab-primary);
+}
+
+.jab-activity-filters__chip--icon.jab-activity-filters__chip--open {
+  background: var(--jab-surface);
+  border-color: var(--jab-border-strong);
+  color: var(--jab-text-primary);
+}
+
+.jab-activity-filters__chip--icon .jab-activity-filters__chip-dot {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+}
+
+.jab-activity-filters__chip--active {
+  border-color: var(--jab-primary);
+  background: var(--jab-primary-bg);
+  color: var(--jab-primary);
+}
+
+.jab-activity-filters__chip--open {
+  border-color: var(--jab-primary);
+}
+
+.jab-activity-filters__chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--jab-primary);
+  flex-shrink: 0;
+}
+
+.jab-activity-filters__popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  z-index: 31;
+  width: 220px;
+  background: var(--jab-surface);
+  border: 1px solid var(--jab-border);
+  border-radius: var(--jab-radius-md);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.12);
+  overflow: hidden;
+  /* Normal, non-uppercase text inside the popover even though it's
+     anchored inside an all-caps table header. */
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+
+.jab-activity-filters__popover--left {
+  left: 0;
+}
+
+/* Used by header chips near the right edge of the table so the popover
+   hangs from the right side of its button instead of overflowing past
+   the edge of the horizontally-scrolling table. */
+.jab-activity-filters__popover--right {
+  right: 0;
+}
+
+.jab-activity-filters__popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--jab-border);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--jab-text-faint);
+}
+
+.jab-activity-filters__popover-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--jab-text-faint);
+  cursor: pointer;
+  border-radius: var(--jab-radius-sm);
+}
+
+.jab-activity-filters__popover-close:hover {
+  background: var(--jab-surface-muted);
+  color: var(--jab-text-primary);
+}
+
+.jab-activity-filters__popover-body {
+  padding: 10px;
+}
+
+.jab-activity-filters__popover-body input,
+.jab-activity-filters__popover-body select {
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--jab-text-primary);
+  background: var(--jab-surface);
+  border: 1px solid var(--jab-border);
+  border-radius: var(--jab-radius-sm);
+  padding: 7px 9px;
+  outline: none;
+  width: 100%;
+}
+
+.jab-activity-filters__popover-body input:focus,
+.jab-activity-filters__popover-body select:focus {
+  border-color: var(--jab-primary);
+}
+
+.jab-activity-filters__popover-body input::placeholder {
+  color: var(--jab-text-faint);
+}
+
+/* Checkbox list used for performer/asset/status — the "Filter Resource"
+   style: an "All" row plus one row per option, each independently
+   toggleable. Shared by the desktop header popovers and the mobile
+   accordion sections below. */
+.jab-activity-filters__checklist {
+  display: flex;
+  flex-direction: column;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.jab-activity-filters__check-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 6px;
+  border-radius: var(--jab-radius-sm);
+  font-size: 13px;
+  color: var(--jab-text-primary);
+  cursor: pointer;
+}
+
+.jab-activity-filters__check-row:hover {
+  background: var(--jab-surface-muted);
+}
+
+.jab-activity-filters__check-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--jab-primary);
+  cursor: pointer;
+}
+
+.jab-activity-filters__check-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jab-activity-filters__clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 10px;
+  border-radius: var(--jab-radius-sm);
+  border: 1px solid var(--jab-border);
+  background: var(--jab-surface);
+  color: var(--jab-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.jab-activity-filters__clear:hover:not(:disabled) {
+  background: var(--jab-surface-muted);
+  border-color: var(--jab-border-strong);
+  color: var(--jab-text-primary);
+}
+
+.jab-activity-filters__clear:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Full-panel accordion sheet opened by the mobile "Filters" trigger —
+   the combined equivalent of every per-column popover in one place. */
+.jab-activity-filters__sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(16, 24, 40, 0.45);
+  display: flex;
+  align-items: flex-end;
+}
+
+.jab-activity-filters__sheet {
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--jab-surface);
+  border-radius: var(--jab-radius-lg) var(--jab-radius-lg) 0 0;
+  box-shadow: 0 -8px 24px rgba(16, 24, 40, 0.18);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.jab-activity-filters__sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--jab-border);
+}
+
+.jab-activity-filters__sheet-header h3 {
+  margin: 0;
+  font-family: var(--jab-heading-font);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--jab-text-primary);
+}
+
+.jab-activity-filters__sheet-header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--jab-text-faint);
+  border-radius: var(--jab-radius-sm);
+  cursor: pointer;
+}
+
+.jab-activity-filters__sheet-header button:hover {
+  background: var(--jab-surface-muted);
+  color: var(--jab-text-primary);
+}
+
+.jab-activity-filters__sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 16px;
+}
+
+.jab-activity-filters__section {
+  border-bottom: 1px solid var(--jab-border);
+}
+
+.jab-activity-filters__section:last-child {
+  border-bottom: none;
+}
+
+.jab-activity-filters__section-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 4px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--jab-text-primary);
+  cursor: pointer;
+}
+
+.jab-activity-filters__section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.jab-activity-filters__chevron {
+  flex-shrink: 0;
+  color: var(--jab-text-faint);
+  transition: transform 0.15s ease;
+}
+
+.jab-activity-filters__chevron--open {
+  transform: rotate(180deg);
+}
+
+.jab-activity-filters__section-body {
+  padding: 0 4px 16px;
+}
+
+.jab-activity-filters__section-body input,
+.jab-activity-filters__section-body select {
+  width: 100%;
+  font-family: inherit;
+  font-size: 16px; /* prevents iOS Safari from zooming in on focus */
+  color: var(--jab-text-primary);
+  background: var(--jab-surface);
+  border: 1px solid var(--jab-border);
+  border-radius: var(--jab-radius-sm);
+  padding: 10px 12px;
+  outline: none;
+}
+
+.jab-activity-filters__section-body input:focus,
+.jab-activity-filters__section-body select:focus {
+  border-color: var(--jab-primary);
+}
+
+.jab-activity-filters__section-body .jab-activity-filters__checklist {
+  max-height: none;
+}
+
+.jab-activity-filters__sheet-footer {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 12px 16px;
+  border-top: 1px solid var(--jab-border);
+}
+
+.jab-activity-filters__sheet-footer .jab-activity-filters__clear {
+  flex: 1;
+  margin-left: 0;
+  justify-content: center;
+}
+
+.jab-activity-filters__done {
+  flex: 1;
+  padding: 10px 14px;
+  border: none;
+  border-radius: var(--jab-radius-sm);
+  background: var(--jab-primary);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.jab-activity-filters__done:hover {
+  background: var(--jab-primary-hover);
+}
+
+@media (max-width: 640px) {
+  .jab-activity-filters {
+    padding: 10px 12px;
+  }
+}
+.jab-activity-filters__search-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.jab-activity-filters__search-row input {
+  flex: 1;
+  min-width: 0;
+}
+.jab-activity-filters__field-clear {
+  border: none;
+  background: none;
+  font-size: 12px;
+  color: #2563eb;
+  cursor: pointer;
+  padding: 4px 6px;
+  white-space: nowrap;
+}
+.jab-activity-filters__field-clear:disabled {
+  color: #9ca3af;
+  cursor: default;
+}
+.jab-activity-filters__empty {
+  font-size: 12px;
+  color: #6b7280;
+  padding: 6px 4px;
+}
+
+
+.jab-activity-filters__date-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.jab-activity-filters__check-row input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--jab-primary);
+  cursor: pointer;
+}
+/* Radios/dates shouldn't inherit the full-width text-input styling. */
+.jab-activity-filters__popover-body .jab-activity-filters__check-row input[type="radio"],
+.jab-activity-filters__section-body .jab-activity-filters__check-row input[type="radio"] {
+  width: 16px;
+  padding: 0;
+}
+.jab-activity-filters__custom-range {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 2px 2px 4px 24px;
+}
+.jab-activity-filters__custom-range label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--jab-text-faint);
+}
+.jab-activity-filters__date-wrap > .jab-activity-filters__field-clear {
+  align-self: flex-end;
+}

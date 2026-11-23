@@ -1,0 +1,213 @@
+.jab-job-card {
+  background: var(--jab-surface);
+  border: 1px solid var(--jab-border);
+  border-radius: var(--jab-radius-lg);
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.jab-job-card:hover {
+  border-color: var(--jab-border-strong);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+}
+
+.jab-job-card:focus-visible {
+  outline: 2px solid var(--jab-primary);
+  outline-offset: 2px;
+}
+
+.jab-job-card--selected {
+  border-color: var(--jab-primary);
+  background: var(--jab-primary-bg);
+  box-shadow: 0 0 0 1px var(--jab-primary);
+}
+
+.jab-job-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.jab-job-card__title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.jab-job-card__title-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.jab-job-card__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--jab-text-primary);
+  line-height: 1.3;
+}
+
+.jab-job-card__id {
+  font-size: 11px;
+  color: var(--jab-text-faint);
+}
+
+.jab-job-card__adhoc {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #7C3AED;
+  background: #F5F3FF;
+  border: 1px solid #DDD6FE;
+  border-radius: 4px;
+  padding: 1px 6px;
+  flex-shrink: 0;
+}
+
+.jab-job-card__detail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--jab-text-faint);
+  cursor: pointer;
+}
+
+.jab-job-card__detail-btn:hover {
+  background: var(--jab-surface);
+  border-color: var(--jab-border);
+  color: var(--jab-text-secondary);
+}
+
+.jab-job-card__badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.jab-job-card__meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--jab-border);
+}
+
+.jab-job-card__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.jab-job-card__meta-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--jab-text-faint);
+}
+
+.jab-job-card__instrument {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--jab-text-secondary);
+}
+
+.jab-job-card__instrument svg {
+  color: var(--jab-text-faint);
+  flex-shrink: 0;
+}
+
+.jab-job-card__people {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--jab-text-secondary);
+  flex-wrap: wrap;
+}
+
+.jab-job-card__arrow {
+  color: var(--jab-text-faint);
+}
+
+.jab-job-card__performer-tag {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--jab-neutral);
+  background: var(--jab-neutral-bg);
+  border: 1px solid var(--jab-neutral-border);
+}
+
+.jab-job-card__stats {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.jab-job-card__stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--jab-text-secondary);
+}
+
+.jab-job-card__stat svg {
+  color: var(--jab-text-faint);
+  flex-shrink: 0;
+}
+
+.jab-job-card__stat strong {
+  font-weight: 700;
+  color: var(--jab-text-primary);
+}
+
+.jab-job-card__stat--muted {
+  color: var(--jab-text-muted);
+}
+
+.jab-job-card__stat--muted strong {
+  font-weight: 600;
+  color: var(--jab-text-muted);
+}
+
+.jab-job-card__footer {
+  padding-top: 2px;
+}
+
+.jab-job-card__footer .jab-progress {
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .jab-job-card__meta {
+    grid-template-columns: 1fr;
+  }
+}

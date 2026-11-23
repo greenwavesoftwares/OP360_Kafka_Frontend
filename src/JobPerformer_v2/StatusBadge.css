@@ -1,0 +1,29 @@
+.jab-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.jab-status__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.jab-status__dot--pulse {
+  animation: jab-pulse 1.6s ease-in-out infinite;
+}
+
+.jab-status--success   { color: var(--jab-success); background: var(--jab-success-bg); border-color: var(--jab-success-border); }
+.jab-status--info      { color: var(--jab-info);    background: var(--jab-info-bg);    border-color: var(--jab-info-border); }
+.jab-status--warning   { color: var(--jab-warning); background: var(--jab-warning-bg); border-color: var(--jab-warning-border); }
+.jab-status--orange    { color: var(--jab-orange);  background: var(--jab-orange-bg);  border-color: var(--jab-orange-border); }
+.jab-status--danger    { color: var(--jab-danger);  background: var(--jab-danger-bg);  border-color: var(--jab-danger-border); }
+.jab-status--neutral   { color: var(--jab-neutral); background: var(--jab-neutral-bg); border-color: var(--jab-neutral-border); }

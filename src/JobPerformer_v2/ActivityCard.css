@@ -1,0 +1,190 @@
+.jab-activity-card {
+  background: var(--jab-surface);
+  border: 1px solid var(--jab-border);
+  border-radius: var(--jab-radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.jab-activity-card--mine {
+  border-color: var(--jab-primary);
+  background: var(--jab-primary-bg);
+  box-shadow: 0 0 0 1px var(--jab-primary);
+}
+
+.jab-activity-card__top {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.jab-activity-card__seq {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--jab-text-faint);
+  font-variant-numeric: tabular-nums;
+  padding-top: 1px;
+}
+
+.jab-activity-card__title-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.jab-activity-card__name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--jab-text-primary);
+  line-height: 1.35;
+}
+
+.jab-activity-card__remark-icon {
+  flex-shrink: 0;
+  color: var(--jab-text-faint);
+}
+
+.jab-activity-card__detail-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--jab-border);
+  background: var(--jab-surface);
+  color: var(--jab-text-faint);
+  cursor: pointer;
+}
+
+.jab-activity-card__detail-btn:hover {
+  border-color: var(--jab-border-strong);
+  color: var(--jab-text-secondary);
+}
+
+.jab-activity-card__badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.jab-activity-card__mine-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px 1px 5px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--jab-primary);
+  background: var(--jab-surface);
+  border: 1px solid var(--jab-primary);
+  white-space: nowrap;
+}
+
+/* Performer + Reviewer sit side by side, each with a small label so the
+   two avatars can't be confused. On very narrow cards they stack. */
+.jab-activity-card__people {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px 12px;
+}
+
+.jab-activity-card__person {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.jab-activity-card__person-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--jab-text-faint);
+}
+
+.jab-activity-card__person-body {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.jab-activity-card__performer-name {
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--jab-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jab-activity-card__performer-tag {
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--jab-neutral);
+  background: var(--jab-neutral-bg);
+  border: 1px solid var(--jab-neutral-border);
+  white-space: nowrap;
+}
+
+.jab-activity-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--jab-border);
+}
+
+.jab-activity-card__meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--jab-text-muted);
+}
+
+.jab-activity-card__meta-item svg {
+  flex-shrink: 0;
+  color: var(--jab-text-faint);
+}
+
+.jab-activity-card__meta-item--muted {
+  color: var(--jab-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Logbook meta item links out to the logbook's own page instead of just
+   naming it in muted text. */
+.jab-activity-card__logbook-link {
+  color: var(--jab-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.jab-activity-card__logbook-link:hover {
+  text-decoration: underline;
+  color: var(--jab-primary-hover);
+}
+
+.jab-activity-card__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 2px;
+}

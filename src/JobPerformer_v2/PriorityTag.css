@@ -1,0 +1,18 @@
+.jab-priority {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--jab-text-secondary);
+}
+
+.jab-priority__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.jab-priority__dot--high   { background: var(--jab-priority-high); }
+.jab-priority__dot--medium { background: var(--jab-priority-medium); }
+.jab-priority__dot--low    { background: var(--jab-priority-low); }

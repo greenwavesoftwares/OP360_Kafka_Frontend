@@ -1,0 +1,72 @@
+/* ==========================================================
+   Shared design tokens for the Job / Activity board.
+   Every component stylesheet in this folder relies on these
+   custom properties instead of hardcoding hex values, so the
+   whole board can be re-themed from one place.
+   ========================================================== */
+
+.jab-scope {
+  --jab-font: 'Inter', 'Sora', sans-serif;
+  --jab-heading-font: 'Sora', sans-serif;
+
+  --jab-page-bg: #F7F8FA;
+  --jab-surface: #FFFFFF;
+  --jab-surface-muted: #F8FAFC;
+  --jab-border: #E2E8F0;
+  --jab-border-strong: #CBD5E1;
+
+  --jab-text-primary: #1E293B;
+  --jab-text-secondary: #475467;
+  --jab-text-muted: #667085;
+  --jab-text-faint: #94A3B8;
+
+  --jab-primary: #155EEF;
+  --jab-primary-bg: #EFF4FF;
+  --jab-primary-hover: #0E4FD1;
+
+  --jab-radius-sm: 6px;
+  --jab-radius-md: 10px;
+  --jab-radius-lg: 14px;
+
+  /* status palette */
+  --jab-success: #067647;
+  --jab-success-bg: #ECFDF3;
+  --jab-success-border: #ABEFC6;
+
+  --jab-info: #175CD3;
+  --jab-info-bg: #EFF8FF;
+  --jab-info-border: #B2DDFF;
+
+  --jab-warning: #B54708;
+  --jab-warning-bg: #FFFAEB;
+  --jab-warning-border: #FEDF89;
+
+  --jab-orange: #C4320A;
+  --jab-orange-bg: #FFF4ED;
+  --jab-orange-border: #F9DBAF;
+
+  --jab-danger: #B42318;
+  --jab-danger-bg: #FEF3F2;
+  --jab-danger-border: #FECDCA;
+
+  --jab-neutral: #475467;
+  --jab-neutral-bg: #F2F4F7;
+  --jab-neutral-border: #D0D5DD;
+
+  --jab-priority-high: #D92D20;
+  --jab-priority-medium: #F79009;
+  --jab-priority-low: #12B76A;
+
+  font-family: var(--jab-font);
+  color: var(--jab-text-primary);
+  background: var(--jab-page-bg);
+}
+
+.jab-scope * {
+  box-sizing: border-box;
+}
+
+@keyframes jab-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}

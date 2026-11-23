@@ -1,0 +1,22 @@
+.jab-jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.jab-jobs-grid__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 10px;
+  color: var(--jab-text-faint);
+  font-size: 13px;
+  background: var(--jab-surface);
+  border: 1px solid var(--jab-border);
+  border-radius: var(--jab-radius-lg);
+}
+
+@media (max-width: 480px) {
+  .jab-jobs-grid {
+    grid-template-columns: 1fr;
+  }
+}

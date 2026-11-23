@@ -1,0 +1,61 @@
+/* Tooltip is portalled to <body>, i.e. outside .jab-scope, so it can't
+   inherit the board's custom properties. Every token has a fallback. */
+
+.jab-tooltip {
+  position: fixed;
+  z-index: 10000;
+  width: max-content;
+  padding: 6px 10px;
+  border-radius: var(--jab-radius-sm, 6px);
+  background: var(--jab-tooltip-bg, #101828);
+  color: var(--jab-tooltip-text, #FFFFFF);
+  font-family: var(--jab-font, 'Inter', 'Sora', sans-serif);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: left;
+  overflow-wrap: anywhere;
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.18);
+  box-sizing: border-box;
+  /* Invisible until measured + positioned, so it never flashes at 0,0. */
+  opacity: 0;
+  pointer-events: auto;
+}
+
+.jab-tooltip--visible {
+  opacity: 1;
+  animation: jab-tooltip-in 120ms ease-out;
+}
+
+.jab-tooltip--top { transform-origin: bottom center; }
+.jab-tooltip--bottom { transform-origin: top center; }
+
+.jab-tooltip__arrow {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.jab-tooltip--top .jab-tooltip__arrow { top: 100%; margin-top: -1px; }
+.jab-tooltip--bottom .jab-tooltip__arrow { top: 0; margin-top: 1px; }
+.jab-tooltip--left .jab-tooltip__arrow { left: 100%; margin-left: -1px; }
+.jab-tooltip--right .jab-tooltip__arrow { left: 0; margin-left: 1px; }
+
+@keyframes jab-tooltip-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jab-tooltip--visible { animation: none; }
+}
+
+/* Auto-created wrapper when <Tooltip> receives several children / text. */
+.jab-tooltip-anchor {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}

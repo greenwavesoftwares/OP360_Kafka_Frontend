@@ -1,0 +1,27 @@
+.jab-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-weight: 600;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.jab-avatar-empty {
+  font-size: 12px;
+  color: var(--jab-text-faint);
+}
+
+/* Group performers get a rounded-square tile instead of a circle,
+   so they're visually distinct from an individual at a glance. */
+.jab-avatar--group {
+  border-radius: 8px;
+}
+
+.jab-avatar--blue   { background: #EFF4FF; color: #155EEF; }
+.jab-avatar--indigo { background: #EEF4FF; color: #3538CD; }
+.jab-avatar--pink   { background: #FDF2FA; color: #C11574; }
+.jab-avatar--green  { background: #ECFDF3; color: #067647; }
+.jab-avatar--orange { background: #FFF6ED; color: #B93815; }
+.jab-avatar--cyan   { background: #F0F9FF; color: #026AA2; }

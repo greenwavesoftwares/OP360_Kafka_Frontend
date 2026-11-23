@@ -1,0 +1,304 @@
+.jab-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.jab-toolbar__search {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+
+.jab-toolbar__search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--jab-text-faint);
+}
+
+.jab-toolbar__input {
+  width: 100%;
+  padding: 8px 12px 8px 32px;
+  font-size: 13px;
+  border-radius: var(--jab-radius-md);
+  border: 1px solid var(--jab-border);
+  background: var(--jab-surface);
+  outline: none;
+  font-family: inherit;
+  color: var(--jab-text-primary);
+}
+
+.jab-toolbar__input:focus {
+  border-color: var(--jab-border-strong);
+}
+
+.jab-toolbar__input::placeholder {
+  color: var(--jab-text-faint);
+}
+
+.jab-toolbar__filters {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--jab-surface);
+  border: 1px solid var(--jab-border);
+  border-radius: var(--jab-radius-md);
+  padding: 4px;
+}
+
+.jab-toolbar__filter {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--jab-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.jab-toolbar__filter--active {
+  background: var(--jab-primary-bg);
+  color: var(--jab-primary);
+}
+
+.jab-toolbar__more-wrap {
+  position: relative;
+}
+
+.jab-toolbar__more {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--jab-radius-md);
+  border: 1px solid var(--jab-border);
+  background: var(--jab-surface);
+  color: var(--jab-text-secondary);
+  font-size: 12.5px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.jab-toolbar__more:hover {
+  border-color: var(--jab-border-strong);
+  color: var(--jab-text-primary);
+}
+
+.jab-toolbar__more--active {
+  border-color: var(--jab-primary);
+  background: var(--jab-primary-bg);
+  color: var(--jab-primary);
+}
+
+.jab-toolbar__more-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--jab-primary);
+  flex-shrink: 0;
+}
+
+/* Popover opened by the "Filters" button: current / last / upcoming
+   month, or a custom date range, filtered against each job's
+   scheduled start date. */
+.jab-toolbar__popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 31;
+  width: 220px;
+  background: var(--jab-surface);
+  border: 1px solid var(--jab-border);
+  border-radius: var(--jab-radius-md);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.12);
+  overflow: hidden;
+}
+
+.jab-toolbar__popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--jab-border);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--jab-text-faint);
+}
+
+.jab-toolbar__popover-header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--jab-text-faint);
+  cursor: pointer;
+  border-radius: var(--jab-radius-sm);
+}
+
+.jab-toolbar__popover-header button:hover {
+  background: var(--jab-surface-muted);
+  color: var(--jab-text-primary);
+}
+
+.jab-toolbar__popover-body {
+  padding: 6px 10px;
+}
+
+.jab-toolbar__radio-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 2px;
+  font-size: 13px;
+  color: var(--jab-text-primary);
+  cursor: pointer;
+}
+
+/* Gated behind (hover: hover) so touch devices — where a "hover" can get
+   stuck on after a tap — don't show a lingering color change that looks
+   like a selection when nothing was actually selected. */
+@media (hover: hover) {
+  .jab-toolbar__radio-row:hover {
+    color: var(--jab-primary);
+  }
+}
+
+/* The real control, kept for keyboard/screen-reader support but visually
+   hidden — accent-color (previously used to theme it) isn't supported by
+   every mobile browser/webview, which left the radio looking unselected
+   there even though its checked state was correct. The dot below is
+   themed purely off :checked, which works everywhere. */
+.jab-toolbar__radio-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.jab-toolbar__radio-dot {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--jab-border-strong);
+  background: var(--jab-surface);
+  transition: border-color 0.15s ease;
+}
+
+.jab-toolbar__radio-input:checked + .jab-toolbar__radio-dot,
+.jab-toolbar__radio-dot--checked {
+  border-color: var(--jab-primary);
+}
+
+.jab-toolbar__radio-input:checked + .jab-toolbar__radio-dot::after,
+.jab-toolbar__radio-dot--checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--jab-primary);
+  transform: translate(-50%, -50%);
+}
+
+.jab-toolbar__radio-input:focus-visible + .jab-toolbar__radio-dot {
+  outline: 2px solid var(--jab-primary);
+  outline-offset: 2px;
+}
+
+.jab-toolbar__custom-range {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 2px 6px 24px;
+}
+
+.jab-toolbar__custom-range label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--jab-text-faint);
+}
+
+.jab-toolbar__custom-range input {
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--jab-text-primary);
+  background: var(--jab-surface);
+  border: 1px solid var(--jab-border);
+  border-radius: var(--jab-radius-sm);
+  padding: 6px 8px;
+  outline: none;
+}
+
+.jab-toolbar__custom-range input:focus {
+  border-color: var(--jab-primary);
+}
+
+.jab-toolbar__popover-footer {
+  padding: 8px 10px;
+  border-top: 1px solid var(--jab-border);
+}
+
+.jab-toolbar__clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  justify-content: center;
+  padding: 7px 10px;
+  border-radius: var(--jab-radius-sm);
+  border: 1px solid var(--jab-border);
+  background: var(--jab-surface);
+  color: var(--jab-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.jab-toolbar__clear:hover:not(:disabled) {
+  background: var(--jab-surface-muted);
+  border-color: var(--jab-border-strong);
+  color: var(--jab-text-primary);
+}
+
+.jab-toolbar__clear:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .jab-toolbar__popover {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    border-radius: var(--jab-radius-lg) var(--jab-radius-lg) 0 0;
+    box-shadow: 0 -8px 24px rgba(16, 24, 40, 0.18);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
