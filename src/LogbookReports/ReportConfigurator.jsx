@@ -132,12 +132,32 @@ export default function ReportConfigurator() {
   }, []);
 
   const fetchUser = useCallback(async () => {
-    const data = await fetchAllUsers();
-    const activeUsers = data.filter((u) => u.active === true);
-    const activeUsersWithoutCreator = activeUsers.filter(
-      (u) => u.userID !== creator,
-    );
-    setUser(activeUsersWithoutCreator);
+    try {
+      const data = await fetchAllUsers();
+
+      if (!data || data.length === 0) {
+        setsnackbarSeverity("error");
+        setSnackbarText("Unable to fetch users. Please try again later.");
+        setErrorOpen(true);
+        setShowReportConfig(false);
+        setShowReportConfigWithData(false);
+        setUser([]);
+        return;
+      }
+
+      const activeUsers = data.filter((u) => u.active === true);
+      const activeUsersWithoutCreator = activeUsers.filter(
+        (u) => u.userID !== creator,
+      );
+      setUser(activeUsersWithoutCreator);
+    } catch (err) {
+      setsnackbarSeverity("error");
+      setSnackbarText("Unable to fetch users. Please try again later.");
+      setErrorOpen(true);
+      setShowReportConfig(false);
+      setShowReportConfigWithData(false);
+      setUser([]);
+    }
   }, [creator]);
 
   const fetchUserWiseReport = useCallback(async () => {

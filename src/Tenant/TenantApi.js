@@ -4,6 +4,7 @@ import { decryptTokenId } from "../helper/AuthService";
 // Get some important URLs from environment variables
 const UserGroup = process.env.REACT_APP_USERGROUPS; // URL for user groups
 const Logbook = process.env.REACT_APP_LOGBOOK; // URL for the logbook
+const AUTH_API = process.env.REACT_APP_AUTHSERVICE; // Auth service URL
 
 // Function to fetch plant data from the server
 export const fetchPlantDataApi = async () => {
@@ -55,7 +56,7 @@ export const loginCheckBeforeTenant = async () => {
   try {
     console.log(
       "Signing up user at:",
-      `${UserGroup}/users/user/${localStorage.getItem("savedTenant")}`
+      `${UserGroup}/users/user/${localStorage.getItem("savedTenant")}`,
     ); // Show where we're signing up
     const response = await fetch(
       `${UserGroup}/users/user/${localStorage.getItem("savedTenant")}`,
@@ -65,7 +66,7 @@ export const loginCheckBeforeTenant = async () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // Include our token for access
           "Content-Type": "application/json", // We're sending JSON data
         },
-      }
+      },
     );
     if (response.ok) {
       console.log("response --> ", response);
@@ -83,7 +84,7 @@ export const getUserByTenantIdApi = async () => {
   try {
     // Create the URL to fetch user data using a decrypted tenant ID
     const url = `${Logbook}/logbook/user/${decryptTokenId(
-      localStorage.getItem(process.env.REACT_APP_TENANTID) // Get and decrypt the tenant ID from session storage
+      localStorage.getItem(process.env.REACT_APP_TENANTID), // Get and decrypt the tenant ID from session storage
     )}`;
     console.log("Fetching user data from:", url); // Show the URL we're fetching from
 
@@ -123,7 +124,7 @@ export const deletePlantByPlantIdApi = async (selectedplantId) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // Include our token for access
           "Content-Type": "application/json", // We're sending JSON data
         },
-      }
+      },
     );
 
     // Return true if the response is okay (successful deletion)
@@ -157,17 +158,17 @@ export const checkTenantExpiration = async (tenant) => {
   try {
     console.log(
       "Signing up user at:",
-      `${UserGroup}/users/checkTenantExpiration/${tenant}`
+      `${AUTH_API}/auth/checkTenantExpiration/${tenant}`,
     ); // Show where we're signing up
     const response = await fetch(
-      `${UserGroup}/users/checkTenantExpiration/${tenant}`,
+      `${AUTH_API}/auth/checkTenantExpiration/${tenant}`,
       {
         method: "GET", // We're getting data
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // Include our token for access
           "Content-Type": "application/json", // We're getting JSON data
         },
-      }
+      },
     );
     if (response.ok) {
       const data = await response.json();

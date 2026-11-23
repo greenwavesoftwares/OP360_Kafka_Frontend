@@ -17,7 +17,13 @@ import {
   Chip,
   Paper,
   CircularProgress,
+  DialogActions,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  Dialog as MuiDialog
 } from "@mui/material";
+import { WarningAmber } from "@mui/icons-material";
 import {
   CloudUpload,
   Download,
@@ -30,7 +36,7 @@ import {
   AttachFile,
   Close,
 } from "@mui/icons-material";
-import { downloadFileFromMinIO } from "../JobPerformer/JobPerformerAPI";
+import { deleteFileFromMinIO, downloadFileFromMinIO, uploadFileToMinIO } from "../JobPerformer/JobPerformerAPI";
 import { getTenantID } from "../UserModuleUpdated/UsermoduleApi";
 import SnackbarComponent from "../components/shared/snackbar/customSnackbar";
 
@@ -56,7 +62,7 @@ const detectValueType = (value) => {
 
     // UUID pattern → MinIO key
     const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
     if (uuidRegex.test(value.trim())) return "minioKey";
 
     // Long base64 string
@@ -139,26 +145,35 @@ const getFileFromByteArray = async (byteArray, fileNamePath) => {
       mimeType = "application/pdf";
       fileExtension = "pdf";
     } else if (
-      uint8Array[0] === 0xd0 &&
-      uint8Array[1] === 0xcf &&
-      uint8Array[2] === 0x11 &&
-      uint8Array[3] === 0xe0
-    ) {
-      const headerString = new TextDecoder("utf-8", { fatal: false }).decode(
-        uint8Array.slice(0, 2000),
-      );
-      if (
-        headerString.includes("IPM.Note") ||
-        headerString.includes("Microsoft Outlook") ||
-        fileNamePath?.toLowerCase().endsWith(".msg")
-      ) {
-        mimeType = "application/vnd.ms-outlook";
-        fileExtension = "msg";
-      } else {
-        mimeType = "application/msword";
-        fileExtension = "doc";
-      }
-    } else if (uint8Array[0] === 0xff && uint8Array[1] === 0xd8) {
+  uint8Array[0] === 0xd0 &&
+  uint8Array[1] === 0xcf &&
+  uint8Array[2] === 0x11 &&
+  uint8Array[3] === 0xe0
+) {
+  const headerString = new TextDecoder("utf-8", { fatal: false }).decode(
+    uint8Array.slice(0, 2000),
+  );
+  const lowerPath = fileNamePath?.toLowerCase() || "";
+
+  if (
+    headerString.includes("IPM.Note") ||
+    headerString.includes("Microsoft Outlook") ||
+    lowerPath.endsWith(".msg")
+  ) {
+    mimeType = "application/vnd.ms-outlook";
+    fileExtension = "msg";
+  } else if (
+    headerString.includes("Workbook") ||
+    headerString.includes("Book") ||
+    lowerPath.endsWith(".xls")
+  ) {
+    mimeType = "application/vnd.ms-excel";
+    fileExtension = "xls";
+  } else {
+    mimeType = "application/msword";
+    fileExtension = "doc";
+  }
+} else if (uint8Array[0] === 0xff && uint8Array[1] === 0xd8) {
       mimeType = "image/jpeg";
       fileExtension = "jpg";
     } else if (uint8Array[0] === 0x89 && uint8Array[1] === 0x50) {
@@ -243,6 +258,10 @@ const getFileFromByteArray = async (byteArray, fileNamePath) => {
         mimeType =
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         fileExtension = "xlsx";
+      }
+       else if (lowerPath.endsWith(".xls")) {          // ← NEW
+        mimeType = "application/vnd.ms-excel";           // ← NEW
+        fileExtension = "xls";                           // ← NEW
       } else if (lowerPath.endsWith(".jpg") || lowerPath.endsWith(".jpeg")) {
         mimeType = "image/jpeg";
         fileExtension = "jpg";
@@ -363,7 +382,10 @@ const FileCellComponent = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const excelPreviewRef = useRef(null);
+const deleteInProgressRef = useRef(false);
 
+const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+const [isDeleting, setIsDeleting] = useState(false);
   // Sync cellValue with elem.value
   useEffect(() => {
     setCellValue(elem?.value || null);
@@ -373,7 +395,7 @@ const FileCellComponent = ({
     setIsDesktop(isDesktopDevice());
   }, []);
 
-  const getDisplayLabel = () => {
+const getDisplayLabel = () => {
     if (!cellValue) return "";
 
     const valueType = detectValueType(cellValue);
@@ -388,20 +410,42 @@ const FileCellComponent = ({
 
     // If it's a string (MinIO key or other)
     if (typeof cellValue === "string") {
-      const value = String(cellValue);
-      const uuidRegex =
-        /^[0-9a-f]{4,8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{8,12}/i;
-      const lastDotIndex = value.lastIndexOf(".");
+      const value = String(cellValue).trim();
 
+      // ── UUID-based MinIO key detection ──
+      // A UUID is always exactly 36 characters:
+      //   8-4-4-4-12  →  xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      const uuidPrefixRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+      if (uuidPrefixRegex.test(value)) {
+        // Everything after the 36-char UUID
+        const afterUuid = value.substring(36);
+
+        // New format: UUID_filename.ext  →  show "filename.ext"
+        if (afterUuid.startsWith("_") && afterUuid.length > 1) {
+          return afterUuid.substring(1);
+        }
+
+        // Old format: UUID.ext  →  show "Attachment.ext"
+        if (afterUuid.startsWith(".") && afterUuid.length > 1) {
+          const ext = afterUuid.substring(1);
+          return `Attachment.${ext}`;
+        }
+
+        // Bare UUID, no suffix
+        return "Attachment";
+      }
+
+      // Non-UUID string — check if it looks like a filename
+      const lastDotIndex = value.lastIndexOf(".");
       if (lastDotIndex !== -1) {
         const extension = value.substring(lastDotIndex + 1);
         const validExtRegex = /^[a-z0-9]{2,5}$/i;
-        if (!validExtRegex.test(extension)) return "No file";
-        if (uuidRegex.test(value)) return `attachment.${extension}`;
-        return value;
+        if (validExtRegex.test(extension)) return value;
+        return "No file";
       }
 
-      if (uuidRegex.test(value)) return "attachment";
       return "No file";
     }
 
@@ -583,45 +627,50 @@ const FileCellComponent = ({
     }
   }, [file]);
 
-  const handleCameraCapture = async (event) => {
-    const capturedFile = event.target.files?.[0];
-    if (!capturedFile) return;
+const handleCameraCapture = async (event) => {
+  const capturedFile = event.target.files?.[0];
+  if (!capturedFile) return;
 
-    try {
-      setIsUploading(true);
+  try {
+    setIsUploading(true);
 
-      const arrayBuffer = await capturedFile.arrayBuffer();
-      const byteArray = Array.from(new Uint8Array(arrayBuffer));
-      const base64String = btoa(
-        byteArray.map((b) => String.fromCharCode(b)).join(""),
-      );
+    const minioKey = await uploadFileToMinIO(capturedFile);
 
-      setFile(capturedFile);
-      setFileType(capturedFile.type);
-      setIsLocalFile(true);
-      setCellValue(base64String);
-
-      if (elem) {
-        elem.value = base64String; // ← ONLY value, no fileContent
-        elem.imagePath = capturedFile.name;
-      }
-
-      if (onValueChange) onValueChange(base64String);
-      if (onFileUpload) onFileUpload(base64String, capturedFile);
-
-      setSnackbarText("Photo uploaded successfully!");
-      setsnackbarSeverity("success");
-      setSnackbarOpen(true);
-    } catch (error) {
-      console.error("Camera upload error:", error);
-      setSnackbarText("Photo upload failed: " + error.message);
-      setsnackbarSeverity("error");
-      setSnackbarOpen(true);
-    } finally {
-      setIsUploading(false);
+    if (!minioKey) {
+      throw new Error("No key returned from server");
     }
-  };
 
+    setFile(capturedFile);
+    setFileType(capturedFile.type);
+    setIsLocalFile(true);
+    setCellValue(minioKey);
+
+    if (elem) {
+      elem.value = minioKey;
+      elem.imagePath = capturedFile.name;
+    }
+
+    if (onValueChange) onValueChange(minioKey);
+    if (onFileUpload) onFileUpload(minioKey, capturedFile);
+
+    setSnackbarText("Photo uploaded successfully!");
+    setsnackbarSeverity("success");
+    setSnackbarOpen(true);
+  } catch (error) {
+    console.error("Camera upload error:", error);
+
+    setFile(null);
+    setFileType("");
+    setIsLocalFile(false);
+    setCellValue(null);
+
+    setSnackbarText("Photo upload failed: " + (error.message || "Unknown error"));
+    setsnackbarSeverity("error");
+    setSnackbarOpen(true);
+  } finally {
+    setIsUploading(false);
+  }
+};
   const parseEmlFile = async (arrayBuffer) => {
     try {
       const parser = new PostalMime();
@@ -701,52 +750,63 @@ const FileCellComponent = ({
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    canvas.toBlob(
-      async (blob) => {
-        if (!blob) return;
+  canvas.toBlob(
+  async (blob) => {
+    if (!blob) return;
 
-        const capturedFile = new File([blob], `capture_${Date.now()}.jpg`, {
-          type: "image/jpeg",
-        });
+    const capturedFile = new File([blob], `capture_${Date.now()}.jpg`, {
+      type: "image/jpeg",
+    });
 
-        try {
-          setIsUploading(true);
+    try {
+      setIsUploading(true);
 
-          const arrayBuffer = await capturedFile.arrayBuffer();
-          const byteArray = Array.from(new Uint8Array(arrayBuffer));
-          const base64String = btoa(
-            byteArray.map((b) => String.fromCharCode(b)).join(""),
-          );
+      // Upload the captured photo directly to MinIO
+      const minioKey = await uploadFileToMinIO(capturedFile);
 
-          setFile(capturedFile);
-          setFileType(capturedFile.type);
-          setIsLocalFile(true);
-          setCellValue(base64String);
+      if (!minioKey) {
+        throw new Error("No key returned from server");
+      }
 
-          if (elem) {
-            elem.value = base64String; // ← ONLY value
-            elem.imagePath = capturedFile.name;
-          }
+      setFile(capturedFile);
+      setFileType(capturedFile.type);
+      setIsLocalFile(true);
+      setCellValue(minioKey);
 
-          if (onValueChange) onValueChange(base64String);
-          if (onFileUpload) onFileUpload(base64String, capturedFile);
+      if (elem) {
+        elem.value = minioKey;           // ← KEY only
+        elem.imagePath = capturedFile.name;
+      }
 
-          setSnackbarText("Photo captured & uploaded!");
-          setsnackbarSeverity("success");
-          setSnackbarOpen(true);
-        } catch (error) {
-          console.error("Capture upload error:", error);
-          setSnackbarText("Capture upload failed: " + error.message);
-          setsnackbarSeverity("error");
-          setSnackbarOpen(true);
-        } finally {
-          setIsUploading(false);
-          stopCamera();
-        }
-      },
-      "image/jpeg",
-      0.9,
-    );
+      if (onValueChange) onValueChange(minioKey);
+      if (onFileUpload) onFileUpload(minioKey, capturedFile);
+
+      const url = URL.createObjectURL(capturedFile);
+      setPreviewUrl(url);
+
+      setSnackbarText("Photo captured & uploaded!");
+      setsnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Capture upload error:", error);
+
+      // On failure: do NOT set elem.value, reset state
+      setFile(null);
+      setFileType("");
+      setIsLocalFile(false);
+      setCellValue(null);
+
+      setSnackbarText("Capture upload failed: " + (error.message || "Unknown error"));
+      setsnackbarSeverity("error");
+      setSnackbarOpen(true);
+    } finally {
+      setIsUploading(false);
+      stopCamera();
+    }
+  },
+  "image/jpeg",
+  0.9,
+);
   };
 
   const parseMsgFile = async (arrayBuffer) => {
@@ -929,51 +989,62 @@ const FileCellComponent = ({
   };
 
   // ─── FILE UPLOAD: Sets elem.value to base64 string only ───
-  const handleFileChange = async (event) => {
-    const selectedFile = event.target.files[0];
-    if (!selectedFile) return;
+// ─── FILE UPLOAD: Upload directly to MinIO, store only the key ───
+const handleFileChange = async (event) => {
+  const selectedFile = event.target.files[0];
+  if (!selectedFile) return;
 
-    try {
-      setIsUploading(true);
+  try {
+    setIsUploading(true);
 
-      const arrayBuffer = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(selectedFile);
-      });
+    // Upload to MinIO and get back the key
+    const minioKey = await uploadFileToMinIO(selectedFile);
 
-      const byteArray = Array.from(new Uint8Array(arrayBuffer));
-      const base64String = btoa(
-        byteArray.map((b) => String.fromCharCode(b)).join(""),
-      );
-
-      setFile(selectedFile);
-      setFileType(selectedFile.type);
-      setIsLocalFile(true);
-      setCellValue(base64String);
-
-      if (elem) {
-        elem.value = base64String; // ← ONLY value, no fileContent
-        elem.imagePath = selectedFile.name;
-      }
-
-      if (onValueChange) onValueChange(base64String);
-      if (onFileUpload) onFileUpload(base64String, selectedFile);
-
-      setSnackbarText("File uploaded successfully!");
-      setsnackbarSeverity("success");
-      setSnackbarOpen(true);
-    } catch (error) {
-      console.error("Upload error:", error);
-      setSnackbarText("File upload failed: " + error.message);
-      setsnackbarSeverity("error");
-      setSnackbarOpen(true);
-    } finally {
-      setIsUploading(false);
-      event.target.value = "";
+    if (!minioKey) {
+      throw new Error("No key returned from server");
     }
-  };
+
+    // Keep a local copy of the file so the user can preview/download
+    // immediately without a second round-trip.
+    setFile(selectedFile);
+    setFileType(selectedFile.type);
+    setIsLocalFile(true);
+    setCellValue(minioKey);
+
+    if (elem) {
+      elem.value = minioKey;           // ← store the KEY, not base64
+      elem.imagePath = selectedFile.name;
+    }
+
+    if (onValueChange) onValueChange(minioKey);
+    if (onFileUpload) onFileUpload(minioKey, selectedFile);
+
+    if (selectedFile.type.startsWith("image/")) {
+      const url = URL.createObjectURL(selectedFile);
+      setPreviewUrl(url);
+    }
+
+    setSnackbarText("File uploaded successfully!");
+    setsnackbarSeverity("success");
+    setSnackbarOpen(true);
+  } catch (error) {
+    console.error("Upload error:", error);
+
+    // ── Requirement: on failure, do NOT set elem.value ──
+    // Reset everything so the UI shows the upload button again.
+    setFile(null);
+    setFileType("");
+    setIsLocalFile(false);
+    setCellValue(null);
+
+    setSnackbarText("File upload failed: " + (error.message || "Unknown error"));
+    setsnackbarSeverity("error");
+    setSnackbarOpen(true);
+  } finally {
+    setIsUploading(false);
+    event.target.value = "";
+  }
+};
 
   const handleDownload = () => {
     if (!file) return;
@@ -1016,39 +1087,61 @@ const FileCellComponent = ({
     return ["jpg", "jpeg", "png", "gif", "webp", "bmp"].includes(ext);
   };
 
-  const handleDeleteFile = async () => {
-    try {
-      setIsLoading(true);
+const handleDeleteClick = (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+  setConfirmDeleteOpen(true);
+};
 
-      setCellValue(null);
-      setFile(null);
-      setIsLocalFile(false);
-      setFileType("");
+const handleConfirmDelete = async () => {
+  try {
+    setIsDeleting(true);
 
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-        setPreviewUrl(null);
-      }
+    const valueType = detectValueType(cellValue);
 
-      if (elem) {
-        elem.value = null; // ← Clear value only
-      }
-
-      if (onValueChange) onValueChange(null);
-      if (onFileUpload) onFileUpload(null, null);
-
-      setSnackbarText("File deleted successfully!");
-      setsnackbarSeverity("success");
-      setSnackbarOpen(true);
-    } catch (error) {
-      console.error("Delete error:", error);
-      setSnackbarText("File deletion failed: " + error.message);
-      setsnackbarSeverity("error");
-      setSnackbarOpen(true);
-    } finally {
-      setIsLoading(false);
+    if (valueType === "minioKey" && cellValue) {
+      await deleteFileFromMinIO(cellValue);
     }
-  };
+
+    setCellValue(null);
+    setFile(null);
+    setIsLocalFile(false);
+    setFileType("");
+
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+
+    if (elem) {
+      elem.value = null;
+    }
+
+    if (onValueChange) onValueChange(null);
+    if (onFileUpload) onFileUpload(null, null);
+
+    setConfirmDeleteOpen(false);
+
+    setSnackbarText("File deleted successfully!");
+    setsnackbarSeverity("success");
+    setSnackbarOpen(true);
+  } catch (error) {
+    console.error("Delete error:", error);
+    setConfirmDeleteOpen(false);
+    setSnackbarText(
+      "File deletion failed: " + (error.message || "Unknown error")
+    );
+    setsnackbarSeverity("error");
+    setSnackbarOpen(true);
+  } finally {
+    setIsDeleting(false);
+  }
+};
+
+const handleCancelDelete = () => {
+  if (isDeleting) return; // block cancel while delete is in progress
+  setConfirmDeleteOpen(false);
+};
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -1171,7 +1264,7 @@ const FileCellComponent = ({
 
         {editable && (
           <IconButton
-            onClick={handleDeleteFile}
+           onClick={(e) => handleDeleteClick(e)} 
             color="error"
             size="small"
             title="Delete file and upload new"
@@ -1213,12 +1306,14 @@ const FileCellComponent = ({
               <IconButton
                 size="small"
                 color="error"
-                onClick={handleDeleteFile}
+                onClick={(e) => handleDeleteClick(e)} 
               >
                 <Delete />
               </IconButton>
             )}
           </Box>
+          {/* ─── DELETE CONFIRMATION DIALOG ─── */}
+
         </Box>
       );
     }
@@ -1254,7 +1349,7 @@ const FileCellComponent = ({
           </Button>
           {editable && (
             <IconButton
-              onClick={handleDeleteFile}
+              onClick={handleDeleteClick}
               color="error"
               size="small"
             >
@@ -1340,7 +1435,132 @@ const FileCellComponent = ({
           snackbarSeverity={snackbarSeverity}
         />
       </div>
+      {/* ─── CUSTOM DELETE CONFIRMATION (no library) ─── */}
+{confirmDeleteOpen && (
+  <div
+    onClick={handleCancelDelete}
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      zIndex: 99999,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    {/* Stop click on the card from closing the overlay */}
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        backgroundColor: "#fff",
+        borderRadius: "8px",
+        padding: "24px",
+        width: "420px",
+        maxWidth: "90vw",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+        fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "16px",
+        }}
+      >
+        <h3
+          style={{
+            margin: 0,
+            fontSize: "1.15rem",
+            fontWeight: 600,
+            color: "#1a1a1a",
+          }}
+        >
+          ⚠️ Confirm Deletion
+        </h3>
+        <button
+          onClick={handleCancelDelete}
+          disabled={isDeleting}
+          style={{
+            background: "none",
+            border: "none",
+            fontSize: "1.3rem",
+            cursor: isDeleting ? "not-allowed" : "pointer",
+            color: "#666",
+            lineHeight: 1,
+            padding: "2px 6px",
+          }}
+        >
+          ×
+        </button>
+      </div>
 
+      {/* Body */}
+      <p style={{ margin: "0 0 12px", fontSize: "0.95rem", color: "#333" }}>
+        Are you sure you want to delete{" "}
+        <strong>{file?.name || getDisplayLabel()}</strong>?
+      </p>
+      <p
+        style={{
+          margin: "0 0 24px",
+          fontSize: "0.9rem",
+          color: "#d32f2f",
+          fontWeight: 600,
+        }}
+      >
+        ⚠️ This file will be deleted permanently and cannot be recovered.
+      </p>
+
+      {/* Actions */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: "10px",
+        }}
+      >
+        <button
+          onClick={handleCancelDelete}
+          disabled={isDeleting}
+          style={{
+            padding: "8px 18px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            background: "#fff",
+            color: "#333",
+            fontSize: "0.9rem",
+            cursor: isDeleting ? "not-allowed" : "pointer",
+            fontWeight: 500,
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleConfirmDelete}
+          disabled={isDeleting}
+          style={{
+            padding: "8px 18px",
+            borderRadius: "6px",
+            border: "none",
+            background: isDeleting ? "#e57373" : "#d32f2f",
+            color: "#fff",
+            fontSize: "0.9rem",
+            cursor: isDeleting ? "not-allowed" : "pointer",
+            fontWeight: 600,
+          }}
+        >
+          {isDeleting ? "Deleting..." : "Delete Permanently"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       <Dialog
         header="Capture Image"
         visible={cameraOpen}

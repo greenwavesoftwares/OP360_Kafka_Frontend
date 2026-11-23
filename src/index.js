@@ -7,6 +7,8 @@ import { RotatingTriangles, ThreeDots } from "react-loader-spinner";
 import ErrorBoundary from "./ErrorBoundary";
 import { BrowserRouter } from "react-router-dom";
 
+import "./helper/axiosSetup";
+
 // index.js
 window.addEventListener("beforeinstallprompt", (e) => {
   console.log("✅ beforeinstallprompt fired!"); // if you never see this, Chrome blocked it

@@ -448,7 +448,7 @@ console.log('Selected Asset : ',selected_asset,' Task List :  ',taskList)
         {/* {task?.taskId+'hello'}{assetDataFromDb?.length+'hello'}{taskList?.length+'hello'}{'hi'+eventJobDetails?.jobID} */}
           <PrimeReactDropdown
             className="w-full"
-            value={copyMode ?  taskList?.find((task)=>task?.taskId === eventJobDetails?.task?.taskId):task}
+            value={copyMode ?  taskList||[]?.find((task)=>task?.taskId === eventJobDetails?.task?.taskId):task}
             onChange={(e) => handleTaskChange(e)}
             optionLabel="taskName"
             placeholder="Select Task"

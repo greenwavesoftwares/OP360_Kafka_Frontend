@@ -168,12 +168,24 @@ const LogbookReportView = () => {
   };
 
   const fetchAllFormInfo = async () => {
-    // This function fetches all form information
-    const data = await fetchAllFormInfoApi(); // Get form info from API
-    const uniqueGroups = new Set(); // Create a set for unique groups
-    const uniqueLogbooks = new Set(); // Create a set for unique logbooks
-    let GroupArray = []; // Array to store groups
-    if (data) {
+    try {
+      // This function fetches all form information
+      const data = await fetchAllFormInfoApi(); // Get form info from API
+
+      if (!data || data.length === 0) {
+        setsnackbarSeverity("error");
+        setSnackbarText("Unable to fetch form info. Please try again later.");
+        setErrorOpen(true);
+        setAllFormInfo([]); // Clear all form info
+        setGroups([]); // Clear groups
+        setLogbooks([]); // Clear logbooks
+        return;
+      }
+
+      const uniqueGroups = new Set(); // Create a set for unique groups
+      const uniqueLogbooks = new Set(); // Create a set for unique logbooks
+      let GroupArray = []; // Array to store groups
+
       setAllFormInfo(data); // Store all form info in state
       data.forEach((item) => {
         let splitGroups = item.userGroup.split(","); // Split user groups
@@ -182,14 +194,29 @@ const LogbookReportView = () => {
           uniqueLogbooks.add(item.formName); // Add logbook if group matches
         }
       });
+
       const groupname = await getAllGroupDetails(); // calling getAllGroupDetails to get all group details like groupname, groupid in form of a object
+
+      if (!groupname || groupname.length === 0) {
+        setsnackbarSeverity("error");
+        setSnackbarText(
+          "Unable to fetch group details. Please try again later.",
+        );
+        setErrorOpen(true);
+        setGroups([]);
+        return;
+      }
+
       GroupArray.forEach((item) => {
         uniqueGroups.add(item); // Add group to unique set
       });
       setLogbooks(Array.from(uniqueLogbooks).sort()); // Sort and set logbooks in state
       // setGroups(Array.from(uniqueGroups).sort()); // Sort and set groups in state
       setGroups(groupname); // set all group details object in groups variable
-    } else {
+    } catch (err) {
+      setsnackbarSeverity("error");
+      setSnackbarText("Unable to fetch form info. Please try again later.");
+      setErrorOpen(true);
       setAllFormInfo([]); // Clear all form info
       setGroups([]); // Clear groups
       setLogbooks([]); // Clear logbooks

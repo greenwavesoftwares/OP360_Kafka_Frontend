@@ -2369,7 +2369,7 @@ const JobAssign = () => {
                 flex="1 1 20%"
                 backgroundColor="#e0e0e0" //{colors.primary[400]}
                 //p="15px"
-                borderRadius="4px"
+                borderRadius="1.3rem"
                 maxHeight={"95vh"}
                 overflow={"auto"}
                 component={motion.div}

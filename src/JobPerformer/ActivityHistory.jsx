@@ -40,8 +40,8 @@ import { useTheme } from "@mui/material";
 import DateSelection from "./DateSelection";
 import { ProgressBar } from "primereact/progressbar";
 
-const ActivityHistory = ({
-  performergroupList,fromDate,setFromDate,toDate,setToDate
+const ActivityHistory = ({performer,groups,
+  fromDate,setFromDate,toDate,setToDate
 }) => {
   const BoldTableCell = styled(TableCell)(({ theme }) => ({
     // Set the background color to black
@@ -62,10 +62,18 @@ const ActivityHistory = ({
   const isTab = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
+
     setLoader(true)
     fetchActivities(fromDate, toDate);
   }, [fromDate, toDate]);
   const fetchActivities = async (fromDate, toDate) => {
+    
+    let performergroupList = "";
+      groups.forEach((group) => {
+        performergroupList += group.groupName + ",";
+      });
+
+       performergroupList = performer?.concat(",", performergroupList);
     if (fromDate && toDate) {
       const historicalActivities = await fetchHistoricalActivities(
         performergroupList,

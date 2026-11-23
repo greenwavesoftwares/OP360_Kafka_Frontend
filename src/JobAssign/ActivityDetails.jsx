@@ -27,7 +27,7 @@ import {
 // Import dayjs library for date manipulation
 import dayjs from "dayjs";
 // Import React and useState, useEffect hooks
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 // Import API functions for availability checks
 import {  getAssetAvailability, getPerformerAvailability } from "./JobAssignAPI";
 
@@ -54,6 +54,11 @@ import { Skeleton } from 'primereact/skeleton';
 import { useRef } from 'react';
 import { areActivityIdsMatching, fetchCurrentActivityList, formatDatetime, formatDuration } from "./helper";
 import UserValueTemplate from './UserValueTemplate';
+
+import { Clipboard   } from 'lucide-react';
+import { CircleX } from 'lucide-react';
+import { BadgeCheck } from 'lucide-react';
+
 
 
 
@@ -105,6 +110,16 @@ const theme = useTheme();
 const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 const overlayPanelRef = useRef(null);
 
+const [copyPerformer, setCopyPerformer] = useState(null);
+const [copyApprover, setCopyApprover] = useState(null);
+
+
+// const [rowCopyDetails,setRowCopyDetails]=useState({ userId:'',
+//                                                     rowIndex:null,
+//                                                     copyType:'',
+//                                                     pastedPerformerIndexes:[],
+//                                                     pastedApproverIndexes:[]
+//                                                   })
   
   useEffect(() => {
     console.log(
@@ -216,12 +231,13 @@ const getPerformerAndAssetStatus = async (activityList, performers,approverList)
 
       // ✅ fetch performer availability once for the given window
       const allPerformerStatus = await getPerformerAvailability(start, stop, activityId, taskId);
-      const flattenedPerformersStatus = allPerformerStatus ?? [].flat();
+      console.log('All Performer Status: ', allPerformerStatus);
+      const flattenedPerformersStatus =allPerformerStatus?.length === 0 ?[]: allPerformerStatus?.[0];
 
       console.log("Flattened Performer Status: ", flattenedPerformersStatus);
       console.log("Performers List: ", performers);
 
-      
+        
       //Why the function does 2 things because JOB API has no internal access to usermodule API.(duplicacy of logic would occur)
 
       const groupNamesForActivity = activity.activityUserGroupList ?? [];
@@ -233,17 +249,21 @@ const getPerformerAndAssetStatus = async (activityList, performers,approverList)
           return includesAnyGroup(performer.group.map((group) => group.groupName), groupNamesForActivity);
         }) // only keep allowed groups
         .map((performer) => {
-          const performerStatus = flattenedPerformersStatus.filter(
+          const performerStatus = flattenedPerformersStatus?.filter(
             (status) => status.performer === performer.userID
           );
+
+          console.log('performer.userID : ',performer.userID,flattenedPerformersStatus)
+          console.log('performerStatus : ',performerStatus)
 
           return {
             userName: performer.userName,
             userID: performer.userID,
-            status: performerStatus.length === 0, // true if available
+            status: performerStatus?.length === 0, // true if available
             performerUnavailability: performerStatus,
           };
         });
+        console.log('Final Performers Array : ',performerArray)
 
       // ✅ fetch asset availability by activityId
       const assetArray = await getAssetAvailability(start, stop, activityId, taskId);
@@ -358,18 +378,18 @@ const getPerformerAndAssetStatus = async (activityList, performers,approverList)
  * @param {number} index - The index of the current row in the Activity Details table
  */
 
-  const handlePerformerChange = async (event, row, index) => {
+  const handlePerformerChange = async (performer, row, index) => {
     // setIsLoading(true)
 // console.log("handlePerformerChange() called ");
 // console.log("Current Selected StartDate : ", fromdate);
 // console.log('Current row Details : ',row)
-// console.log('Current Performer Selected : ',event.target.value)
+console.log('Current Performer Selected : ',performer)
     //console.log('Formatted DateAndTime : ',dayjs(fromdate).format('YYYY-MM-DD HH:mm:ss.SSS'))
     const updatedList = [...currentActivityDetailsObject];
     const updatedObject = { ...updatedList[index] };//* create a copy of the object from activityList whose index is coming as a parameter
 
     //setting the values
-    updatedObject.performer = event.target.value ||'';
+    updatedObject.performer = performer ||'';
     
       // groupOrDeptName: newValue,
       // performerType: "Group",
@@ -423,11 +443,11 @@ const getPerformerAndAssetStatus = async (activityList, performers,approverList)
  * @param {Object} row - The row of the activity details table for which the approver is being changed.
  * @param {Number} index - The index of the row in the currentActivityDetailsObject state.
  */
-const handleApproverChange= (event, row, index) => {
+const handleApproverChange= (approver, row, index) => {
   // console.log('Approver => ',event.target.value)
   const updatedList = [...currentActivityDetailsObject];
   const updatedObject = { ...updatedList[index] };
-  updatedObject.approver = event.target.value || '';
+  updatedObject.approver = approver || '';
   updatedList[index] = updatedObject;
   setCurrentActivityDetailsObject(updatedList)
   setUserEditedActivityDetails(true)
@@ -475,7 +495,7 @@ console.log("Current updated List : ",updatedList)
  * If the first row is not filled, it will show an error message.
  * @returns {undefined}
  */
-const handleCopyFirstRowPerformer=async()=>
+const handleCopyFirstRowPerformer=()=>
 {
 
 // console.log("handleCopyFirstRowPerformer() called")
@@ -499,28 +519,44 @@ const handleCopyFirstRowPerformer=async()=>
 // console.log("Copy Current Activity Details: ", copyCurrentActivityDetails);
         let modifiedList=null;
         try{
-         modifiedList = await Promise.all(
-  copyCurrentActivityDetails.map(async (data) => {
-    let start = dayjs(data.scheduledActivityStartTime).format("YYYY-MM-DD HH:mm:ss.SSS");
-    let stop = dayjs(data.scheduledActivityEndTime).format("YYYY-MM-DD HH:mm:ss.SSS");
-    // let currentPerformeruserId = currentActivityDetailsObject[0].performer;
+          modifiedList = 
+          // await Promise.all(
+  copyCurrentActivityDetails.map( (data) => {
+    // let start = dayjs(data.scheduledActivityStartTime).format("YYYY-MM-DD HH:mm:ss.SSS");
+    // let stop = dayjs(data.scheduledActivityEndTime).format("YYYY-MM-DD HH:mm:ss.SSS");
+    // // let currentPerformeruserId = currentActivityDetailsObject[0].performer;
 
-    let performerAvailabilityList = await getPerformerAvailability(
-      start, stop,data.activityId, data.taskId
-    );
+    // let allPerformerStatus = await getPerformerAvailability(
+    //   start, stop,data.activityId, data.taskId
+    // );
 
-    if (performerAvailabilityList) {
-      data.performerAvlReasons = performerAvailabilityList;
-      if (performerAvailabilityList.length > 0) {
-        data.available = false;
-      } else {
-        data.available = true;
-      }
-    } else {
-      data.available = false;
-    }
+    // const flattenedPerformersStatus = allPerformerStatus?.[0];
 
-    data.performer = currentperformer;
+    // console.log('Performer AvailabilityList : ',flattenedPerformersStatus)
+    //  const performerAvailabilityList = flattenedPerformersStatus?.filter(
+    //         (status) => status.performer === currentperformer
+    //       );
+
+
+    // if (performerAvailabilityList) {
+    //   data.performerAvlReasons = performerAvailabilityList;
+    //   if (performerAvailabilityList.length > 0) {
+    //     data.available = false;
+    //   } else {
+    //     data.available = true;
+    //   }
+    // } else {
+    //   data.available = false;
+    // }
+
+const foundPerformer = data?.performerStatusList?.find(user => user.userID === currentperformer);
+
+console.log('Found Performer: ', foundPerformer);
+console.log( 'data?.performerStatusList : ', data?.performerStatusList)
+
+data.performer = foundPerformer ? currentperformer : '';
+
+
     data.filterSelection = "individuals";
     // data.approver = currentapprover;
     data.groupOrDeptName = "";
@@ -529,7 +565,7 @@ const handleCopyFirstRowPerformer=async()=>
 
     return data;
   })
-);
+// );
 
     }
     catch(err)
@@ -543,7 +579,7 @@ const handleCopyFirstRowPerformer=async()=>
     }
       
       // console.log("Copy List:", modifiedList);        
-// console.log("Updated Activities List: ", modifiedList);
+console.log("Updated Activities List: ", modifiedList);
         setCurrentActivityDetailsObject(modifiedList);
       
     }
@@ -664,7 +700,72 @@ const handleFilterChange=(row,index,radioValue)=>
   
   }
 
- const isAssetAvailable = () => currentActivityDetailsObject.some(data => data.assetStatusList?.length > 0);
+  const handlePastePerformer = (row, index) => {
+    const foundPerformer = row?.performerStatusList?.find(user => user.userID === copyPerformer.performer);
+    if(foundPerformer) 
+      {
+        setCopyPerformer({...copyPerformer, pastedPerformerIndexes: [...(copyPerformer.pastedPerformerIndexes || []), index]});
+        handlePerformerChange(copyPerformer.performer,row, index);
+      }
+      else
+      {
+        setSeverityText('Performer not available for this activity !')
+        setSeverityType('error')
+        setSnackbarOpen(true)
+      }
+
+    }
+
+    const handlePasteApprover = (row, index) => {
+
+    const foundApprover = row?.approverList?.find(user => user.userID === copyApprover.approver);
+    console.log('Found Approver : ',foundApprover,copyApprover.approver)
+
+    if(foundApprover)
+      {
+        setCopyApprover({...copyApprover, pastedApproverIndexes: [...(copyApprover.pastedApproverIndexes || []), index]});
+        handleApproverChange(copyApprover.approver,row, index);
+      }
+      else
+      {
+        setSeverityText('Approver not available for this activity !')
+        setSeverityType('error')
+        setSnackbarOpen(true)
+      }
+
+    }
+
+
+  const handleRowPerformerCopy =(row , index) =>
+  {
+    console.log('Row  : ',row,'index => ',index)
+    if(copyPerformer) setCopyPerformer(null);
+    else setCopyPerformer({performer : row.performer,rowIndex:index});
+  }
+
+  const handleRowApproverCopy = (row, index) =>
+  {
+    if(copyApprover) setCopyApprover(null);
+    else setCopyApprover({approver : row.approver,rowIndex:index});
+  }
+
+
+  // const handleRowCopy=(userId,rowIndex,type)=>
+  // {
+  //     setRowCopyDetails({...rowCopyDetails,userId:userId,rowIndex:rowIndex,copyType:type})
+  // }
+
+  // const handleRowPaste=(row,userId,index,type)=>
+  // {
+  //   if(type==='performer')
+  //   {
+  //     const foundPerformer = currentActivityDetailsObject[index]?.performerStatusList?.find(user => user.userID === rowCopyDetails.userId);
+  //     if(foundPerformer) handlePerformerChange(row.userId,currentActivityDetailsObject[index], index);
+  //   }
+
+  // }
+
+ const isAssetAvailable = () => currentActivityDetailsObject?.some(data => data.assetStatusList?.length > 0);
 console.log('Asset Available : ', isAssetAvailable())
  
 
@@ -696,9 +797,13 @@ console.log('Asset Available : ', isAssetAvailable())
         <TableContainer
           component={Paper}
           className="dataTableStyle"
-          sx={{ mt: 2 }}
+          sx={{
+    mt: 2,
+    maxHeight: '70vh',
+    overflowY: 'auto',
+  }}
         >
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+          <Table sx={{ minWidth: 700 }} aria-label="customized table" stickyHeader>
             <TableHead>
               {/* Table Headers */}
               <TableRow>
@@ -730,9 +835,19 @@ console.log('Asset Available : ', isAssetAvailable())
                           >
                             <ContentCopyIcon />
                           </IconButton>
+
+                           
                         </Tooltip>
+                        
                       </div>
+                      
                     )}
+                    {copyPerformer?.performer  && <Tooltip title="Cancel CopyMode" color='#FFB2B2'>
+                      <IconButton>
+                      <CircleX size={'1rem'} color='#FFB2B2'  onClick={()=> {setCopyPerformer(null)}}/>
+                        </IconButton>
+                        
+                        </Tooltip>}
                   </div>
                 </StyledTableCell>
                 <StyledTableCell align="center">
@@ -756,10 +871,18 @@ console.log('Asset Available : ', isAssetAvailable())
                             onClick={handleCopyFirstRowApprover}
                           >
                             <ContentCopyIcon />
+                            
                           </IconButton>
                         </Tooltip>
                       </div>
                     )}
+                     <Tooltip title="Cancel CopyMode" color='#FFB2B2'>
+                      { copyApprover?.approver && 
+                      <IconButton>
+                      <CircleX size={'1rem'} color='#FFB2B2'  onClick={()=> {setCopyApprover(null)}}/>
+                        </IconButton>
+}
+                      </Tooltip>
                   </div>
                 </StyledTableCell>
 
@@ -856,7 +979,7 @@ console.log('Asset Available : ', isAssetAvailable())
                           options={row.performerStatusList}
                           value={row.performer}
                           onChange={(event) => {
-                            handlePerformerChange(event, row, index);
+                            handlePerformerChange(event?.target?.value??'', row, index);
                           }}
                           //className="w-full"
                           style={{ maxWidth: isMobile ? "160px" : "250px" }}
@@ -901,115 +1024,14 @@ console.log('Asset Available : ', isAssetAvailable())
                                     <CancelIcon
                                       fontSize="small"
                                       sx={{ color: "red", paddingRight: "5px" }}
-                                      onMouseEnter={(e) =>
-                                        overlayPanelRef.current.show(e)
-                                      }
+                                      // onMouseEnter={(e) =>
+                                      //   overlayPanelRef.current.show(e)
+                                      // }
                                       // onMouseLeave={() => overlayPanelRef.current.hide()}
                                     />
 
                                     {/* OverlayPanel Popup */}
-                                    <OverlayPanel
-                                      ref={overlayPanelRef}
-                                      style={{
-                                        width: "300px",
-                                        overflow: "auto",
-                                        maxHeight: "70vh",
-                                      }}
-                                    >
-                                      <div>
-                                        {option.performerUnavailablity?.map(
-                                          (reason, index) => (
-                                            <div
-                                              key={index}
-                                              style={{ marginBottom: "10px" }}
-                                            >
-                                              {/* Unavailable Reason */}
-                                              {index === 0 && (
-                                                <Chip
-                                                  label={
-                                                    option.userName +
-                                                    " ( " +
-                                                    option.userID +
-                                                    " )"
-                                                  }
-                                                  // variant=""
-                                                  color="error"
-                                                  size="small"
-                                                  style={{ marginBottom: 10 }}
-                                                />
-                                              )}{" "}
-                                              <Chip
-                                                variant="outlined"
-                                                color="error"
-                                                sx={{
-                                                  fontWeight: "bold",
-                                                  fontSize: ".7rem",
-                                                  marginBottom: "5px",
-                                                }}
-                                                label="Performer busy 🡇"
-                                              />
-                                              {/* Job Details */}
-                                              {reason.jobId && (
-                                                <Chip
-                                                  color="info"
-                                                  sx={{
-                                                    fontWeight: "bold",
-                                                    fontSize: ".7rem",
-                                                    marginBottom: "5px",
-                                                  }}
-                                                  label={`Job ID: ${reason.jobId}`}
-                                                />
-                                              )}
-                                              {reason.actId && (
-                                                <Chip
-                                                  color="info"
-                                                  sx={{
-                                                    fontWeight: "bold",
-                                                    fontSize: ".7rem",
-                                                    marginBottom: "5px",
-                                                  }}
-                                                  label={`Activity ID: ${reason.actId}`}
-                                                />
-                                              )}
-                                              {reason.assetId && (
-                                                <Chip
-                                                  color="info"
-                                                  sx={{
-                                                    fontWeight: "bold",
-                                                    fontSize: ".7rem",
-                                                    marginBottom: "5px",
-                                                  }}
-                                                  label={`Asset ID: ${reason.assetId}`}
-                                                />
-                                              )}
-                                              {/* Schedule Details */}
-                                              <Chip
-                                                color="info"
-                                                sx={{
-                                                  fontWeight: "bold",
-                                                  fontSize: ".7rem",
-                                                  marginBottom: "5px",
-                                                }}
-                                                label={`Start: ${formatDatetime(
-                                                  dayjs(reason.scheduleStart)
-                                                )}`}
-                                              />
-                                              <Chip
-                                                color="info"
-                                                sx={{
-                                                  fontWeight: "bold",
-                                                  fontSize: ".7rem",
-                                                  marginBottom: "5px",
-                                                }}
-                                                label={`Stop: ${formatDatetime(
-                                                  dayjs(reason.scheduleStop)
-                                                )}`}
-                                              />
-                                            </div>
-                                          )
-                                        )}
-                                      </div>
-                                    </OverlayPanel>
+                                   
                                   </div>
                                 )}
                               </div>
@@ -1097,6 +1119,65 @@ console.log('Asset Available : ', isAssetAvailable())
                           onClick={(e) => e.preventDefault()}
                         />
                       )}
+                     {copyPerformer?.rowIndex === index ? 
+  // Selected row
+ <> { row?.performer?.length>0 &&
+  (<i
+    className="pi pi-copy"
+    style={{
+      fontSize: "1rem",
+      marginLeft: "5px",
+      color: "var(--primary-color)",
+      cursor: "pointer"
+    }}
+    onClick={() => handleRowPerformerCopy(row, index)}
+  ></i>)}</>
+ : copyPerformer?.rowIndex >= 0 ? (
+  // Other rows when a row is selected
+  // <i
+  //   className="pi pi-check-circle"
+  //   style={{
+  //     fontSize: "1rem",
+  //     marginLeft: "5px",
+  //     color: "green"
+  //   }}
+  //   onClick={()=> handlePastePerformer(row, index)}
+  // ></i>
+  < div style={{ display: "flex", gap: "5px" }}>
+    {
+      !copyPerformer?.pastedPerformerIndexes?.includes(index) ? 
+<Tooltip title="Paste here"><Clipboard    size={'1rem'} color="#9564DD"  onClick={()=> handlePastePerformer(row, index)}/></Tooltip>
+
+:
+<motion.div
+  initial={{ scale: 0, opacity: 0 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{
+    duration: 0.4,
+    ease: "backOut",
+  }}
+  style={{ display: "inline-flex" }}
+>
+  <BadgeCheck size="1rem" color="#3e9392" />
+</motion.div>
+}
+ {/* <Tooltip Tooltip title="Cancel CopyMode" ><CircleX size={'1rem'} color='#FFB2B2' onClick={()=> {setCopyPerformer(null)}}/></Tooltip> */}
+    </div>
+) : (
+  // Default state
+   <> { row?.performer?.length>0 &&
+  (<i
+    className="pi pi-copy"
+    style={{
+      fontSize: "1rem",
+      marginLeft: "5px",
+      color: "var(--primary-color)",
+      cursor: "pointer"
+    }}
+    onClick={() => handleRowPerformerCopy(row, index)}
+  ></i>)}</>
+  )}  
+                     {/* { copyPerformer?.rowIndex !== index &&  <i className="pi pi-check-circle" style={{ fontSize: "1rem", marginLeft: "5px" }}></i>} */}
                     </div>
                   </StyledTableCell>
                   <StyledTableCell align="center">
@@ -1105,7 +1186,7 @@ console.log('Asset Available : ', isAssetAvailable())
                         options={row.approverList}
                         value={row.approver}
                         onChange={(event) => {
-                          handleApproverChange(event, row, index);
+                          handleApproverChange(event?.target?.value??'', row, index);
                         }}
                         className="w-full"
                         optionValue="userID"
@@ -1154,6 +1235,58 @@ console.log('Asset Available : ', isAssetAvailable())
                         // optionLabel={"userName"}
                         clearIcon
                       />
+
+
+                      {copyApprover?.rowIndex === index ? (
+  // Selected row
+  <i
+    className="pi pi-copy"
+    style={{
+      fontSize: "1rem",
+      marginLeft: "5px",
+      color: "var(--primary-color)",
+      cursor: "pointer"
+    }}
+    onClick={() => handleRowApproverCopy(row, index)}
+  ></i>
+) : copyApprover?.rowIndex >= 0 ? (
+  // Other rows when a row is selected
+  <div style={{ display: "flex", gap: "5px" }}>
+     {
+      !copyApprover?.pastedApproverIndexes?.includes(index) ?
+  <Tooltip title="Paste here"><Clipboard   size={'1rem'} color="#9564DD"  onClick={()=> handlePasteApprover(row, index)}/></Tooltip>
+  :
+  <motion.div
+  initial={{ scale: 0, opacity: 0 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{
+    duration: 0.4,
+    ease: "backOut",
+  }}
+  style={{ display: "inline-flex" }}
+>
+  <BadgeCheck size="1rem" color="#3e9392" />
+</motion.div>
+     }
+  </div>
+) : (
+  // Default state
+  <>
+  { row?.approver?.length>0 &&
+  <i
+    className="pi pi-copy"
+    style={{
+      fontSize: "1rem",
+      marginLeft: "5px",
+      color: "var(--primary-color)",
+      cursor: "pointer"
+    }}
+    onClick={() => handleRowApproverCopy(row, index)}
+  ></i>}
+
+  
+    </>
+)}  
                     </div>
                   </StyledTableCell>
 
