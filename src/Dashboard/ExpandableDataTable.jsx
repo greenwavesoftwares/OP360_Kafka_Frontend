@@ -2,43 +2,103 @@ import {
   Avatar as MuiAvatar,
   Tooltip as MuiTooltip,
   Stack,
-} from "@mui/material"; // Importing Material UI Avatar and Tooltip components
-import { Avatar } from "primereact/avatar"; // Importing PrimeReact Avatar component
-import { Button } from "primereact/button"; // Importing PrimeReact Button component
-import { Column } from "primereact/column"; // Importing PrimeReact Column component (used in DataTable)
-import { DataTable } from "primereact/datatable"; // Importing PrimeReact DataTable component
-import { Dialog } from "primereact/dialog"; // Importing PrimeReact Dialog component
-import { ProgressBar } from "primereact/progressbar"; // Importing PrimeReact ProgressBar component
-import { Tag } from "primereact/tag"; // Importing PrimeReact Tag component
-import { Tooltip } from "primereact/tooltip"; // Importing PrimeReact Tooltip component
-import React, { useState } from "react"; // Importing React and useState hook for state management
-import TransactionTable from "./TransactionTable"; // Importing custom TransactionTable component
-import { Card, Chip, Typography } from "@mui/material"; // Importing Material UI components: Card, Chip, Typography
-import LViewWithProps from "../Logbook/View/LViewWithProps"; // Importing custom LViewWithProps component from Logbook
-import EllipsisText from "./EllipsisText"; // Importing custom EllipsisText component
-import StopIcon from "@mui/icons-material/Stop";
+  Card,
+  Chip,
+  Typography,
+} from "@mui/material";
+import { Avatar } from "primereact/avatar";
+import { Button } from "primereact/button";
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
+import { Dialog } from "primereact/dialog";
+import { ProgressBar } from "primereact/progressbar";
+import { Tooltip } from "primereact/tooltip";
+import React, { useState, useMemo } from "react";
+import TransactionTable from "./TransactionTable";
+import LViewWithProps from "../Logbook/View/LViewWithProps";
+import EllipsisText from "./EllipsisText";
 import ActivityFlow from "../JobReviewer/ActivityFlow";
-import { FilterMatchMode, FilterOperator } from "primereact/api";
+import { FilterMatchMode, FilterService } from "primereact/api";
 import { InputText } from "primereact/inputtext";
-// Objective: Defines the ExpandableDataTable component, managing expandable rows and status display in a DataTable
+
+// 1. Register custom filter for multi-range Progress filtering
+FilterService.register("progressMultiRange", (value, filter) => {
+  if (!filter || filter.length === 0) return true;
+  if (value === undefined || value === null) return false;
+
+  return filter.some((range) => {
+    if (range === "0%") return value === 0;
+    if (range === "1-49%") return value >= 1 && value <= 49;
+    if (range === "50-99%") return value >= 50 && value <= 99;
+    if (range === "100%") return value === 100;
+    return false;
+  });
+});
+
+// Helper for status badge colors in the filter
+const getStatusColorConfig = (status) => {
+  switch (status?.toLowerCase()) {
+    case "completed":
+      return { bg: "#e8f5e9", text: "#2e7d32", border: "#a5d6a7" };
+    case "started":
+      return { bg: "#ede7f6", text: "#512da8", border: "#b39ddb" };
+    case "not started":
+      return { bg: "#f5f5f5", text: "#616161", border: "#e0e0e0" };
+    case "rejected":
+    case "aborted":
+      return { bg: "#ffebee", text: "#c62828", border: "#ef9a9a" };
+    case "sent for approval":
+      return { bg: "#e1f5fe", text: "#0277bd", border: "#81d4fa" };
+    case "review started":
+      return { bg: "#fff3e0", text: "#ef6c00", border: "#ffcc80" };
+    case "approved":
+      return { bg: "#e0f2f1", text: "#00695c", border: "#80cbc4" };
+    default:
+      return { bg: "#f8f9fa", text: "#495057", border: "#dee2e6" };
+  }
+};
+
 export default function ExpandableDataTable({ key, data, header, groupBy }) {
-  const [expandedRows, setExpandedRows] = useState(null); // Manages the state for rows that are expanded in the DataTable
-  const [selectedActivity, setSelectedActivity] = useState(null); // Manages the state for the currently selected activity
-  const [displayDialog, setDisplayDialog] = useState(false); // Manages the state to control the visibility of the Dialog
-  const [activityNameClick, setactivityNameClick] = useState(false); // Manages state to track if an activity name was clicked
-  const [logbookClick, setLogbookClick] = useState(false); // Manages state to track if the logbook was clicked
+  const [expandedRows, setExpandedRows] = useState(null);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [displayDialog, setDisplayDialog] = useState(false);
+  const [activityNameClick, setactivityNameClick] = useState(false);
+  const [logbookClick, setLogbookClick] = useState(false);
   const [openrow, setOpenrow] = useState(null);
-  const [openrowdialog, setOpenrowdialog] = useState(false); //State to  track which rows are open
+  const [openrowdialog, setOpenrowdialog] = useState(false);
+
+  // Filters setup
   const [filters, setFilters] = useState({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     jobName: { value: null, matchMode: FilterMatchMode.CONTAINS },
     taskTemplate: { value: null, matchMode: FilterMatchMode.CONTAINS },
     assigner: { value: null, matchMode: FilterMatchMode.CONTAINS },
     scheduledJobStartTime: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    jobStatus: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    jobStatus: { value: null, matchMode: FilterMatchMode.IN },
+    progress: { value: null, matchMode: "progressMultiRange" },
   });
 
   const [globalFilterValue, setGlobalFilterValue] = useState("");
+
+  // DYNAMIC JOB STATUS OPTIONS (Extracted from actual data)
+  const dynamicJobStatusOptions = useMemo(() => {
+    if (!data || !Array.isArray(data)) return [];
+    const unique = Array.from(
+      new Set(
+        data
+          .map((item) => item.jobStatus)
+          .filter((s) => s !== null && s !== undefined && s.trim() !== ""),
+      ),
+    );
+    return unique.sort();
+  }, [data]);
+
+  const progressOptions = [
+    { label: "0%", value: "0%", color: "#9e9e9e" },
+    { label: "1% – 49%", value: "1-49%", color: "#f57c00" },
+    { label: "50% – 99%", value: "50-99%", color: "#0288d1" },
+    { label: "100%", value: "100%", color: "#2e7d32" },
+  ];
 
   const onGlobalFilterChange = (e) => {
     const value = e.target.value;
@@ -58,10 +118,186 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
       },
-      jobStatus: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      jobStatus: { value: null, matchMode: FilterMatchMode.IN },
+      progress: { value: null, matchMode: "progressMultiRange" },
     });
     setGlobalFilterValue("");
   };
+
+  /* ========================================================================= */
+  /*             PROFESSIONAL MULTI-SELECT FOR JOB STATUS                      */
+  /* ========================================================================= */
+  const JobStatusMultiFilter = ({ options }) => {
+    const [searchQuery, setSearchQuery] = useState("");
+    const selectedValues = options.value || [];
+
+    const filteredOptions = dynamicJobStatusOptions.filter((status) =>
+      status.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+
+    const isAllSelected =
+      dynamicJobStatusOptions.length > 0 &&
+      selectedValues.length === dynamicJobStatusOptions.length;
+
+    const toggleSelectAll = () => {
+      if (isAllSelected) {
+        options.filterApplyCallback(null);
+      } else {
+        options.filterApplyCallback([...dynamicJobStatusOptions]);
+      }
+    };
+
+    const handleCheckboxChange = (status) => {
+      let updated = [...selectedValues];
+      if (updated.includes(status)) {
+        updated = updated.filter((item) => item !== status);
+      } else {
+        updated.push(status);
+      }
+      options.filterApplyCallback(updated.length > 0 ? updated : null);
+    };
+
+    return (
+      <div className="custom-filter-panel">
+        <div className="filter-header-title">
+          <span>Filter Status</span>
+          <span className="selected-badge">
+            {selectedValues.length} selected
+          </span>
+        </div>
+
+        {/* Search input */}
+        <div className="filter-search-box">
+          <i className="pi pi-search search-icon" />
+          <input
+            type="text"
+            placeholder="Search status..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="filter-search-input"
+          />
+          {searchQuery && (
+            <i
+              className="pi pi-times clear-search"
+              onClick={() => setSearchQuery("")}
+            />
+          )}
+        </div>
+
+        {/* Select All Toggle */}
+        <div className="select-all-row" onClick={toggleSelectAll}>
+          <input
+            type="checkbox"
+            checked={isAllSelected}
+            onChange={() => {}}
+            className="custom-checkbox"
+          />
+          <span className="select-all-label">Select All</span>
+        </div>
+
+        <div className="filter-divider" />
+
+        {/* Options List */}
+        <div className="filter-list-container">
+          {filteredOptions.length === 0 ? (
+            <div className="no-options">No status found</div>
+          ) : (
+            filteredOptions.map((status) => {
+              const isChecked = selectedValues.includes(status);
+              const colors = getStatusColorConfig(status);
+
+              return (
+                <div
+                  key={status}
+                  className={`filter-item-row ${isChecked ? "active" : ""}`}
+                  onClick={() => handleCheckboxChange(status)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => {}}
+                    className="custom-checkbox"
+                  />
+                  <span
+                    className="status-pill-badge"
+                    style={{
+                      backgroundColor: colors.bg,
+                      color: colors.text,
+                      border: `1px solid ${colors.border}`,
+                    }}
+                  >
+                    <span
+                      className="status-dot"
+                      style={{ backgroundColor: colors.text }}
+                    />
+                    {status}
+                  </span>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  /* ========================================================================= */
+  /*             PROFESSIONAL MULTI-SELECT FOR PROGRESS                        */
+  /* ========================================================================= */
+  const ProgressMultiFilter = ({ options }) => {
+    const selectedValues = options.value || [];
+
+    const handleToggle = (rangeValue) => {
+      let updated = [...selectedValues];
+      if (updated.includes(rangeValue)) {
+        updated = updated.filter((item) => item !== rangeValue);
+      } else {
+        updated.push(rangeValue);
+      }
+      options.filterApplyCallback(updated.length > 0 ? updated : null);
+    };
+
+    const clearAll = () => options.filterApplyCallback(null);
+
+    return (
+      <div className="custom-filter-panel">
+        <div className="filter-header-title">
+          <span>Progress Range</span>
+          {selectedValues.length > 0 && (
+            <span className="clear-link" onClick={clearAll}>
+              Reset
+            </span>
+          )}
+        </div>
+
+        <div className="progress-options-list">
+          {progressOptions.map((opt) => {
+            const isChecked = selectedValues.includes(opt.value);
+            return (
+              <div
+                key={opt.value}
+                className={`progress-item-card ${isChecked ? "active" : ""}`}
+                onClick={() => handleToggle(opt.value)}
+              >
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={() => {}}
+                  className="custom-checkbox"
+                />
+                <span className="progress-label">{opt.label}</span>
+                <span
+                  className="progress-indicator-bar"
+                  style={{ backgroundColor: opt.color }}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   const renderHeader = () => {
     return (
       <div
@@ -85,7 +321,6 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
             onClick={clearFilter}
           />
 
-          {/* Simple search input with icon inside */}
           <span className="p-input-icon-left">
             <i className="pi pi-search" />
             <InputText
@@ -99,131 +334,119 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
       </div>
     );
   };
+
   const handleRowClick = (row) => {
-    console.log("Handle row click", row);
     setOpenrow(row);
     setOpenrowdialog(true);
   };
-  // Objective: Renders status icons with tooltips based on the activity status for each row in the DataTable
+
   const statusActivityBodyTemplate = (rowData) => {
     return (
       <>
-        {rowData.actvityStatus === "Completed" ? ( // If the activity status is "Completed"
+        {rowData.actvityStatus === "Completed" ? (
           <MuiTooltip title="Completed" placement="right">
-            {" "}
-            {/* Tooltip for the "Completed" status */}
             <Button
-              icon="pi pi-check" // Check icon for completed status
-              rounded // Button is rounded
-              text // Text button style (no background color)
-              raised // Raised button style
+              icon="pi pi-check"
+              rounded
+              text
+              raised
               style={{
-                height: "2.2rem", // Button height
-                width: "2.2rem", // Button width
-                cursor: "default", // Default cursor (not clickable)
-                boxShadow: "none", // No shadow on button
-                background: "#e3f2fd", // Light blue background color
+                height: "2.2rem",
+                width: "2.2rem",
+                cursor: "default",
+                boxShadow: "none",
+                background: "#e3f2fd",
               }}
-              aria-label="Filter" // Accessibility label for screen readers
+              aria-label="Filter"
             />
           </MuiTooltip>
-        ) : rowData.actvityStatus === "Rejected" ? ( // If the activity status is "Rejected"
+        ) : rowData.actvityStatus === "Rejected" ? (
           <MuiTooltip title="Rejected" placement="right">
-            {" "}
-            {/* Tooltip for the "Rejected" status */}
             <Button
-              icon="pi pi-times" // Cross icon for rejected status
+              icon="pi pi-times"
               rounded
               text
               raised
-              severity="danger" // Red color indicating danger/severity
+              severity="danger"
               style={{
                 height: "2.2rem",
                 width: "2.2rem",
                 cursor: "default",
                 boxShadow: "none",
-                background: "#fce4ec", // Light pink background for rejected status
+                background: "#fce4ec",
               }}
             />
           </MuiTooltip>
-        ) : rowData.actvityStatus === "Sent For Approval" ? ( // If the activity status is "Sent For Approval"
+        ) : rowData.actvityStatus === "Sent For Approval" ? (
           <MuiTooltip title="Sent For Approval" placement="right">
-            {" "}
-            {/* Tooltip for the "Sent For Approval" status */}
             <Button
-              icon="pi pi-send" // Send icon for approval
+              icon="pi pi-send"
               rounded
               text
               raised
-              severity="success" // Green color indicating success
+              severity="success"
               style={{
                 height: "2.2rem",
                 width: "2.2rem",
                 cursor: "default",
                 boxShadow: "none",
-                background: "#e8f5e9", // Light green background for approval status
+                background: "#e8f5e9",
               }}
             />
           </MuiTooltip>
-        ) : rowData.actvityStatus === "Started" ? ( // If the activity status is "Started"
+        ) : rowData.actvityStatus === "Started" ? (
           <MuiTooltip title="Started" placement="right">
-            {" "}
-            {/* Tooltip for the "Started" status */}
             <Button
-              icon="pi pi-play" // Play icon for started status
+              icon="pi pi-play"
               rounded
               text
               raised
-              size="small" // Button size small for a compact look
-              severity="help" // Blue color indicating progress/help
+              size="small"
+              severity="help"
               style={{
                 height: "2.2rem",
                 width: "2.2rem",
                 cursor: "default",
                 boxShadow: "none",
-                background: "#ede7f6", // Light purple background for started status
+                background: "#ede7f6",
               }}
             />
           </MuiTooltip>
-        ) : rowData.actvityStatus === "Review Started" ? ( // If the activity status is "Review Started"
+        ) : rowData.actvityStatus === "Review Started" ? (
           <MuiTooltip title="Review Started" placement="right">
-            {" "}
-            {/* Tooltip for the "Review Started" status */}
             <Button
-              icon="pi pi-file-check" // File-check icon for review status
+              icon="pi pi-file-check"
               rounded
               text
               raised
-              severity="secondary" // Gray color indicating review/neutral state
+              severity="secondary"
               style={{
                 height: "2.2rem",
                 width: "2.2rem",
                 cursor: "default",
                 boxShadow: "none",
-                background: "#e0e0e0", // Gray background for review started
+                background: "#e0e0e0",
               }}
             />
           </MuiTooltip>
-        ) : rowData.actvityStatus === "Not Started" ? ( // If the activity status is "Not Started"
+        ) : rowData.actvityStatus === "Not Started" ? (
           <MuiTooltip title="Not Started" placement="right">
-            {" "}
-            {/* Tooltip for the "Not Started" status */}
             <Button
-              icon="pi pi-stopwatch" // Stopwatch icon for not started status
+              icon="pi pi-stopwatch"
               rounded
               text
               raised
-              severity="secondary" // Gray color indicating neutral state
+              severity="secondary"
               style={{
                 height: "2.2rem",
                 width: "2.2rem",
                 cursor: "default",
                 boxShadow: "none",
-                background: "#e0e0e0", // Gray background for not started
+                background: "#e0e0e0",
               }}
             />
           </MuiTooltip>
-        ) : rowData.actvityStatus === "Aborted" ? ( // If the activity status is "Not Started"
+        ) : rowData.actvityStatus === "Aborted" ? (
           <MuiTooltip title="Aborted" placement="right">
             <Button
               icon="pi pi-ban"
@@ -240,122 +463,108 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
               }}
             />
           </MuiTooltip>
-        ) : (
-          "" // If no recognized status, render nothing
-        )}
+        ) : null}
       </>
     );
   };
 
   const activityNameBodyTemplate = (jobID) => (rowData) => {
-    // Objective: Renders a chip component with an activity name and an icon based on the activity status
     return (
       <Chip
         disabled={
           rowData.actvityStatus.toLowerCase() === "Not Started".toLowerCase() ||
           rowData.actvityStatus.toLowerCase() === "Started".toLowerCase()
-        } // Disable chip if the activity status is "Not Started" or "Started"
-        style={{ cursor: "pointer" }} // Add pointer cursor for better UX
-        onClick={() => onActivityNameClick(rowData, jobID)} // Trigger function when chip is clicked
+        }
+        style={{ cursor: "pointer" }}
+        onClick={() => onActivityNameClick(rowData, jobID)}
         icon={
           rowData.actvityStatus === "Started" ? (
             <i
               className="pi pi-spin pi-spinner"
               style={{ fontSize: "0.8rem" }}
-            ></i> // Show a spinner icon if the activity is "Started"
+            ></i>
           ) : rowData.actvityStatus === "Completed" ? (
-            <i className="pi pi-check" style={{ fontSize: "0.8rem" }}></i> // Show a checkmark if the activity is "Completed"
-          ) : (
-            ""
-          )
+            <i className="pi pi-check" style={{ fontSize: "0.8rem" }}></i>
+          ) : null
         }
-        size="small" // Set chip size to small
-        label={rowData.activityName} // Set chip label to the activity name
+        size="small"
+        label={rowData.activityName}
       />
     );
   };
 
   const isYearLessThan2000 = (datetime) => {
-    // Objective: Checks if the provided datetime is before the year 2000
     const year = new Date(datetime).getFullYear();
-    return year < 2000; // Return true if year is less than 2000, else false
+    return year < 2000;
   };
 
   function formatDateTime(startTime) {
-    // Objective: Formats a given datetime string into a readable date and time format
-    const d = isYearLessThan2000(startTime); // Check if year is less than 2000
-    if (d) {
-      return "----"; // Return placeholder if the year is before 2000
-    }
-    if (!startTime) {
-      return "---"; // Return placeholder if no start time is provided
-    }
+    const d = isYearLessThan2000(startTime);
+    if (d) return "----";
+    if (!startTime) return "---";
 
     let startDate;
 
     if (startTime.includes("T")) {
-      startDate = new Date(startTime); // If the datetime includes "T", treat it as ISO format
+      startDate = new Date(startTime);
     } else {
-      // If not ISO format, parse custom format "dd/MM/yyyy hh:mm:ss"
       const [datePart, timePart] = startTime.split(" ");
       const [day, month, year] = datePart.split("/").map(Number);
       const [hours, minutes, seconds] = timePart.split(":").map(Number);
-      startDate = new Date(year, month - 1, day, hours, minutes, seconds); // Create new Date object from parsed values
+      startDate = new Date(year, month - 1, day, hours, minutes, seconds);
     }
 
     const optionsTime = {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true, // Format time as 12-hour with AM/PM
+      hour12: true,
     };
 
-    const getShortYear = (date) => date.getFullYear().toString().slice(-2); // Extract last two digits of the year
+    const getShortYear = (date) => date.getFullYear().toString().slice(-2);
 
     const formattedDate = `${startDate.getDate()} ${new Intl.DateTimeFormat(
       "en-US",
       { month: "short" },
-    ).format(startDate)} ${getShortYear(startDate)}`; // Format date as "dd MMM yy"
+    ).format(startDate)} ${getShortYear(startDate)}`;
 
     const formattedTime = new Intl.DateTimeFormat("en-US", optionsTime).format(
       startDate,
-    ); // Format time as "hh:mm AM/PM"
+    );
 
-    return `${formattedDate} ${formattedTime}`; // Combine formatted date and time
+    return `${formattedDate} ${formattedTime}`;
   }
 
   const logbookBodyTemplate = (jobID) => (rowData) => {
-    // Objective: Renders a chip for the logbook, or a placeholder if no logbook is available
     return (
       <>
         {rowData?.logbook !== null &&
         rowData?.logbook !== undefined &&
         rowData?.logbook !== " " &&
-        rowData?.logbook !== "" ? ( // Check if logbook data is not null, undefined, or an empty string
+        rowData?.logbook !== "" ? (
           <Chip
-            size="small" // Set chip size to small
-            style={{ cursor: "pointer" }} // Add pointer cursor for better UX
+            size="small"
+            style={{ cursor: "pointer" }}
             disabled={
               rowData.actvityStatus.toLowerCase() ===
                 "Not Started".toLowerCase() ||
               rowData.actvityStatus.toLowerCase() === "Started".toLowerCase()
-            } // Disable chip if activity status is "Not Started" or "Started"
-            variant="outlined" // Set chip to outlined style
-            color="info" // Set chip color to info (blue)
-            onClick={() => onLogbookClick(rowData, jobID)} // Trigger logbook click function on chip click
-            label={rowData.logbook} // Set chip label to the logbook name
+            }
+            variant="outlined"
+            color="info"
+            onClick={() => onLogbookClick(rowData, jobID)}
+            label={rowData.logbook}
           />
         ) : (
-          "----" // Return placeholder if no logbook data is available
+          "----"
         )}
       </>
     );
   };
+
   const getInitialsFromEmail = (email) => {
     if (!email) return "";
-
     const namePart = email.split("@")[0];
     const parts = namePart.split(/[._-]/);
-
     return parts
       .filter(Boolean)
       .map((p) => p.charAt(0).toUpperCase())
@@ -364,19 +573,7 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
   };
 
   const PerformerAndApprover = (rowData) => {
-    // console.log("Rowdata PerformerAndApprover : ", rowData);
-    // console.log("performer : ", rowData.performer);
-    // console.log("approver : ", rowData.approver);
-    // console.log(
-    //   "Get Initials Performer : ",
-    //   getInitialsFromEmail(rowData.performer),
-    // );
-    // console.log(
-    //   "Get Initials Approver : ",
-    //   getInitialsFromEmail(rowData.approver),
-    // );
     if (!rowData) return null;
-
     return (
       <Stack direction="row" spacing={1} justifyContent={"center"}>
         {rowData.performer && (
@@ -388,7 +585,6 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
             </MuiAvatar>
           </MuiTooltip>
         )}
-
         {rowData.approver && (
           <MuiTooltip title={`Approver: ${rowData.approver}`} arrow>
             <MuiAvatar
@@ -402,91 +598,74 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
     );
   };
 
-  const ScheduleStatAndStopTime = (rowData) => {
-    // Objective: Displays scheduled start and end times for an activity
-    return (
-      <>
-        <p style={{ margin: "0 0 4px 0", padding: 0 }}>
-          {formatDateTime(rowData.scheduledActivityStartTime)}{" "}
-          {/* Format and display the scheduled start time */}
-        </p>
-        <p style={{ margin: 0, padding: 0 }}>
-          {formatDateTime(rowData.scheduledActivityEndTime)}{" "}
-          {/* Format and display the scheduled end time */}
-        </p>
-      </>
-    );
-  };
+  const ScheduleStatAndStopTime = (rowData) => (
+    <>
+      <p style={{ margin: "0 0 4px 0", padding: 0 }}>
+        {formatDateTime(rowData.scheduledActivityStartTime)}
+      </p>
+      <p style={{ margin: 0, padding: 0 }}>
+        {formatDateTime(rowData.scheduledActivityEndTime)}
+      </p>
+    </>
+  );
 
-  const activityStatAndStopTime = (rowData) => {
-    // Objective: Displays actual start and end times for an activity
-    return (
-      <>
-        <p style={{ margin: "0 0 4px 0", padding: 0 }}>
-          {formatDateTime(rowData.actualActivityStartTime)}{" "}
-          {/* Format and display the actual start time */}
-        </p>
-        <p style={{ margin: 0, padding: 0 }}>
-          {formatDateTime(rowData.actualActivityEndTime)}{" "}
-          {/* Format and display the actual end time */}
-        </p>
-      </>
-    );
-  };
+  const activityStatAndStopTime = (rowData) => (
+    <>
+      <p style={{ margin: "0 0 4px 0", padding: 0 }}>
+        {formatDateTime(rowData.actualActivityStartTime)}
+      </p>
+      <p style={{ margin: 0, padding: 0 }}>
+        {formatDateTime(rowData.actualActivityEndTime)}
+      </p>
+    </>
+  );
 
-  // Objective: Render the expansion template for a row in the DataTable, displaying detailed information about activities in a card layout
   const rowExpansionTemplate = (rowData, jobID) => {
-    console.log("Row data from expnasion : ", rowData);
     return (
       <Card>
-        <DataTable
-          className="HeaderColorExpandable" // Custom class for header color
-          stripedRows // Enable striped rows for better readability
-          value={rowData.activityList} // Use the activity list from row data
-        >
-          <Column field="sequence" header="Sequence" /> {/* Sequence column */}
+        <DataTable stripedRows value={rowData.activityList}>
+          <Column field="sequence" header="Sequence" />
           <Column
             field="activityName"
             header="Activity Name"
-            body={activityNameBodyTemplate(jobID)} // Custom body template for activity name
+            body={activityNameBodyTemplate(jobID)}
           />
           <Column
             field="logbook"
             header="Logbook"
-            body={logbookBodyTemplate(jobID)} // Custom body template for logbook
+            body={logbookBodyTemplate(jobID)}
           />
           <Column
             header="Performer vs Approver"
-            body={PerformerAndApprover} // Custom body template for scheduled start and stop times
+            body={PerformerAndApprover}
             headerStyle={{ textAlign: "center" }}
             bodyStyle={{ textAlign: "center" }}
           />
           <Column
             field="assetName"
             header="Assets"
-            body={assetsBodyTemplateTest} // Custom body template for assets
+            body={assetsBodyTemplateTest}
           />
           <Column
             field="scheduledActivityStartTime"
             header="Schedule Start Time vs Stop Time"
-            body={ScheduleStatAndStopTime} // Custom body template for scheduled start and stop times
+            body={ScheduleStatAndStopTime}
           />
           <Column
             field="actualActivityStartTime"
             header="Activity Start Time vs Stop Time"
-            body={activityStatAndStopTime} // Custom body template for actual start and stop times
+            body={activityStatAndStopTime}
           />
           <Column
             field="actvityStatus"
             header="Status"
-            body={statusActivityBodyTemplate} // Custom body template for activity status
+            body={statusActivityBodyTemplate}
           />
         </DataTable>
       </Card>
     );
   };
 
-  // Objective: Render the status button based on the job status with tooltips for additional information
   const statusBodyTemplate = (rowData) => {
     return (
       <>
@@ -504,7 +683,6 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
                 boxShadow: "none",
                 background: "#e3f2fd",
               }}
-              aria-label="Filter"
             />
           </MuiTooltip>
         ) : rowData.jobStatus === "Rejected" ? (
@@ -593,23 +771,6 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
               }}
             />
           </MuiTooltip>
-        ) : rowData.jobStatus === "Review Started" ? (
-          <MuiTooltip title="Review Started" placement="right">
-            <Button
-              icon="pi pi-file-check"
-              rounded
-              text
-              raised
-              severity="secondary"
-              style={{
-                height: "2.2rem",
-                width: "2.2rem",
-                cursor: "default",
-                boxShadow: "none",
-                background: "#e0e0e0",
-              }}
-            />
-          </MuiTooltip>
         ) : rowData.jobStatus === "Approved" ? (
           <MuiTooltip title="Approved" placement="right">
             <Button
@@ -644,68 +805,37 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
               }}
             />
           </MuiTooltip>
-        ) : (
-          ""
-        )}
+        ) : null}
       </>
     );
   };
 
-  // Objective: Render a progress bar showing the current progress of a job
   const progressBodyTemplate = (rowData) => {
-    const activityList = rowData.activityList;
-    const progress = () => {
-      return Math.ceil(
-        (activityList.filter(
-          (activity) => activity.actvityStatus === "Completed",
-        ).length *
-          100) /
-          activityList.length,
-      );
-    };
-    console.log("Progress first ", rowData.jobName, progress());
     return (
       <ProgressBar
-        value={progress() ? progress() : 0}
-        style={{ borderRadius: "20px", height: "1rem" }} // Custom style for the progress bar
-        showValue={true} // Display the progress value
+        value={rowData.progress ?? 0}
+        style={{ borderRadius: "20px", height: "1rem" }}
+        showValue={true}
       />
     );
   };
 
-  // Objective: Display the actual start and stop times of a job in a formatted manner
-  const jobStartandStoptime = (rowData) => {
-    return (
-      <>
-        <p style={{ margin: "0 0 4px 0", padding: 0 }}>
-          {formatDateTime(rowData.actualJobStartTime)}{" "}
-          {/* Format and display the start time */}
-        </p>
-        <p style={{ margin: 0, padding: 0 }}>
-          {formatDateTime(rowData.actualJobEndTime)}{" "}
-          {/* Format and display the stop time */}
-        </p>{" "}
-      </>
-    );
-  };
+  const jobStartandStoptime = (rowData) => (
+    <>
+      <p style={{ margin: "0 0 4px 0", padding: 0 }}>
+        {formatDateTime(rowData.actualJobStartTime)}
+      </p>
+      <p style={{ margin: 0, padding: 0 }}>
+        {formatDateTime(rowData.actualJobEndTime)}
+      </p>
+    </>
+  );
 
   const AssignerTemplate = (rowData) => {
-    // console.log("Rowdata PerformerAndApprover : ", rowData);
-    // console.log("performer : ", rowData.performer);
-    // console.log("approver : ", rowData.approver);
-    // console.log(
-    //   "Get Initials Performer : ",
-    //   getInitialsFromEmail(rowData.performer),
-    // );
-    // console.log(
-    //   "Get Initials Approver : ",
-    //   getInitialsFromEmail(rowData.approver),
-    // );
     if (!rowData) return null;
-
     return (
       <Stack direction="row" spacing={1} justifyContent={"center"}>
-        {rowData.approver && (
+        {rowData.assigner && (
           <MuiTooltip title={`${rowData.assigner}`} arrow>
             <MuiAvatar
               sx={{ width: 30, height: 30, fontSize: 13, bgcolor: "#2e7d32" }}
@@ -718,26 +848,18 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
     );
   };
 
-  // Objective: Render the assets information with a tooltip for the asset name
   const assetsBodyTemplateTest = (rowData) => {
     return (
       <>
-        {rowData.assetName === null ||
-        rowData.assetName === undefined ||
-        rowData.assetName === "" ? ( // Check if assetName is null or undefined
-          "----" // Display placeholder if assetName is not available
+        {!rowData.assetName ? (
+          "----"
         ) : (
           <MuiTooltip title={rowData.assetName} placement="bottom">
-            {" "}
-            {/* Tooltip to show the full asset name */}
             <span
-              style={{ fontWeight: "600" }} // Style to make the asset name bold
-              className={`assets-tooltip-${rowData.activityId}`} // Dynamic class name for tooltip targeting
+              style={{ fontWeight: "600" }}
+              className={`assets-tooltip-${rowData.activityId}`}
             >
-              <EllipsisText
-                text={rowData.assetName} // Component to truncate asset name with ellipsis
-                maxWidth={"120px"} // Set maximum width for truncation
-              ></EllipsisText>
+              <EllipsisText text={rowData.assetName} maxWidth={"120px"} />
             </span>
           </MuiTooltip>
         )}
@@ -745,160 +867,132 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
     );
   };
 
-  // Objective: Retrieve the currently started activity from the activity list
   function getCurrentStartedActivity(activityData) {
     return activityData.activityList?.find(
-      // Find the first activity with status "Started"
       (activity) => activity.actvityStatus === "Started",
     );
   }
 
-  // Objective: Render the current performer information and related details
   const currentPerformerBodyTemplate = (rowData) => {
-    const currentActivity = getCurrentStartedActivity(rowData); // Get the current started activity
+    const currentActivity = getCurrentStartedActivity(rowData);
 
-    // Extract initials from the performer's email address
     const initials = currentActivity?.performer
-      ?.split("@")[0] // Split the email at "@" and take the first part (name)
-      .split(".") // Split the name at "." to get individual name parts
-      .map((name) => name.charAt(0).toUpperCase()) // Get the first character of each name part and convert to uppercase
-      .join(""); // Join the initials into a single string
-
-    return (
-      <>
-        <div
-          style={{
-            display: "flex", // Use flexbox for layout
-            justifyContent: "center", // Center items horizontally
-            alignContent: "center", // Center items vertically
-            alignItems: "center", // Align items in the center of the flex container
-            columnGap: "0.25rem", // Add space between columns
-          }}
-        >
-          <div className="current-performer-avatar-container">
-            {" "}
-            {/* Container for the performer's avatar */}
-            <Tooltip
-              target={`.current-performer-avatar-${rowData.jobID}`} // Target the avatar for tooltip
-              position="bottom" // Position of the tooltip
-            >
-              {currentActivity?.performer} {/* Display the performer's name */}
-            </Tooltip>
-            {currentActivity?.performer === null ||
-            currentActivity?.performer === " " ||
-            currentActivity?.performer === undefined ? ( // Check if performer is null, empty, or undefined
-              "---- " // Display placeholder if performer is not available
-            ) : (
-              <Avatar
-                shape="circle" // Avatar shape
-                size="normal" // Avatar size
-                label={initials ? initials : "NA"} // Display initials or "NA" if none
-                className={`current-performer-avatar-${rowData.jobID}`} // Dynamic class name for targeting
-                style={{
-                  backgroundColor: "#04888d", // Background color for the avatar
-                  color: "#ffffff", // Text color for initials
-                  width: "30px", // Width of the avatar
-                  height: "30px", // Height of the avatar
-                  fontSize: "0.8rem", // Font size for initials
-                }}
-              />
-            )}
-          </div>
-          <div>
-            {currentActivity?.assetName === undefined ||
-            currentActivity?.assetName === null ||
-            currentActivity?.assetName === "" ? ( // Check if assetName is undefined
-              " ---- " // Display placeholder if assetName is not available
-            ) : (
-              <>
-                <Tooltip
-                  target={`.assets-tooltip-${rowData.jobID}`} // Target the asset name for tooltip
-                  position="bottom" // Position of the tooltip
-                >
-                  {currentActivity?.assetName}{" "}
-                  {/* Display the asset name in tooltip */}
-                </Tooltip>
-
-                <span className={`assets-tooltip-${rowData.jobID}`}>
-                  {" "}
-                  {/* Span for the asset name with tooltip targeting */}
-                  <EllipsisText
-                    text={currentActivity?.assetName} // Component to truncate asset name with ellipsis
-                    maxWidth={"80px"} // Set maximum width for truncation
-                  ></EllipsisText>
-                </span>
-              </>
-            )}
-          </div>
-          <div>
-            {currentActivity?.activityName === null ||
-            currentActivity?.activityName === " " ||
-            currentActivity?.activityName === undefined ||
-            currentActivity?.activityName === "Self Job" ? ( // Check if activityName is null, empty, or undefined
-              " ----" // Display placeholder if activityName is not available
-            ) : (
-              <Chip size="small" label={currentActivity?.activityName} /> // Render a chip with the activity name
-            )}
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  // Objective: Handle the click event for the activity name
-  const onActivityNameClick = (rowData, jobID) => {
-    setactivityNameClick(true); // Set state to indicate that the activity name has been clicked
-    setLogbookClick(false); // Reset the logbook click state
-    setSelectedActivity({
-      // Update the selected activity state with job and activity identifiers
-      jobName: jobID,
-      activityName: rowData.activityId,
-    });
-    setDisplayDialog(true); // Set state to display the dialog
-  };
-
-  // Objective: Handle the click event for the logbook
-  const onLogbookClick = (rowData, jobID) => {
-    setactivityNameClick(false); // Reset the activity name click state
-    setLogbookClick(true); // Set state to indicate that the logbook has been clicked
-    setSelectedActivity({
-      // Update the selected activity state with job and activity identifiers
-      jobName: jobID,
-      activityName: rowData.activityId,
-    });
-    setDisplayDialog(true); // Set state to display the dialog
-  };
-
-  // Objective: Render the job name template with tooltip and chip
-  const jobNameTemplate = (rowData) => {
-    // Extract initials from the approver's email address
-    const emailinitials = rowData.approver
-      ?.split("@")[0] // Split the email at "@" and take the first part (name)
-      .split(".") // Split the name at "." to get individual name parts
-      .map((name) => name.charAt(0).toUpperCase()) // Get the first character of each name part and convert to uppercase
-      .join(""); // Join the initials into a single string
+      ?.split("@")[0]
+      .split(".")
+      .map((name) => name.charAt(0).toUpperCase())
+      .join("");
 
     return (
       <div
-        className="Test" // CSS class for styling
         style={{
-          display: "flex", // Use flexbox for layout
-          columnGap: "0.5rem", // Space between columns
-          justifyContent: "center", // Center items horizontally
-          alignItems: "center", // Center items vertically
+          display: "flex",
+          justifyContent: "center",
+          alignContent: "center",
+          alignItems: "center",
+          columnGap: "0.25rem",
         }}
       >
-        {/* <div style={{ border: "1px solid #e0e0e0", marginTop: "1rem" }}>
-          <ActivityFlow job={rowData}></ActivityFlow>
-        </div> */}
+        <div className="current-performer-avatar-container">
+          <Tooltip
+            target={`.current-performer-avatar-${rowData.jobID}`}
+            position="bottom"
+          >
+            {currentActivity?.performer}
+          </Tooltip>
+          {!currentActivity?.performer?.trim() ? (
+            "---- "
+          ) : (
+            <Avatar
+              shape="circle"
+              size="normal"
+              label={initials ? initials : "NA"}
+              className={`current-performer-avatar-${rowData.jobID}`}
+              style={{
+                backgroundColor: "#04888d",
+                color: "#ffffff",
+                width: "30px",
+                height: "30px",
+                fontSize: "0.8rem",
+              }}
+            />
+          )}
+        </div>
+        <div>
+          {!currentActivity?.assetName ? (
+            " ---- "
+          ) : (
+            <>
+              <Tooltip
+                target={`.assets-tooltip-${rowData.jobID}`}
+                position="bottom"
+              >
+                {currentActivity?.assetName}
+              </Tooltip>
 
+              <span className={`assets-tooltip-${rowData.jobID}`}>
+                <EllipsisText
+                  text={currentActivity?.assetName}
+                  maxWidth={"80px"}
+                />
+              </span>
+            </>
+          )}
+        </div>
+        <div>
+          {!currentActivity?.activityName ||
+          currentActivity?.activityName === "Self Job" ? (
+            " ----"
+          ) : (
+            <Chip size="small" label={currentActivity?.activityName} />
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const onActivityNameClick = (rowData, jobID) => {
+    setactivityNameClick(true);
+    setLogbookClick(false);
+    setSelectedActivity({
+      jobName: jobID,
+      activityName: rowData.activityId,
+    });
+    setDisplayDialog(true);
+  };
+
+  const onLogbookClick = (rowData, jobID) => {
+    setactivityNameClick(false);
+    setLogbookClick(true);
+    setSelectedActivity({
+      jobName: jobID,
+      activityName: rowData.activityId,
+    });
+    setDisplayDialog(true);
+  };
+
+  const jobNameTemplate = (rowData) => {
+    const emailinitials = rowData.approver
+      ?.split("@")[0]
+      .split(".")
+      .map((name) => name.charAt(0).toUpperCase())
+      .join("");
+
+    return (
+      <div
+        className="Test"
+        style={{
+          display: "flex",
+          columnGap: "0.5rem",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Button
           onClick={() => handleRowClick(rowData)}
           icon="pi pi-eye"
           rounded
           text
           raised
-          //size="small"
           style={{
             height: "2.2rem",
             width: "2.2rem",
@@ -908,62 +1002,48 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
           }}
           aria-label="Filter"
         />
-        <MuiTooltip // Tooltip to show additional information on hover
+        <MuiTooltip
           title={
-            // Content of the tooltip
             <>
               <Typography>Approver : {rowData.approver}</Typography>
-              {/* Approver's email */}
               <Typography>Job Name : {rowData.jobName}</Typography>
-              {/* Job name */}
               <Typography>Job Id : {rowData.jobID}</Typography>
-              {/* Job ID */}
             </>
           }
-          placement="top" // Tooltip position
+          placement="top"
         >
-          <Chip // Material-UI chip component to display job name and priority
+          <Chip
             color={
-              // Set the color based on the job's priority
-              rowData.priority === "Normal" // Check priority and set corresponding color
-                ? "success" // Green for normal priority
-                : rowData.priority === "Critical" // Check for critical priority
-                  ? "error" // Red for critical priority
-                  : rowData.priority === "Low" // Check for low priority
-                    ? "warning" // Orange for low priority
-                    : "default" // Default color for unrecognized priorities
+              rowData.priority === "Normal"
+                ? "success"
+                : rowData.priority === "Critical"
+                  ? "error"
+                  : rowData.priority === "Low"
+                    ? "warning"
+                    : "default"
             }
-            label={
-              // Label for the chip
-              <EllipsisText // Component to truncate job name with ellipsis
-                text={rowData.jobName} // Job name text
-                maxWidth={"80px"} // Set maximum width for truncation
-              ></EllipsisText>
-            }
+            label={<EllipsisText text={rowData.jobName} maxWidth={"80px"} />}
             avatar={
-              // Avatar for the chip to show initials
-              <MuiAvatar // Material-UI Avatar component
+              <MuiAvatar
                 sx={{
-                  width: 35, // Width of the avatar
-                  height: 35, // Height of the avatar
-                  fontSize: "0.9rem", // Font size for initials
-                  // Set background color based on priority
+                  width: 35,
+                  height: 35,
+                  fontSize: "0.9rem",
                   background:
-                    rowData.priority === "Normal" // Check priority and set corresponding background color
-                      ? "#2e7d32" // Dark green for normal
-                      : rowData.priority === "Critical" // Check for critical priority
-                        ? "#d32f2f" // Dark red for critical
-                        : rowData.priority === "Low" // Check for low priority
-                          ? "#ed6c02" // Orange for low
-                          : "gray", // Gray for unrecognized priorities
-                  color: "#ffff !important", // Text color for initials, with high specificity
+                    rowData.priority === "Normal"
+                      ? "#2e7d32"
+                      : rowData.priority === "Critical"
+                        ? "#d32f2f"
+                        : rowData.priority === "Low"
+                          ? "#ed6c02"
+                          : "gray",
+                  color: "#ffff !important",
                 }}
               >
-                {emailinitials ? emailinitials : "NA"}{" "}
-                {/* Display initials or "NA" if none available */}
+                {emailinitials ? emailinitials : "NA"}
               </MuiAvatar>
             }
-            variant="outlined" // Chip variant
+            variant="outlined"
             size="medium"
           />
         </MuiTooltip>
@@ -971,12 +1051,188 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
     );
   };
 
-  // Objective: Render the main component structure
   return (
     <>
+      {/* PROFESSIONAL STYLING FOR CUSTOM MULTI-SELECT FILTERS */}
+      <style>{`
+        .custom-filter-panel {
+          padding: 0.75rem;
+          min-width: 220px;
+          max-width: 260px;
+          background: #ffffff;
+          user-select: none;
+        }
+        .filter-header-title {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 13px;
+          font-weight: 700;
+          color: #374151;
+          margin-bottom: 0.6rem;
+        }
+        .selected-badge {
+          font-size: 11px;
+          font-weight: 600;
+          background-color: #e0f2fe;
+          color: #0369a1;
+          padding: 2px 7px;
+          border-radius: 12px;
+        }
+        .clear-link {
+          font-size: 11px;
+          color: #ef4444;
+          font-weight: 600;
+          cursor: pointer;
+        }
+        .clear-link:hover {
+          text-decoration: underline;
+        }
+        .filter-search-box {
+          position: relative;
+          margin-bottom: 0.5rem;
+          display: flex;
+          align-items: center;
+        }
+        .filter-search-box .search-icon {
+          position: absolute;
+          left: 8px;
+          color: #9ca3af;
+          font-size: 12px;
+        }
+        .filter-search-input {
+          width: 100%;
+          padding: 6px 24px 6px 26px;
+          font-size: 12px;
+          border: 1px solid #d1d5db;
+          border-radius: 6px;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+        .filter-search-input:focus {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+        }
+        .clear-search {
+          position: absolute;
+          right: 8px;
+          color: #9ca3af;
+          font-size: 10px;
+          cursor: pointer;
+        }
+        .select-all-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 4px 6px;
+          cursor: pointer;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: 600;
+          color: #4b5563;
+        }
+        .select-all-row:hover {
+          background-color: #f3f4f6;
+        }
+        .filter-divider {
+          height: 1px;
+          background-color: #e5e7eb;
+          margin: 6px 0;
+        }
+        .filter-list-container {
+          max-height: 180px;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          padding-right: 2px;
+        }
+        .filter-list-container::-webkit-scrollbar {
+          width: 4px;
+        }
+        .filter-list-container::-webkit-scrollbar-thumb {
+          background-color: #d1d5db;
+          border-radius: 4px;
+        }
+        .filter-item-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 5px 6px;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: background-color 0.15s ease;
+        }
+        .filter-item-row:hover {
+          background-color: #f3f4f6;
+        }
+        .filter-item-row.active {
+          background-color: #f0fdf4;
+        }
+        .custom-checkbox {
+          width: 15px;
+          height: 15px;
+          cursor: pointer;
+          accent-color: #2563eb;
+        }
+        .status-pill-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-size: 11px;
+          font-weight: 600;
+        }
+        .status-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+        }
+        .no-options {
+          text-align: center;
+          font-size: 12px;
+          color: #9ca3af;
+          padding: 8px 0;
+        }
+        .progress-options-list {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .progress-item-card {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 6px 8px;
+          border: 1px solid #e5e7eb;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 12px;
+          font-weight: 500;
+          transition: all 0.15s ease;
+        }
+        .progress-item-card:hover {
+          border-color: #93c5fd;
+          background-color: #f8fafc;
+        }
+        .progress-item-card.active {
+          border-color: #3b82f6;
+          background-color: #eff6ff;
+          font-weight: 600;
+        }
+        .progress-label {
+          flex: 1;
+          margin-left: 8px;
+        }
+        .progress-indicator-bar {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+        }
+      `}</style>
+
       <Card>
-        {" "}
-        {/* Material-UI Card component for styling */}
         <DataTable
           removableSort
           header={renderHeader()}
@@ -985,16 +1241,17 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
           expandedRows={expandedRows}
           onRowToggle={(e) => setExpandedRows(e.data)}
           paginator
+          pagina
           rows={5}
+          rowsPerPageOptions={[5, 10, 25, 50]}
           rowExpansionTemplate={(rowData) =>
             rowExpansionTemplate(rowData, rowData.jobID)
           }
           dataKey="jobID"
           className="dashboardDatatable HeaderColor primereactPaginatorStyle"
-          /* ✅ Correct filter props */
           filters={filters}
           onFilter={(e) => setFilters(e.filters)}
-          filterDisplay="row"
+          filterDisplay="menu"
           globalFilterFields={[
             "jobName",
             "taskTemplate",
@@ -1006,78 +1263,101 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
           ]}
           emptyMessage="No jobs found."
         >
-          <Column expander /> {/* Column for the row expander icon */}
+          <Column expander />
           <Column
-            headerStyle={{ maxWidth: "12rem !important" }} // Style for the header cell to limit max width
-            bodyStyle={{ maxWidth: "12rem" }} // Style for the body cell to limit max width
-            field="jobName" // Field in the data corresponding to this column
-            header="Job Name" // Header text for the column
-            body={jobNameTemplate} // Template function to render the body content for this column
+            headerStyle={{ maxWidth: "12rem !important" }}
+            bodyStyle={{ maxWidth: "12rem" }}
+            field="jobName"
+            header="Job Name"
+            body={jobNameTemplate}
           />
-          {groupBy === "Tag" && ( // Conditional rendering based on the grouping option
-            <Column field="taskTemplate" header="Task Template" sortable /> // Column for task template, sortable
+          {groupBy === "Tag" && (
+            <Column field="taskTemplate" header="Task Template" sortable />
           )}
           <Column
-            className="assigner" // CSS class for styling the column
-            header="Assigner" // Header text for the column
-            body={AssignerTemplate} // Template function to render job start and stop time content
+            className="assigner"
+            header="Assigner"
+            body={AssignerTemplate}
           />
           <Column
-            field="jobScheduleStartTime" // Field in the data corresponding to this column
-            header="Assign Time" // Header text for the column
-            body={(rowData) => formatDateTime(rowData.scheduledJobStartTime)} // Format and render job schedule start time
-            sortable // Enable sorting for this column
+            field="jobScheduleStartTime"
+            header="Assign Time"
+            body={(rowData) => formatDateTime(rowData.scheduledJobStartTime)}
+            sortable
           />
           <Column
-            className="dateTimeSection" // CSS class for styling the column
-            header="Job Start Time vs Stop Time" // Header text for the column
-            body={jobStartandStoptime} // Template function to render job start and stop time content
+            className="dateTimeSection"
+            header="Job Start Time vs Stop Time"
+            body={jobStartandStoptime}
           />
+
+          {/* Progress Column with Interactive Multi-Select Filter */}
           <Column
-            field="progress" // Field in the data corresponding to this column
-            header="Progress" // Header text for the column
-            body={progressBodyTemplate} // Template function to render progress content
+            field="progress"
+            header="Progress"
+            body={progressBodyTemplate}
+            sortable
+            filter
+            filterElement={(options) => (
+              <ProgressMultiFilter options={options} />
+            )}
+            showFilterMatchModes={false}
+            showFilterOperator={false}
+            showAddButton={false}
+            showApplyButton={false}
+            showClearButton={false}
           />
+
           <Column
-            field="currentPerformer" // Field in the data corresponding to this column
-            header="Current Performer / Activity /Asset" // Header text for the column
-            body={currentPerformerBodyTemplate} // Template function to render current performer information
+            field="currentPerformer"
+            header="Current Performer / Activity /Asset"
+            body={currentPerformerBodyTemplate}
           />
+
+          {/* Job Status Column with Professional Dynamic Multi-Select Filter */}
           <Column
-            field="jobstatus" // Field in the data corresponding to this column
-            header="Job Status" // Header text for the column
-            body={statusBodyTemplate} // Template function to render job status
+            field="jobStatus"
+            header="Job Status"
+            body={statusBodyTemplate}
+            filter
+            filterElement={(options) => (
+              <JobStatusMultiFilter options={options} />
+            )}
+            showFilterMatchModes={false}
+            showFilterOperator={false}
+            showAddButton={false}
+            showApplyButton={false}
+            showClearButton={false}
           />
         </DataTable>
+
         <Dialog
-          visible={displayDialog} // Control visibility of the dialog based on state
-          onHide={() => setDisplayDialog(false)} // Function to execute when the dialog is hidden
-          maximizable // Allow the dialog to be maximized
-          blockScroll // Prevent background scrolling when the dialog is open
+          visible={displayDialog}
+          onHide={() => setDisplayDialog(false)}
+          maximizable
+          blockScroll
         >
           <div>
             <center>
-              {" "}
-              {/* Center the content of the dialog */}
-              {activityNameClick && ( // Conditionally render based on activity name click state
+              {activityNameClick && (
                 <TransactionTable
-                  jobId={selectedActivity?.jobName} // Pass jobID from selected activity
-                  activityId={selectedActivity?.activityName} // Pass activityId from selected activity
+                  jobId={selectedActivity?.jobName}
+                  activityId={selectedActivity?.activityName}
                 />
               )}
-              {logbookClick && ( // Conditionally render based on logbook click state
+              {logbookClick && (
                 <LViewWithProps
-                  jobId={selectedActivity?.jobName} // Pass jobID from selected activity
-                  activityId={selectedActivity?.activityName} // Pass activityId from selected activity
-                ></LViewWithProps>
+                  jobId={selectedActivity?.jobName}
+                  activityId={selectedActivity?.activityName}
+                />
               )}
             </center>
           </div>
         </Dialog>
+
         <Dialog
-          header={openrow?.jobName} // Set the header of the dialog to the job name of the selected row
+          header={openrow?.jobName}
           visible={openrowdialog}
-          // maximizable
           style={{ width: "75vw", height: "75vh" }}
           onHide={() => {
             if (!openrowdialog) return;
@@ -1089,7 +1369,7 @@ export default function ExpandableDataTable({ key, data, header, groupBy }) {
           </div>
         </Dialog>
       </Card>
-      <br /> {/* Add a line break after the card */}
+      <br />
     </>
   );
 }
